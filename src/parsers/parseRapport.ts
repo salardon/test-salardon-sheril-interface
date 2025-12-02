@@ -166,6 +166,7 @@ export function parseRapportXml(text: string): Rapport {
 
         const planetes: any[] = [];
         let revenuEstime = 0;
+        let pdc = 0;
         const pNodes = qAll(s, ['planetes > p',]);
         pNodes.forEach((p) => {
             const proprietaire = getAttrNum(p, ['prop']);
@@ -182,7 +183,8 @@ export function parseRapportXml(text: string): Rapport {
             }
 
             const num = getAttrNum(p, ['num']) ?? 0;
-            const pdc = getAttrNum(p, ['pdc']) ?? 0;
+            const planetPdc = getAttrNum(p, ['pdc']) ?? 0;
+            pdc += planetPdc;
             const minerai = getAttrNum(p, ['stockmin']) ?? getAttrNum(p, ['minerai']);
 
             const batiments: { techCode: string; count: number }[] = [];
@@ -223,7 +225,7 @@ export function parseRapportXml(text: string): Rapport {
 
             planetes.push({
                 num,
-                pdc,
+                pdc: planetPdc,
                 proprietaire,
                 minerai,
                 batiments,
@@ -249,6 +251,7 @@ export function parseRapportXml(text: string): Rapport {
             type: 'joueur',
             nom,
             pos,
+            pdc,
             typeEtoile,
             nbPla,
             proprietaires: sortedProprietaires,

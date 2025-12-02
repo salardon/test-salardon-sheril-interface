@@ -7,7 +7,7 @@ import { NavLink } from 'react-router-dom';
 
 type SortKey =
   | 'etoile' | 'pos' | 'nom' | 'nbpla' | 'proprietaires'
-  | 'politique' | 'entretien' | 'revenu' | 'revenuEstime' | 'hscan' | 'bcont' | 'besp' | 'btech';
+  | 'politique' | 'entretien' | 'revenu' | 'revenuEstime' | 'hscan' | 'bcont' | 'besp' | 'btech' | 'pdc';
 type SortDir = 'asc' | 'desc';
 
 export default function ListeSystemes() {
@@ -92,6 +92,7 @@ export default function ListeSystemes() {
         case 'pos': av = a.pos.x * 1000 + a.pos.y; bv = b.pos.x * 1000 + b.pos.y; break;
         case 'nom': av = a.nom.toLowerCase(); bv = b.nom.toLowerCase(); break;
         case 'nbpla': av = a.nbPla ?? a.nombrePla ?? 0; bv = b.nbPla ?? b.nombrePla ?? 0; break;
+        case 'pdc': av = a.pdc ?? 0; bv = b.pdc ?? 0; break;
         case 'proprietaires': av = a.proprietaires; bv = b.proprietaires; break;
         case 'politique': av = a.politique ?? -9999; bv = b.politique ?? -9999; break;
         case 'entretien': av = a.entretien ?? 0; bv = b.entretien ?? 0; break;
@@ -119,8 +120,9 @@ export default function ListeSystemes() {
       acc.technologique += (s.revenuEstime ?? 0) * (s.btech ?? 0) / 100;
       acc.contreEspionnage += (s.revenuEstime ?? 0) * (s.bcont ?? 0) / 100;
       acc.espionnage += (s.revenuEstime ?? 0) * (s.besp ?? 0) / 100;
+      acc.pdc += s.pdc ?? 0;
       return acc;
-    }, { entretien: 0, revenu: 0, revenuEstime: 0, technologique: 0, contreEspionnage: 0, espionnage: 0 });
+    }, { entretien: 0, revenu: 0, revenuEstime: 0, technologique: 0, contreEspionnage: 0, espionnage: 0, pdc: 0 });
   }, [filtered]);
 
   const total = sorted.length;
@@ -211,6 +213,7 @@ export default function ListeSystemes() {
               {header('pos', 'Position')}
               {header('nom', 'Nom')}
               {header('nbpla', 'Planètes')}
+              {header('pdc', 'Pdc')}
               {header('proprietaires', 'Commandants')}
               {header('politique', 'Politique')}
               {header('entretien', 'Entretien')}
@@ -241,6 +244,7 @@ export default function ListeSystemes() {
                 </td>
                 <td>{s.nom}</td>
                 <td style={{ textAlign: 'right' }}>{s.nbPla ?? 0}</td>
+                <td style={{ textAlign: 'right' }}>{s.pdc ?? '—'}</td>
                 <td style={{ whiteSpace: 'nowrap' }}>{s.proprietaires.map((p: number, key: number) =>
                     <Commandant num={p} key={key} />
                 )}</td>
@@ -256,7 +260,7 @@ export default function ListeSystemes() {
             ))}
             {pageItems.length === 0 && (
               <tr>
-                <td colSpan={13} style={{ textAlign: 'center', padding: 12, color: '#aaa' }}>
+                <td colSpan={14} style={{ textAlign: 'center', padding: 12, color: '#aaa' }}>
                   {rapport ? 'Aucun système ne correspond aux filtres.' : 'Chargez le rapport pour voir les systèmes.'}
                 </td>
               </tr>
@@ -264,7 +268,9 @@ export default function ListeSystemes() {
           </tbody>
           <tfoot>
             <tr>
-              <td colSpan={6} style={{ textAlign: 'right', fontWeight: 'bold' }}>Totaux:</td>
+              <td colSpan={4} style={{ textAlign: 'right', fontWeight: 'bold' }}>Totaux:</td>
+              <td style={{ textAlign: 'right', fontWeight: 'bold' }}>{totals.pdc}</td>
+              <td colSpan={2}></td>
               <td style={{ textAlign: 'right', fontWeight: 'bold' }}>{totals.entretien.toFixed(1)}</td>
               <td style={{ textAlign: 'right', fontWeight: 'bold' }}>{totals.revenu.toFixed(1)}</td>
               <td style={{ textAlign: 'right', fontWeight: 'bold' }}>{totals.revenuEstime.toFixed(1)}</td>
