@@ -167,6 +167,12 @@ export function parseRapportXml(text: string): Rapport {
         const planetes: any[] = [];
         let revenuEstime = 0;
         let pdc = 0;
+        let revenumin = 0;
+        let stockmin = 0;
+        let popAct = 0;
+        let popMax = 0;
+        let popAug = 0;
+        const racePop: { [key: number]: number } = {};
         const pNodes = qAll(s, ['planetes > p',]);
         pNodes.forEach((p) => {
             const proprietaire = getAttrNum(p, ['prop']);
@@ -185,6 +191,10 @@ export function parseRapportXml(text: string): Rapport {
             const num = getAttrNum(p, ['num']) ?? 0;
             const planetPdc = getAttrNum(p, ['pdc']) ?? 0;
             pdc += planetPdc;
+            const planetRevenumin = getAttrNum(p, ['revenumin']) ?? 0;
+            revenumin += planetRevenumin;
+            const planetStockmin = getAttrNum(p, ['stockmin']) ?? 0;
+            stockmin += planetStockmin;
             const minerai = getAttrNum(p, ['stockmin']) ?? getAttrNum(p, ['minerai']);
 
             const batiments: { techCode: string; count: number }[] = [];
@@ -206,11 +216,18 @@ export function parseRapportXml(text: string): Rapport {
                 const nbStr = getAttr(pop, ['nb']) || getAttr(pop, ['count']) || getAttr(pop, ['popAct']) || '0';
                 const raceId = Number(raceStr);
                 const nb = Number(nbStr);
+                popAct += nb;
                 const growth = Number(getAttr(pop, ['popAug']) || '0');
+                popAug += growth;
                 const max = Number(getAttr(pop, ['popMax']) || '0');
+                popMax += max;
 
                 if (!Number.isNaN(raceId) && !Number.isNaN(nb) && nb > 0) {
                     populations.push({ raceId, nb, max, growth });
+                    if (!racePop[raceId]) {
+                        racePop[raceId] = 0;
+                    }
+                    racePop[raceId] += nb;
                 }
             });
             const tax = getAttrNum(p, ['tax']) ?? 0;
@@ -228,6 +245,8 @@ export function parseRapportXml(text: string): Rapport {
                 pdc: planetPdc,
                 proprietaire,
                 minerai,
+                revenumin: planetRevenumin,
+                stockmin: planetStockmin,
                 batiments,
                 populations,
                 tax,
@@ -247,17 +266,40 @@ export function parseRapportXml(text: string): Rapport {
         }
 
         const sortedProprietaires = Array.from(proprietaires).sort((a, b) => a - b);
+        const politique = getAttrNum(s, ['politique']);
+        if (politique === 3) {
+            pdc *= 1.5;
+        } else if (politique === 7) {
+            pdc *= 2;
+        }
+
+        const raceNames: { [key: number]: string } = {
+            0: "Fremens",
+            1: "Atalantes",
+            2: "Zwaias",
+            3: "Yoksors",
+            4: "Fergoks",
+        };
+        const mostRepresentedRace = Object.keys(racePop).length > 0
+            ? raceNames[parseInt(Object.keys(racePop).reduce((a, b) => racePop[parseInt(a)] > racePop[parseInt(b)] ? a : b))]
+            : "";
         systemesJoueur.push({
             type: 'joueur',
             nom,
             pos,
             pdc,
+            revenumin,
+            stockmin,
+            popAct,
+            popMax,
+            popAug: popAug / nbPla,
+            race: mostRepresentedRace,
             typeEtoile,
             nbPla,
             proprietaires: sortedProprietaires,
             scan: getAttrNum(s, ['hscan']),
             planetes, // attributs additionnels présents sur les systèmes du joueur
-            politique: getAttrNum(s, ['politique']),
+            politique,
             entretien: getAttrNum(s, ['entretien']),
             revenu: getAttrNum(s, ['revenu']),
             revenuEstime,

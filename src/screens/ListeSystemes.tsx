@@ -5,9 +5,28 @@ import {commandantAsString} from "../utils/commandant";
 import Position from "../components/utils/Position";
 import { NavLink } from 'react-router-dom';
 
+const politiqueMap: { [key: number]: string } = {
+    0: "impôts",
+    1: "commerce",
+    2: "défense",
+    3: "construction",
+    4: "expansion",
+    5: "intégriste",
+    6: "totalitaire",
+    7: "esclavagiste",
+    8: "anti-Fremens",
+    9: "anti-Atalantes",
+    10: "anti-Zwaïas",
+    11: "anti-Yoksors",
+    12: "anti-Fergok",
+    13: "loisir",
+    14: "anti-Cyborg",
+};
+
 type SortKey =
   | 'etoile' | 'pos' | 'nom' | 'nbpla' | 'proprietaires'
-  | 'politique' | 'entretien' | 'revenu' | 'revenuEstime' | 'hscan' | 'bcont' | 'besp' | 'btech' | 'pdc';
+  | 'politique' | 'entretien' | 'revenu' | 'revenuEstime' | 'hscan' | 'bcont' | 'besp' | 'btech' | 'pdc'
+  | 'revenumin' | 'stockmin' | 'popAct' | 'popMax' | 'popAug' | 'race';
 type SortDir = 'asc' | 'desc';
 
 export default function ListeSystemes() {
@@ -102,6 +121,12 @@ export default function ListeSystemes() {
         case 'bcont': av = a.bcont ?? 0; bv = b.bcont ?? 0; break;
         case 'besp': av = a.besp ?? 0; bv = b.besp ?? 0; break;
         case 'btech': av = a.btech ?? 0; bv = b.btech ?? 0; break;
+        case 'revenumin': av = a.revenumin ?? 0; bv = b.revenumin ?? 0; break;
+        case 'stockmin': av = a.stockmin ?? 0; bv = b.stockmin ?? 0; break;
+        case 'popAct': av = a.popAct ?? 0; bv = b.popAct ?? 0; break;
+        case 'popMax': av = a.popMax ?? 0; bv = b.popMax ?? 0; break;
+        case 'popAug': av = a.popAug ?? 0; bv = b.popAug ?? 0; break;
+        case 'race': av = a.race ?? ''; bv = b.race ?? ''; break;
         default: av = 0; bv = 0;
       }
       if (av < bv) return sortDir === 'asc' ? -1 : 1;
@@ -121,8 +146,13 @@ export default function ListeSystemes() {
       acc.contreEspionnage += (s.revenuEstime ?? 0) * (s.bcont ?? 0) / 100;
       acc.espionnage += (s.revenuEstime ?? 0) * (s.besp ?? 0) / 100;
       acc.pdc += s.pdc ?? 0;
+      acc.revenumin += s.revenumin ?? 0;
+      acc.stockmin += s.stockmin ?? 0;
+      acc.popAct += s.popAct ?? 0;
+      acc.popMax += s.popMax ?? 0;
+      acc.popAug += s.popAug ?? 0;
       return acc;
-    }, { entretien: 0, revenu: 0, revenuEstime: 0, technologique: 0, contreEspionnage: 0, espionnage: 0, pdc: 0 });
+    }, { entretien: 0, revenu: 0, revenuEstime: 0, technologique: 0, contreEspionnage: 0, espionnage: 0, pdc: 0, revenumin: 0, stockmin: 0, popAct: 0, popMax: 0, popAug: 0 });
   }, [filtered]);
 
   const total = sorted.length;
@@ -161,7 +191,7 @@ export default function ListeSystemes() {
           Politique:
           <select value={filterPolitique} onChange={e => { setFilterPolitique(e.target.value); setPage(1); }} style={{ marginLeft: 6 }}>
             <option value="all">Toutes</option>
-            {politiquesOptions.map(p => <option key={p} value={String(p)}>{p}</option>)}
+            {politiquesOptions.map(p => <option key={p} value={String(p)}>{politiqueMap[p]}</option>)}
           </select>
         </label>
         <label style={{ flex: 1, minWidth: 240 }}>
@@ -223,6 +253,12 @@ export default function ListeSystemes() {
               {header('bcont', 'Contre-esp.')}
               {header('besp', 'Espionnage')}
               {header('btech', 'Technologique')}
+              {header('revenumin', 'Revenu Min')}
+              {header('stockmin', 'Stock Min')}
+              {header('popAct', 'Pop Act')}
+              {header('popMax', 'Pop Max')}
+              {header('popAug', 'Pop Aug')}
+              {header('race', 'Race')}
             </tr>
           </thead>
           <tbody>
@@ -248,7 +284,7 @@ export default function ListeSystemes() {
                 <td style={{ whiteSpace: 'nowrap' }}>{s.proprietaires.map((p: number, key: number) =>
                     <Commandant num={p} key={key} />
                 )}</td>
-                <td style={{ textAlign: 'right' }}>{s.politique ?? '—'}</td>
+                <td style={{ textAlign: 'right' }}>{s.politique !== undefined ? politiqueMap[s.politique] : '—'}</td>
                 <td style={{ textAlign: 'right' }}>{typeof s.entretien === 'number' ? s.entretien.toFixed(1) : '—'}</td>
                 <td style={{ textAlign: 'right' }}>{typeof s.revenu === 'number' ? s.revenu.toFixed(1) : '—'}</td>
                 <td style={{ textAlign: 'right' }}>{typeof s.revenuEstime === 'number' ? s.revenuEstime.toFixed(1) : '—'}</td>
@@ -256,11 +292,17 @@ export default function ListeSystemes() {
                 <td style={{ textAlign: 'right' }}>{s.bcont ?? '—'}</td>
                 <td style={{ textAlign: 'right' }}>{s.besp ?? '—'}</td>
                 <td style={{ textAlign: 'right' }}>{s.btech ?? '—'}</td>
+                <td style={{ textAlign: 'right' }}>{s.revenumin ?? '—'}</td>
+                <td style={{ textAlign: 'right' }}>{s.stockmin ?? '—'}</td>
+                <td style={{ textAlign: 'right' }}>{s.popAct ?? '—'}</td>
+                <td style={{ textAlign: 'right' }}>{s.popMax ?? '—'}</td>
+                <td style={{ textAlign: 'right' }}>{s.popAug ? s.popAug.toFixed(2) : '—'}</td>
+                <td>{s.race ?? '—'}</td>
               </tr>
             ))}
             {pageItems.length === 0 && (
               <tr>
-                <td colSpan={14} style={{ textAlign: 'center', padding: 12, color: '#aaa' }}>
+                <td colSpan={20} style={{ textAlign: 'center', padding: 12, color: '#aaa' }}>
                   {rapport ? 'Aucun système ne correspond aux filtres.' : 'Chargez le rapport pour voir les systèmes.'}
                 </td>
               </tr>
@@ -268,9 +310,7 @@ export default function ListeSystemes() {
           </tbody>
           <tfoot>
             <tr>
-              <td colSpan={4} style={{ textAlign: 'right', fontWeight: 'bold' }}>Totaux:</td>
-              <td style={{ textAlign: 'right', fontWeight: 'bold' }}>{totals.pdc}</td>
-              <td colSpan={2}></td>
+              <td colSpan={7} style={{ textAlign: 'right', fontWeight: 'bold' }}>Totaux:</td>
               <td style={{ textAlign: 'right', fontWeight: 'bold' }}>{totals.entretien.toFixed(1)}</td>
               <td style={{ textAlign: 'right', fontWeight: 'bold' }}>{totals.revenu.toFixed(1)}</td>
               <td style={{ textAlign: 'right', fontWeight: 'bold' }}>{totals.revenuEstime.toFixed(1)}</td>
@@ -278,6 +318,12 @@ export default function ListeSystemes() {
               <td style={{ textAlign: 'right', fontWeight: 'bold' }}>{totals.contreEspionnage.toFixed(1)}</td>
               <td style={{ textAlign: 'right', fontWeight: 'bold' }}>{totals.espionnage.toFixed(1)}</td>
               <td style={{ textAlign: 'right', fontWeight: 'bold' }}>{totals.technologique.toFixed(1)}</td>
+              <td style={{ textAlign: 'right', fontWeight: 'bold' }}>{totals.revenumin}</td>
+              <td style={{ textAlign: 'right', fontWeight: 'bold' }}>{totals.stockmin}</td>
+              <td style={{ textAlign: 'right', fontWeight: 'bold' }}>{totals.popAct}</td>
+              <td style={{ textAlign: 'right', fontWeight: 'bold' }}>{totals.popMax}</td>
+              <td style={{ textAlign: 'right', fontWeight: 'bold' }}>{(totals.popAug / Math.max(1, filtered.length)).toFixed(2)}</td>
+              <td></td>
             </tr>
           </tfoot>
         </table>
