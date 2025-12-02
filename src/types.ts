@@ -63,7 +63,9 @@ export type Planete = {
     proprietaire?: number;
     pdc: number; // points de construction
     minerai?: number;
-    batiments: { techCode: string; count: number }[]; 
+    revenumin: number;
+    stockmin: number;
+    batiments: { techCode: string; count: number }[];
     populations: {
         raceId: number;
         nb: number,
@@ -96,6 +98,12 @@ export interface SystemBase {
 export interface SystemeJoueur extends SystemBase {
     type: 'joueur';
     pdc: number;
+    revenumin: number;
+    stockmin: number;
+    popAct: number;
+    popMax: number;
+    popAug: number;
+    race: string;
     planetes: Planete[];
     revenuEstime: number;
     scan: number;
