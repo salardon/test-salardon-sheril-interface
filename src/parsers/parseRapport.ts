@@ -279,6 +279,7 @@ export function parseRapportXml(text: string): Rapport {
             2: "Zwaias",
             3: "Yoksors",
             4: "Fergoks",
+            5: "Cyborgs",
         };
         const mostRepresentedRace = Object.keys(racePop).length > 0
             ? raceNames[parseInt(Object.keys(racePop).reduce((a, b) => racePop[parseInt(a)] > racePop[parseInt(b)] ? a : b))]
