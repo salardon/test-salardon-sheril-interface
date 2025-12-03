@@ -173,6 +173,15 @@ export function parseRapportXml(text: string): Rapport {
         let popMax = 0;
         let popAug = 0;
         const racePop: { [key: number]: number } = {};
+        const racePopAug: { [key: number]: number } = {};
+        const marchandises: { code: number; num: number; prod: number }[] = [];
+        const mNodes = qAll(s, ['postes_commerciaux > p',]);
+        mNodes.forEach((p) => {
+            const code = getAttrNum(p, ['code']);
+            const num = getAttrNum(p, ['num']);
+            const prod = getAttrNum(p, ['prod']);
+            marchandises.push({ code, num, prod });
+        });
         const pNodes = qAll(s, ['planetes > p',]);
         pNodes.forEach((p) => {
             const proprietaire = getAttrNum(p, ['prop']);
@@ -228,6 +237,10 @@ export function parseRapportXml(text: string): Rapport {
                         racePop[raceId] = 0;
                     }
                     racePop[raceId] += nb;
+                    if (!racePopAug[raceId]) {
+                        racePopAug[raceId] = 0;
+                    }
+                    racePopAug[raceId] += growth;
                 }
             });
             const tax = getAttrNum(p, ['tax']) ?? 0;
@@ -295,6 +308,9 @@ export function parseRapportXml(text: string): Rapport {
             popMax,
             popAug: popAug / nbPla,
             race: mostRepresentedRace,
+            racePop,
+            racePopAug,
+            marchandises,
             typeEtoile,
             nbPla,
             proprietaires: sortedProprietaires,

@@ -4,6 +4,9 @@ import Commandant from "../components/utils/Commandant";
 import {commandantAsString} from "../utils/commandant";
 import Position from "../components/utils/Position";
 import { NavLink } from 'react-router-dom';
+import PopulationCell from '../components/systemes/PopulationCell';
+import MineraiCell from '../components/systemes/MineraiCell';
+import MarchandiseCell from '../components/systemes/MarchandiseCell';
 
 const politiqueMap: { [key: number]: string } = {
     0: "impôts",
@@ -25,8 +28,8 @@ const politiqueMap: { [key: number]: string } = {
 
 type SortKey =
   | 'etoile' | 'pos' | 'nom' | 'nbpla' | 'proprietaires'
-  | 'politique' | 'entretien' | 'revenu' | 'revenuEstime' | 'hscan' | 'bcont' | 'besp' | 'btech' | 'pdc'
-  | 'revenumin' | 'stockmin' | 'popAct' | 'popMax' | 'popAug' | 'race';
+  | 'politique' | 'entretien' | 'revenu' | 'hscan' | 'bcont' | 'besp' | 'btech' | 'pdc'
+  | 'minerai' | 'population' | 'race' | `marchandise-${number}`;
 type SortDir = 'asc' | 'desc';
 
 export default function ListeSystemes() {
@@ -116,18 +119,23 @@ export default function ListeSystemes() {
         case 'politique': av = a.politique ?? -9999; bv = b.politique ?? -9999; break;
         case 'entretien': av = a.entretien ?? 0; bv = b.entretien ?? 0; break;
         case 'revenu': av = a.revenu ?? 0; bv = b.revenu ?? 0; break;
-        case 'revenuEstime': av = a.revenuEstime ?? 0; bv = b.revenuEstime ?? 0; break;
-        case 'hscan': av = a.hscan ?? 0; bv = b.hscan ?? 0; break;
+        case 'hscan': av = a.scan ?? 0; bv = b.scan ?? 0; break;
         case 'bcont': av = a.bcont ?? 0; bv = b.bcont ?? 0; break;
         case 'besp': av = a.besp ?? 0; bv = b.besp ?? 0; break;
         case 'btech': av = a.btech ?? 0; bv = b.btech ?? 0; break;
-        case 'revenumin': av = a.revenumin ?? 0; bv = b.revenumin ?? 0; break;
-        case 'stockmin': av = a.stockmin ?? 0; bv = b.stockmin ?? 0; break;
-        case 'popAct': av = a.popAct ?? 0; bv = b.popAct ?? 0; break;
-        case 'popMax': av = a.popMax ?? 0; bv = b.popMax ?? 0; break;
-        case 'popAug': av = a.popAug ?? 0; bv = b.popAug ?? 0; break;
+        case 'minerai': av = (a.stockmin ?? 0) + (a.revenumin ?? 0); bv = (b.stockmin ?? 0) + (b.revenumin ?? 0); break;
+        case 'population': av = (a.popAct ?? 0) + (a.popAug ?? 0); bv = (b.popAct ?? 0) + (b.popAug ?? 0); break;
         case 'race': av = a.race ?? ''; bv = b.race ?? ''; break;
-        default: av = 0; bv = 0;
+        default:
+          if (sortKey.startsWith('marchandise-')) {
+            const code = parseInt(sortKey.split('-')[1], 10);
+            const aMarchandise = a.marchandises?.find((m: any) => m.code === code);
+            const bMarchandise = b.marchandises?.find((m: any) => m.code === code);
+            av = (aMarchandise?.num ?? 0) + (aMarchandise?.prod ?? 0);
+            bv = (bMarchandise?.num ?? 0) + (bMarchandise?.prod ?? 0);
+          } else {
+            av = 0; bv = 0;
+          }
       }
       if (av < bv) return sortDir === 'asc' ? -1 : 1;
       if (av > bv) return sortDir === 'asc' ? 1 : -1;
@@ -151,8 +159,18 @@ export default function ListeSystemes() {
       acc.popAct += s.popAct ?? 0;
       acc.popMax += s.popMax ?? 0;
       acc.popAug += s.popAug ?? 0;
+      (s.marchandises || []).forEach((m: any) => {
+        if (!acc.marchandises[m.code]) {
+          acc.marchandises[m.code] = { num: 0, prod: 0 };
+        }
+        acc.marchandises[m.code].num += m.num;
+        acc.marchandises[m.code].prod += m.prod;
+      });
       return acc;
-    }, { entretien: 0, revenu: 0, revenuEstime: 0, technologique: 0, contreEspionnage: 0, espionnage: 0, pdc: 0, revenumin: 0, stockmin: 0, popAct: 0, popMax: 0, popAug: 0 });
+    }, {
+      entretien: 0, revenu: 0, revenuEstime: 0, technologique: 0, contreEspionnage: 0, espionnage: 0, pdc: 0,
+      revenumin: 0, stockmin: 0, popAct: 0, popMax: 0, popAug: 0, marchandises: {} as { [key: number]: { num: number, prod: number } }
+    });
   }, [filtered]);
 
   const total = sorted.length;
@@ -248,17 +266,14 @@ export default function ListeSystemes() {
               {header('politique', 'Politique')}
               {header('entretien', 'Entretien')}
               {header('revenu', 'Revenu')}
-              {header('revenuEstime', 'Revenu estimé')}
               {header('hscan', 'Portée détect.')}
               {header('bcont', 'Contre-esp.')}
               {header('besp', 'Espionnage')}
               {header('btech', 'Technologique')}
-              {header('revenumin', 'Revenu Min')}
-              {header('stockmin', 'Stock Min')}
-              {header('popAct', 'Pop Act')}
-              {header('popMax', 'Pop Max')}
-              {header('popAug', 'Pop Aug')}
+              {header('minerai', 'Minerai')}
+              {header('population', 'Population')}
               {header('race', 'Race')}
+              {global?.marchandises.map(m => header(`marchandise-${m.code}`, m.nom))}
             </tr>
           </thead>
           <tbody>
@@ -275,34 +290,40 @@ export default function ListeSystemes() {
                 </td>
                 <td style={{ whiteSpace: 'nowrap' }}>
                   {s.owned
-                  ? <NavLink to={'/player-system-detail/' + s.posStr}><Position pos={s.pos} /></NavLink>
-                  : <Position pos={s.pos} />}
+                    ? <NavLink to={'/player-system-detail/' + s.posStr}><Position pos={s.pos} /></NavLink>
+                    : <Position pos={s.pos} />}
                 </td>
                 <td>{s.nom}</td>
                 <td style={{ textAlign: 'right' }}>{s.nbPla ?? 0}</td>
                 <td style={{ textAlign: 'right' }}>{s.pdc ?? '—'}</td>
                 <td style={{ whiteSpace: 'nowrap' }}>{s.proprietaires.map((p: number, key: number) =>
-                    <Commandant num={p} key={key} />
+                  <Commandant num={p} key={key} />
                 )}</td>
                 <td style={{ textAlign: 'right' }}>{s.politique !== undefined ? politiqueMap[s.politique] : '—'}</td>
                 <td style={{ textAlign: 'right' }}>{typeof s.entretien === 'number' ? s.entretien.toFixed(1) : '—'}</td>
-                <td style={{ textAlign: 'right' }}>{typeof s.revenu === 'number' ? s.revenu.toFixed(1) : '—'}</td>
-                <td style={{ textAlign: 'right' }}>{typeof s.revenuEstime === 'number' ? s.revenuEstime.toFixed(1) : '—'}</td>
-                <td style={{ textAlign: 'right' }}>{s.hscan ?? '—'}</td>
+                <td style={{ textAlign: 'right' }}>
+                  {typeof s.revenu === 'number' ? s.revenu.toFixed(1) : '—'}
+                  &nbsp;[{typeof s.revenuEstime === 'number' ? s.revenuEstime.toFixed(1) : '—'}]
+                </td>
+                <td style={{ textAlign: 'right' }}>{s.scan ?? '—'}</td>
                 <td style={{ textAlign: 'right' }}>{s.bcont ?? '—'}</td>
                 <td style={{ textAlign: 'right' }}>{s.besp ?? '—'}</td>
                 <td style={{ textAlign: 'right' }}>{s.btech ?? '—'}</td>
-                <td style={{ textAlign: 'right' }}>{s.revenumin ?? '—'}</td>
-                <td style={{ textAlign: 'right' }}>{s.stockmin ?? '—'}</td>
-                <td style={{ textAlign: 'right' }}>{s.popAct ?? '—'}</td>
-                <td style={{ textAlign: 'right' }}>{s.popMax ?? '—'}</td>
-                <td style={{ textAlign: 'right' }}>{s.popAug ? s.popAug.toFixed(2) : '—'}</td>
+                <MineraiCell system={s} />
+                <PopulationCell system={s} />
                 <td>{s.race ?? '—'}</td>
+                {global?.marchandises.map(m => (
+                  <MarchandiseCell
+                    key={m.code}
+                    marchandise={m}
+                    marchandiseData={s.marchandises?.find((mar: any) => mar.code === m.code)}
+                  />
+                ))}
               </tr>
             ))}
             {pageItems.length === 0 && (
               <tr>
-                <td colSpan={20} style={{ textAlign: 'center', padding: 12, color: '#aaa' }}>
+                <td colSpan={16 + (global?.marchandises.length ?? 0)} style={{ textAlign: 'center', padding: 12, color: '#aaa' }}>
                   {rapport ? 'Aucun système ne correspond aux filtres.' : 'Chargez le rapport pour voir les systèmes.'}
                 </td>
               </tr>
@@ -312,18 +333,19 @@ export default function ListeSystemes() {
             <tr>
               <td colSpan={7} style={{ textAlign: 'right', fontWeight: 'bold' }}>Totaux:</td>
               <td style={{ textAlign: 'right', fontWeight: 'bold' }}>{totals.entretien.toFixed(1)}</td>
-              <td style={{ textAlign: 'right', fontWeight: 'bold' }}>{totals.revenu.toFixed(1)}</td>
-              <td style={{ textAlign: 'right', fontWeight: 'bold' }}>{totals.revenuEstime.toFixed(1)}</td>
+              <td style={{ textAlign: 'right', fontWeight: 'bold' }}>{totals.revenu.toFixed(1)} [{totals.revenuEstime.toFixed(1)}]</td>
               <td></td>
               <td style={{ textAlign: 'right', fontWeight: 'bold' }}>{totals.contreEspionnage.toFixed(1)}</td>
               <td style={{ textAlign: 'right', fontWeight: 'bold' }}>{totals.espionnage.toFixed(1)}</td>
               <td style={{ textAlign: 'right', fontWeight: 'bold' }}>{totals.technologique.toFixed(1)}</td>
-              <td style={{ textAlign: 'right', fontWeight: 'bold' }}>{totals.revenumin}</td>
-              <td style={{ textAlign: 'right', fontWeight: 'bold' }}>{totals.stockmin}</td>
-              <td style={{ textAlign: 'right', fontWeight: 'bold' }}>{totals.popAct}</td>
-              <td style={{ textAlign: 'right', fontWeight: 'bold' }}>{totals.popMax}</td>
-              <td style={{ textAlign: 'right', fontWeight: 'bold' }}>{(totals.popAug / Math.max(1, filtered.length)).toFixed(2)}</td>
+              <td style={{ textAlign: 'right', fontWeight: 'bold' }}>{totals.stockmin} (+{totals.revenumin}) [{totals.stockmin + totals.revenumin}]</td>
+              <td style={{ textAlign: 'right', fontWeight: 'bold' }}>{totals.popAct} / {totals.popMax} [{(totals.popAct + totals.popAug).toFixed(0)}]</td>
               <td></td>
+              {global?.marchandises.map(m => (
+                <td key={m.code} style={{ textAlign: 'right', fontWeight: 'bold' }}>
+                  {totals.marchandises[m.code]?.num ?? 0} (+{totals.marchandises[m.code]?.prod ?? 0}) [{(totals.marchandises[m.code]?.num ?? 0) + (totals.marchandises[m.code]?.prod ?? 0)}]
+                </td>
+              ))}
             </tr>
           </tfoot>
         </table>
