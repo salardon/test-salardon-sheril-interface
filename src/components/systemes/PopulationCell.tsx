@@ -8,7 +8,8 @@ interface PopulationCellProps {
 
 const PopulationCell: React.FC<PopulationCellProps> = ({ system }) => {
   const { global } = useReport();
-  const fPop = (system.popAct ?? 0) + (system.popAug ?? 0);
+  const calculatedFPop = (system.popAct ?? 0) * (1 + 0.01 * (system.popAug ?? 0));
+  const fPop = system.popMax ? Math.min(calculatedFPop, system.popMax) : calculatedFPop;
 
   const majorRaceId = Object.keys(system.racePop ?? {}).length > 0
     ? parseInt(Object.keys(system.racePop).reduce((a, b) => system.racePop[a as any] > system.racePop[b as any] ? a : b))

@@ -1,7 +1,7 @@
 import {Alliance, FlotteDetectee, FlotteJoueur, Rapport, SystemeDetecte, SystemeJoueur, PlanVaisseau} from '../types';
 import {isPos, parsePosString} from '../utils/position';
 
-function getAttr(el: Element | null | undefined, names: string[]): string  {
+export function getAttr(el: Element | null | undefined, names: string[]): string  {
     if (!el) return '';
     for (const n of names) {
         const v = el.getAttribute(n);
@@ -10,14 +10,14 @@ function getAttr(el: Element | null | undefined, names: string[]): string  {
     return '';
 }
 
-function getAttrNum(el: Element | null | undefined, names: string[]): number {
+export function getAttrNum(el: Element | null | undefined, names: string[]): number {
     const v = getAttr(el, names);
     if (v == null || v === '') return 0;
     const n = Number(v);
     return Number.isNaN(n) ? 0 : n;
 }
 
-function qOne(root: ParentNode | null | undefined, selectors: string[]): Element | null {
+export function qOne(root: ParentNode | null | undefined, selectors: string[]): Element | null {
     if (!root) return null;
     for (const s of selectors) {
         const el = (root as ParentNode).querySelector(s);
@@ -26,7 +26,7 @@ function qOne(root: ParentNode | null | undefined, selectors: string[]): Element
     return null;
 }
 
-function qAll(root: ParentNode | null | undefined, selectors: string[]): Element[] {
+export function qAll(root: ParentNode | null | undefined, selectors: string[]): Element[] {
     if (!root) return [];
     const out: Element[] = [];
     for (const s of selectors) {

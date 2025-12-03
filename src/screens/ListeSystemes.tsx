@@ -29,7 +29,9 @@ const politiqueMap: { [key: number]: string } = {
 type SortKey =
   | 'etoile' | 'pos' | 'nom' | 'nbpla' | 'proprietaires'
   | 'politique' | 'entretien' | 'revenu' | 'hscan' | 'bcont' | 'besp' | 'btech' | 'pdc'
-  | 'minerai' | 'population' | 'race' | `marchandise-${number}`;
+  | 'minerai' | 'population' | 'race' | `marchandise-${number}`
+  | 'sol-air-defense' | 'protection' | 'militia'
+  | 'capacite-0' | 'capacite-1' | 'capacite-2' | 'capacite-3' | 'capacite-5' | 'capacite-6' | 'capacite-8' | 'capacite-9';
 type SortDir = 'asc' | 'desc';
 
 export default function ListeSystemes() {
@@ -38,6 +40,10 @@ export default function ListeSystemes() {
   const [pageSize, setPageSize] = useState(20);
   const [sortKey, setSortKey] = useState<SortKey>('nom');
   const [sortDir, setSortDir] = useState<SortDir>('asc');
+  const [visibleColumns, setVisibleColumns] = useState<SortKey[]>([
+    'etoile', 'pos', 'nom', 'nbpla', 'proprietaires', 'politique', 'entretien', 'revenu', 'hscan',
+    'bcont', 'besp', 'btech', 'pdc', 'minerai', 'population', 'race',
+  ]);
 
   const [filterOwned, setFilterOwned] = useState<'all' | 'owned' | 'notowned'>('all');
   const [filterNom, setFilterNom] = useState('');
@@ -60,14 +66,56 @@ export default function ListeSystemes() {
       byPos.set(key, s);
     }
 
-    const list = Array.from(byPos.values()).map((s) => ({
-      ...s,
-      proprietaires: s.proprietaires || [],
-      posStr: `${s.pos.x}-${s.pos.y}`,
-      owned: currentId ? (s.proprietaires || []).includes(currentId) || (s as any).type === 'joueur' : false,
-    }));
+    const list = Array.from(byPos.values()).map((s) => {
+      const batiments = global?.batiments ?? [];
+      const caracteristiques = global?.caracteristiquesBatiment ?? [];
+      const systemBatiments = s.planetes?.flatMap((p: any) => p.batiments) ?? [];
+
+      const solAirDefense = systemBatiments
+        .map((b: any) => batiments.find(bat => bat.code === b.techCode))
+        .filter((b: any) => b && b.arme)
+        .map((b: any) => b.nom)
+        .join(', ');
+
+      const protection = systemBatiments
+        .map((b: any) => batiments.find(bat => bat.code === b.techCode))
+        .filter((b: any) => b)
+        .reduce((acc: number, b: any) => acc + b.structure, 0);
+
+      const capacites: { [key: number]: number | string } = {};
+
+      caracteristiques.forEach(carac => {
+        const buildingsWithCarac = systemBatiments
+          .map((b: any) => batiments.find(bat => bat.code === b.techCode))
+          .filter((b: any) => b && b.caracteristiques.some((c: any) => c.code === carac.code));
+
+        if (buildingsWithCarac.length > 0) {
+          switch (carac.code) {
+            case 0:
+              capacites[carac.code] = "Oui";
+              break;
+            case 8:
+              capacites[carac.code] = Math.max(...buildingsWithCarac.map((b: any) => b.caracteristiques.find((c: any) => c.code === carac.code).value));
+              break;
+            default:
+              capacites[carac.code] = buildingsWithCarac.reduce((acc: number, b: any) => acc + b.caracteristiques.find((c: any) => c.code === carac.code).value, 0);
+              break;
+          }
+        }
+      });
+
+      return {
+        ...s,
+        proprietaires: s.proprietaires || [],
+        posStr: `${s.pos.x}-${s.pos.y}`,
+        owned: currentId ? (s.proprietaires || []).includes(currentId) || (s as any).type === 'joueur' : false,
+        solAirDefense,
+        protection,
+        capacites,
+      };
+    });
     return list;
-  }, [rapport, currentId]);
+  }, [rapport, global, currentId]);
 
   const politiquesOptions = useMemo(() => {
     const set = new Set<number>();
@@ -126,6 +174,16 @@ export default function ListeSystemes() {
         case 'minerai': av = (a.stockmin ?? 0) + (a.revenumin ?? 0); bv = (b.stockmin ?? 0) + (b.revenumin ?? 0); break;
         case 'population': av = (a.popAct ?? 0) + (a.popAug ?? 0); bv = (b.popAct ?? 0) + (b.popAug ?? 0); break;
         case 'race': av = a.race ?? ''; bv = b.race ?? ''; break;
+        case 'sol-air-defense': av = a.solAirDefense ?? ''; bv = b.solAirDefense ?? ''; break;
+        case 'protection': av = a.protection ?? 0; bv = b.protection ?? 0; break;
+        case 'capacite-0': av = a.capacites?.[0] === 'Oui' ? 1 : 0; bv = b.capacites?.[0] === 'Oui' ? 1 : 0; break;
+        case 'capacite-1': av = a.capacites?.[1] ?? 0; bv = b.capacites?.[1] ?? 0; break;
+        case 'capacite-2': av = a.capacites?.[2] ?? 0; bv = b.capacites?.[2] ?? 0; break;
+        case 'capacite-3': av = a.capacites?.[3] ?? 0; bv = b.capacites?.[3] ?? 0; break;
+        case 'capacite-5': av = a.capacites?.[5] ?? 0; bv = b.capacites?.[5] ?? 0; break;
+        case 'capacite-6': av = a.capacites?.[6] ?? 0; bv = b.capacites?.[6] ?? 0; break;
+        case 'capacite-8': av = a.capacites?.[8] ?? 0; bv = b.capacites?.[8] ?? 0; break;
+        case 'capacite-9': av = a.capacites?.[9] ?? 0; bv = b.capacites?.[9] ?? 0; break;
         default:
           if (sortKey.startsWith('marchandise-')) {
             const code = parseInt(sortKey.split('-')[1], 10);
@@ -251,35 +309,88 @@ export default function ListeSystemes() {
             <option value={50}>50</option>
           </select>
         </label>
+
+        <label>
+          Colonnes:
+          <select
+            multiple
+            value={visibleColumns}
+            onChange={e => {
+              const vals = Array.from(e.currentTarget.selectedOptions).map(o => o.value as SortKey);
+              setVisibleColumns(vals);
+            }}
+            style={{ marginLeft: 6, minWidth: 140, height: 100 }}
+          >
+            <option value="etoile">Étoile</option>
+            <option value="pos">Position</option>
+            <option value="nom">Nom</option>
+            <option value="nbpla">Planètes</option>
+            <option value="pdc">Pdc</option>
+            <option value="proprietaires">Commandants</option>
+            <option value="politique">Politique</option>
+            <option value="entretien">Entretien</option>
+            <option value="revenu">Revenu</option>
+            <option value="hscan">Portée détect.</option>
+            <option value="bcont">Contre-esp.</option>
+            <option value="besp">Espionnage</option>
+            <option value="btech">Technologique</option>
+            <option value="minerai">Minerai</option>
+            <option value="population">Population</option>
+            <option value="race">Race</option>
+            <option value="sol-air-defense">Sol-Air Defense</option>
+            <option value="protection">Protection</option>
+            <option value="militia">Militia</option>
+            <option value="capacite-0">Construction de vaisseaux</option>
+            <option value="capacite-1">Extraction de minerai</option>
+            <option value="capacite-2">Retraitement de minerai</option>
+            <option value="capacite-3">Facilités de construction</option>
+            <option value="capacite-5">Capacité réparation vaisseaux</option>
+            <option value="capacite-6">Bouclier magnétique</option>
+            <option value="capacite-8">Portée radar</option>
+            <option value="capacite-9">Capacité extraction avancée</option>
+            {global?.marchandises.map(m => <option key={m.code} value={`marchandise-${m.code}`}>{m.nom}</option>)}
+          </select>
+        </label>
       </div>
 
       <div style={{ overflow: 'auto' }}>
         <table className="tech-table" style={{ width: '100%', borderCollapse: 'collapse' }}>
           <thead>
             <tr>
-              {header('etoile', 'Étoile')}
-              {header('pos', 'Position')}
-              {header('nom', 'Nom')}
-              {header('nbpla', 'Planètes')}
-              {header('pdc', 'Pdc')}
-              {header('proprietaires', 'Commandants')}
-              {header('politique', 'Politique')}
-              {header('entretien', 'Entretien')}
-              {header('revenu', 'Revenu')}
-              {header('hscan', 'Portée détect.')}
-              {header('bcont', 'Contre-esp.')}
-              {header('besp', 'Espionnage')}
-              {header('btech', 'Technologique')}
-              {header('minerai', 'Minerai')}
-              {header('population', 'Population')}
-              {header('race', 'Race')}
-              {global?.marchandises.map(m => header(`marchandise-${m.code}`, m.nom))}
+              {visibleColumns.includes('etoile') && header('etoile', 'Étoile')}
+              {visibleColumns.includes('pos') && header('pos', 'Position')}
+              {visibleColumns.includes('nom') && header('nom', 'Nom')}
+              {visibleColumns.includes('nbpla') && header('nbpla', 'Planètes')}
+              {visibleColumns.includes('pdc') && header('pdc', 'Pdc')}
+              {visibleColumns.includes('proprietaires') && header('proprietaires', 'Commandants')}
+              {visibleColumns.includes('politique') && header('politique', 'Politique')}
+              {visibleColumns.includes('entretien') && header('entretien', 'Entretien')}
+              {visibleColumns.includes('revenu') && header('revenu', 'Revenu')}
+              {visibleColumns.includes('hscan') && header('hscan', 'Portée détect.')}
+              {visibleColumns.includes('bcont') && header('bcont', 'Contre-esp.')}
+              {visibleColumns.includes('besp') && header('besp', 'Espionnage')}
+              {visibleColumns.includes('btech') && header('btech', 'Technologique')}
+              {visibleColumns.includes('minerai') && header('minerai', 'Minerai')}
+              {visibleColumns.includes('population') && header('population', 'Population')}
+              {visibleColumns.includes('race') && header('race', 'Race')}
+              {visibleColumns.includes('sol-air-defense') && header('sol-air-defense', 'Sol-Air Defense')}
+              {visibleColumns.includes('protection') && header('protection', 'Protection')}
+              {visibleColumns.includes('militia') && header('militia', 'Militia')}
+              {visibleColumns.includes('capacite-0') && header('capacite-0', 'Construction de vaisseaux')}
+              {visibleColumns.includes('capacite-1') && header('capacite-1', 'Extraction de minerai')}
+              {visibleColumns.includes('capacite-2') && header('capacite-2', 'Retraitement de minerai')}
+              {visibleColumns.includes('capacite-3') && header('capacite-3', 'Facilités de construction')}
+              {visibleColumns.includes('capacite-5') && header('capacite-5', 'Capacité réparation vaisseaux')}
+              {visibleColumns.includes('capacite-6') && header('capacite-6', 'Bouclier magnétique')}
+              {visibleColumns.includes('capacite-8') && header('capacite-8', 'Portée radar')}
+              {visibleColumns.includes('capacite-9') && header('capacite-9', 'Capacité extraction avancée')}
+              {global?.marchandises.map(m => visibleColumns.includes(`marchandise-${m.code}`) && header(`marchandise-${m.code}`, m.nom))}
             </tr>
           </thead>
           <tbody>
             {pageItems.map((s: any, idx) => (
               <tr key={`${s.nom}-${idx}`}>
-                <td>
+                {visibleColumns.includes('etoile') && <td>
                   <img
                     src={`${process.env.PUBLIC_URL}/img/etoile${s.typeEtoile}.png`}
                     alt={`étoile ${s.typeEtoile}`}
@@ -287,32 +398,43 @@ export default function ListeSystemes() {
                     height={24}
                     style={{ display: 'block' }}
                   />
-                </td>
-                <td style={{ whiteSpace: 'nowrap' }}>
+                </td>}
+                {visibleColumns.includes('pos') && <td style={{ whiteSpace: 'nowrap' }}>
                   {s.owned
                     ? <NavLink to={'/player-system-detail/' + s.posStr}><Position pos={s.pos} /></NavLink>
                     : <Position pos={s.pos} />}
-                </td>
-                <td>{s.nom}</td>
-                <td style={{ textAlign: 'right' }}>{s.nbPla ?? 0}</td>
-                <td style={{ textAlign: 'right' }}>{s.pdc ?? '—'}</td>
-                <td style={{ whiteSpace: 'nowrap' }}>{s.proprietaires.map((p: number, key: number) =>
+                </td>}
+                {visibleColumns.includes('nom') && <td>{s.nom}</td>}
+                {visibleColumns.includes('nbpla') && <td style={{ textAlign: 'right' }}>{s.nbPla ?? 0}</td>}
+                {visibleColumns.includes('pdc') && <td style={{ textAlign: 'right' }} className={s.pdc === 0 ? 'zero-value' : ''}>{s.pdc ?? '—'}</td>}
+                {visibleColumns.includes('proprietaires') && <td style={{ whiteSpace: 'nowrap' }}>{s.proprietaires.map((p: number, key: number) =>
                   <Commandant num={p} key={key} />
-                )}</td>
-                <td style={{ textAlign: 'right' }}>{s.politique !== undefined ? politiqueMap[s.politique] : '—'}</td>
-                <td style={{ textAlign: 'right' }}>{typeof s.entretien === 'number' ? s.entretien.toFixed(1) : '—'}</td>
-                <td style={{ textAlign: 'right' }}>
+                )}</td>}
+                {visibleColumns.includes('politique') && <td style={{ textAlign: 'right' }}>{s.politique !== undefined ? politiqueMap[s.politique] : '—'}</td>}
+                {visibleColumns.includes('entretien') && <td style={{ textAlign: 'right' }} className={s.entretien === 0 ? 'zero-value' : ''}>{typeof s.entretien === 'number' ? s.entretien.toFixed(1) : '—'}</td>}
+                {visibleColumns.includes('revenu') && <td style={{ textAlign: 'right' }} className={s.revenu === 0 ? 'zero-value' : ''}>
                   {typeof s.revenu === 'number' ? s.revenu.toFixed(1) : '—'}
                   &nbsp;[{typeof s.revenuEstime === 'number' ? s.revenuEstime.toFixed(1) : '—'}]
-                </td>
-                <td style={{ textAlign: 'right' }}>{s.scan ?? '—'}</td>
-                <td style={{ textAlign: 'right' }}>{s.bcont ?? '—'}</td>
-                <td style={{ textAlign: 'right' }}>{s.besp ?? '—'}</td>
-                <td style={{ textAlign: 'right' }}>{s.btech ?? '—'}</td>
-                <MineraiCell system={s} />
-                <PopulationCell system={s} />
-                <td>{s.race ?? '—'}</td>
-                {global?.marchandises.map(m => (
+                </td>}
+                {visibleColumns.includes('hscan') && <td style={{ textAlign: 'right' }} className={s.scan === 0 ? 'zero-value' : ''}>{s.scan ?? '—'}</td>}
+                {visibleColumns.includes('bcont') && <td style={{ textAlign: 'right' }} className={s.bcont === 0 ? 'zero-value' : ''}>{s.bcont ?? '—'}</td>}
+                {visibleColumns.includes('besp') && <td style={{ textAlign: 'right' }} className={s.besp === 0 ? 'zero-value' : ''}>{s.besp ?? '—'}</td>}
+                {visibleColumns.includes('btech') && <td style={{ textAlign: 'right' }} className={s.btech === 0 ? 'zero-value' : ''}>{s.btech ?? '—'}</td>}
+                {visibleColumns.includes('minerai') && <MineraiCell system={s} />}
+                {visibleColumns.includes('population') && <PopulationCell system={s} />}
+                {visibleColumns.includes('race') && <td>{s.race ?? '—'}</td>}
+                {visibleColumns.includes('sol-air-defense') && <td>{s.solAirDefense}</td>}
+                {visibleColumns.includes('protection') && <td className={s.protection === 0 ? 'zero-value' : ''}>{s.protection}</td>}
+                {visibleColumns.includes('militia') && <td></td>}
+                {visibleColumns.includes('capacite-0') && <td>{s.capacites?.[0]}</td>}
+                {visibleColumns.includes('capacite-1') && <td className={s.capacites?.[1] === 0 ? 'zero-value' : ''}>{s.capacites?.[1]}</td>}
+                {visibleColumns.includes('capacite-2') && <td className={s.capacites?.[2] === 0 ? 'zero-value' : ''}>{s.capacites?.[2]}</td>}
+                {visibleColumns.includes('capacite-3') && <td className={s.capacites?.[3] === 0 ? 'zero-value' : ''}>{s.capacites?.[3]}</td>}
+                {visibleColumns.includes('capacite-5') && <td className={s.capacites?.[5] === 0 ? 'zero-value' : ''}>{s.capacites?.[5]}</td>}
+                {visibleColumns.includes('capacite-6') && <td className={s.capacites?.[6] === 0 ? 'zero-value' : ''}>{s.capacites?.[6]}</td>}
+                {visibleColumns.includes('capacite-8') && <td className={s.capacites?.[8] === 0 ? 'zero-value' : ''}>{s.capacites?.[8]}</td>}
+                {visibleColumns.includes('capacite-9') && <td className={s.capacites?.[9] === 0 ? 'zero-value' : ''}>{s.capacites?.[9]}</td>}
+                {global?.marchandises.map(m => visibleColumns.includes(`marchandise-${m.code}`) && (
                   <MarchandiseCell
                     key={m.code}
                     marchandise={m}
@@ -331,17 +453,28 @@ export default function ListeSystemes() {
           </tbody>
           <tfoot>
             <tr>
-              <td colSpan={7} style={{ textAlign: 'right', fontWeight: 'bold' }}>Totaux:</td>
-              <td style={{ textAlign: 'right', fontWeight: 'bold' }}>{totals.entretien.toFixed(1)}</td>
-              <td style={{ textAlign: 'right', fontWeight: 'bold' }}>{totals.revenu.toFixed(1)} [{totals.revenuEstime.toFixed(1)}]</td>
-              <td></td>
-              <td style={{ textAlign: 'right', fontWeight: 'bold' }}>{totals.contreEspionnage.toFixed(1)}</td>
-              <td style={{ textAlign: 'right', fontWeight: 'bold' }}>{totals.espionnage.toFixed(1)}</td>
-              <td style={{ textAlign: 'right', fontWeight: 'bold' }}>{totals.technologique.toFixed(1)}</td>
-              <td style={{ textAlign: 'right', fontWeight: 'bold' }}>{totals.stockmin} (+{totals.revenumin}) [{totals.stockmin + totals.revenumin}]</td>
-              <td style={{ textAlign: 'right', fontWeight: 'bold' }}>{totals.popAct} / {totals.popMax} [{(totals.popAct + totals.popAug).toFixed(0)}]</td>
-              <td></td>
-              {global?.marchandises.map(m => (
+              <td colSpan={visibleColumns.filter(c => !c.startsWith('marchandise-') && !['entretien', 'revenu', 'bcont', 'besp', 'btech', 'minerai', 'population', 'race'].includes(c)).length} style={{ textAlign: 'right', fontWeight: 'bold' }}>Totaux:</td>
+              {visibleColumns.includes('entretien') && <td style={{ textAlign: 'right', fontWeight: 'bold' }}>{totals.entretien.toFixed(1)}</td>}
+              {visibleColumns.includes('revenu') && <td style={{ textAlign: 'right', fontWeight: 'bold' }}>{totals.revenu.toFixed(1)} [{totals.revenuEstime.toFixed(1)}]</td>}
+              {visibleColumns.includes('hscan') && <td></td>}
+              {visibleColumns.includes('bcont') && <td style={{ textAlign: 'right', fontWeight: 'bold' }}>{totals.contreEspionnage.toFixed(1)}</td>}
+              {visibleColumns.includes('besp') && <td style={{ textAlign: 'right', fontWeight: 'bold' }}>{totals.espionnage.toFixed(1)}</td>}
+              {visibleColumns.includes('btech') && <td style={{ textAlign: 'right', fontWeight: 'bold' }}>{totals.technologique.toFixed(1)}</td>}
+              {visibleColumns.includes('minerai') && <td style={{ textAlign: 'right', fontWeight: 'bold' }}>{totals.stockmin} (+{totals.revenumin}) [{totals.stockmin + totals.revenumin}]</td>}
+              {visibleColumns.includes('population') && <td style={{ textAlign: 'right', fontWeight: 'bold' }}>{totals.popAct} / {totals.popMax} [{(totals.popAct + totals.popAug).toFixed(0)}]</td>}
+              {visibleColumns.includes('race') && <td></td>}
+              {visibleColumns.includes('sol-air-defense') && <td></td>}
+              {visibleColumns.includes('protection') && <td></td>}
+              {visibleColumns.includes('militia') && <td></td>}
+              {visibleColumns.includes('capacite-0') && <td></td>}
+              {visibleColumns.includes('capacite-1') && <td></td>}
+              {visibleColumns.includes('capacite-2') && <td></td>}
+              {visibleColumns.includes('capacite-3') && <td></td>}
+              {visibleColumns.includes('capacite-5') && <td></td>}
+              {visibleColumns.includes('capacite-6') && <td></td>}
+              {visibleColumns.includes('capacite-8') && <td></td>}
+              {visibleColumns.includes('capacite-9') && <td></td>}
+              {global?.marchandises.map(m => visibleColumns.includes(`marchandise-${m.code}`) && (
                 <td key={m.code} style={{ textAlign: 'right', fontWeight: 'bold' }}>
                   {totals.marchandises[m.code]?.num ?? 0} (+{totals.marchandises[m.code]?.prod ?? 0}) [{(totals.marchandises[m.code]?.num ?? 0) + (totals.marchandises[m.code]?.prod ?? 0)}]
                 </td>
