@@ -185,8 +185,22 @@ export type GlobalData = {
     races: Race[];
     marchandises: Marchandise[];
     politiques: Record<number, string>;
-    caracteristiquesBatiment: Record<number, string>;
+    caracteristiquesBatiment: CaracteristiqueBatiment[];
     caracteristiquesComposant: Record<number, string>;
     plansPublic: PlanVaisseau[];
     tailleVaisseaux: VaisseauTailleRule[];
+    batiments: Batiment[];
+};
+
+export type Batiment = {
+    code: string;
+    nom: string;
+    arme?: string;
+    structure: number;
+    caracteristiques: { code: number; value: number }[];
+};
+
+export type CaracteristiqueBatiment = {
+    code: number;
+    nom: string;
 };
