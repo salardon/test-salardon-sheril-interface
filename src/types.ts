@@ -95,6 +95,12 @@ export interface SystemBase {
     btech?: number;
 }
 
+export type MarchandiseData = {
+    code: number;
+    num: number;
+    prod: number;
+};
+
 export interface SystemeJoueur extends SystemBase {
     type: 'joueur';
     pdc: number;
@@ -104,9 +110,12 @@ export interface SystemeJoueur extends SystemBase {
     popMax: number;
     popAug: number;
     race: string;
+    racePop: { [key: number]: number };
+    racePopAug: { [key: number]: number };
     planetes: Planete[];
     revenuEstime: number;
     scan: number;
+    marchandises: MarchandiseData[];
 }
 
 export interface SystemeDetecte extends SystemBase {
