@@ -152,6 +152,23 @@ export function parseRapportXml(text: string): Rapport {
     });
 
 
+    // Marchandises by system position
+    const marchandisesBySystem = new Map<string, { code: number; num: number; prod: number }[]>();
+    qAll(rapportNode, ['postes_commerciaux > p']).forEach(pc => {
+        const posStr = getAttr(pc, ['pos']);
+        if (posStr) {
+            const marchandises: { code: number; num: number; prod: number }[] = [];
+            qAll(pc, ['m']).forEach(m => {
+                marchandises.push({
+                    code: getAttrNum(m, ['code']),
+                    num: getAttrNum(m, ['nb']),
+                    prod: getAttrNum(m, ['prod']),
+                });
+            });
+            marchandisesBySystem.set(posStr, marchandises);
+        }
+    });
+
     // Systèmes du joueur (lowercase only)
     const systemesJoueur: SystemeJoueur[] = [];
     const sysNodes = qAll(joueurNode, ['systemes > s',]);
