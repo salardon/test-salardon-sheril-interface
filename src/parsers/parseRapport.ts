@@ -152,6 +152,23 @@ export function parseRapportXml(text: string): Rapport {
     });
 
 
+    // Marchandises by system position
+    const marchandisesBySystem = new Map<string, { code: number; num: number; prod: number }[]>();
+    qAll(rapportNode, ['postes_commerciaux > p']).forEach(pc => {
+        const posStr = getAttr(pc, ['pos']);
+        if (posStr) {
+            const marchandises: { code: number; num: number; prod: number }[] = [];
+            qAll(pc, ['m']).forEach(m => {
+                marchandises.push({
+                    code: getAttrNum(m, ['code']),
+                    num: getAttrNum(m, ['nb']),
+                    prod: getAttrNum(m, ['prod']),
+                });
+            });
+            marchandisesBySystem.set(posStr, marchandises);
+        }
+    });
+
     // Systèmes du joueur (lowercase only)
     const systemesJoueur: SystemeJoueur[] = [];
     const sysNodes = qAll(joueurNode, ['systemes > s',]);
@@ -174,14 +191,7 @@ export function parseRapportXml(text: string): Rapport {
         let popAug = 0;
         const racePop: { [key: number]: number } = {};
         const racePopAug: { [key: number]: number } = {};
-        const marchandises: { code: number; num: number; prod: number }[] = [];
-        const mNodes = qAll(s, ['postes_commerciaux > p',]);
-        mNodes.forEach((p) => {
-            const code = getAttrNum(p, ['code']);
-            const num = getAttrNum(p, ['num']);
-            const prod = getAttrNum(p, ['prod']);
-            marchandises.push({ code, num, prod });
-        });
+        const marchandises = marchandisesBySystem.get(getAttr(s, ['pos'])) || [];
         const pNodes = qAll(s, ['planetes > p',]);
         pNodes.forEach((p) => {
             const proprietaire = getAttrNum(p, ['prop']);
