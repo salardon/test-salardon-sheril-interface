@@ -11,24 +11,29 @@ const MarchandiseCell: React.FC<MarchandiseCellProps> = ({ marchandise, marchand
   const prod = marchandiseData?.prod ?? 0;
   const total = num + prod;
 
+  // Cell style is now simpler, no conditional background
   const cellStyle: React.CSSProperties = {
     textAlign: 'right',
     whiteSpace: 'nowrap',
-    backgroundColor: num >= 100 ? '#dcffdb' : 'transparent',
   };
 
+  // Style for the 'nb' (stock) value
   const nbStyle: React.CSSProperties = {
     color: num >= 100 ? '#1a1a1a' : num > 0 ? '#4fc3f7' : 'inherit',
+    textDecoration: num >= 100 ? 'underline' : 'none',
   };
 
+  // Style for the 'prod' (production) value
   const prodStyle: React.CSSProperties = {
-    color: num >= 100 ? (prod >= 100 ? '#2d5016' : '#333333') : num > 0 ? (prod >= 100 ? '#81d4fa' : '#b3e5fc') : 'inherit',
+    color: num > 0 ? (prod >= 100 ? '#81d4fa' : '#b3e5fc') : 'inherit',
   };
 
+  // Style for the 'total' value
   const totalStyle: React.CSSProperties = {
     color: num >= 100 ? '#1a1a1a' : 'inherit',
   };
 
+  // When num is 0, use the 'zero-value' class for default styling
   if (num === 0) {
     return (
       <td key={marchandise.code} style={cellStyle} className="zero-value">
@@ -37,6 +42,7 @@ const MarchandiseCell: React.FC<MarchandiseCellProps> = ({ marchandise, marchand
     );
   }
 
+  // Render for non-zero values
   return (
     <td key={marchandise.code} style={cellStyle}>
       <span style={nbStyle}>{num}</span>

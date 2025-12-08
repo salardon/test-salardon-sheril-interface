@@ -7,6 +7,7 @@ import { NavLink } from 'react-router-dom';
 import PopulationCell from '../components/systemes/PopulationCell';
 import MineraiCell from '../components/systemes/MineraiCell';
 import MarchandiseCell from '../components/systemes/MarchandiseCell';
+import RaceCell from '../components/systemes/RaceCell';
 
 const politiqueMap: { [key: number]: string } = {
     0: "impôts",
@@ -422,7 +423,7 @@ export default function ListeSystemes() {
                 {visibleColumns.includes('btech') && <td style={{ textAlign: 'right' }} className={s.btech === 0 ? 'zero-value' : ''}>{s.btech ?? '—'}</td>}
                 {visibleColumns.includes('minerai') && <MineraiCell system={s} />}
                 {visibleColumns.includes('population') && <PopulationCell system={s} />}
-                {visibleColumns.includes('race') && <td>{s.race ?? '—'}</td>}
+                {visibleColumns.includes('race') && <RaceCell system={s} />}
                 {visibleColumns.includes('sol-air-defense') && <td>{s.solAirDefense}</td>}
                 {visibleColumns.includes('protection') && <td className={s.protection === 0 ? 'zero-value' : ''}>{s.protection}</td>}
                 {visibleColumns.includes('militia') && <td></td>}
@@ -452,8 +453,14 @@ export default function ListeSystemes() {
             )}
           </tbody>
           <tfoot>
-            <tr>
-              <td colSpan={visibleColumns.filter(c => !c.startsWith('marchandise-') && !['entretien', 'revenu', 'bcont', 'besp', 'btech', 'minerai', 'population', 'race'].includes(c)).length} style={{ textAlign: 'right', fontWeight: 'bold' }}>Totaux:</td>
+          <tr>
+              {visibleColumns.includes('etoile') && <td></td>}
+              {visibleColumns.includes('pos') && <td></td>}
+              {visibleColumns.includes('nom') && <td style={{ textAlign: 'right', fontWeight: 'bold' }}>Totaux:</td>}
+              {visibleColumns.includes('nbpla') && <td></td>}
+              {visibleColumns.includes('pdc') && <td></td>}
+              {visibleColumns.includes('proprietaires') && <td></td>}
+              {visibleColumns.includes('politique') && <td></td>}
               {visibleColumns.includes('entretien') && <td style={{ textAlign: 'right', fontWeight: 'bold' }}>{totals.entretien.toFixed(1)}</td>}
               {visibleColumns.includes('revenu') && <td style={{ textAlign: 'right', fontWeight: 'bold' }}>{totals.revenu.toFixed(1)} [{totals.revenuEstime.toFixed(1)}]</td>}
               {visibleColumns.includes('hscan') && <td></td>}
@@ -475,11 +482,11 @@ export default function ListeSystemes() {
               {visibleColumns.includes('capacite-8') && <td></td>}
               {visibleColumns.includes('capacite-9') && <td></td>}
               {global?.marchandises.map(m => visibleColumns.includes(`marchandise-${m.code}`) && (
-                <td key={m.code} style={{ textAlign: 'right', fontWeight: 'bold' }}>
-                  {totals.marchandises[m.code]?.num ?? 0} (+{totals.marchandises[m.code]?.prod ?? 0}) [{(totals.marchandises[m.code]?.num ?? 0) + (totals.marchandises[m.code]?.prod ?? 0)}]
-                </td>
+                  <td key={m.code} style={{ textAlign: 'right', fontWeight: 'bold' }}>
+                      {totals.marchandises[m.code]?.num ?? 0} (+{totals.marchandises[m.code]?.prod ?? 0}) [{(totals.marchandises[m.code]?.num ?? 0) + (totals.marchandises[m.code]?.prod ?? 0)}]
+                  </td>
               ))}
-            </tr>
+          </tr>
           </tfoot>
         </table>
       </div>

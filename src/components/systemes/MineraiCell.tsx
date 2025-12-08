@@ -6,17 +6,35 @@ interface MineraiCellProps {
 }
 
 const MineraiCell: React.FC<MineraiCellProps> = ({ system }) => {
-  const fMin = (system.stockmin ?? 0) + (system.revenumin ?? 0);
+  const stock = system.stockmin ?? 0;
+  const minprod = system.revenumin ?? 0;
+  const fprod = stock + minprod;
+
+  const stockStyle: React.CSSProperties = {
+    color: stock > 0 && stock < 100 ? '#4fc3f7' : 'inherit',
+  };
+
+  const minprodStyle: React.CSSProperties = {
+    color: stock > 0 && stock < 100 ? (minprod >= 100 ? '#81d4fa' : '#b3e5fc') : 'inherit',
+  };
+
+  const fprodStyle: React.CSSProperties = {
+    color: stock > 0 && stock < 100 ? '#4fc3f7' : 'inherit',
+  };
+
+  if (stock === 0) {
+    return (
+      <td style={{ textAlign: 'right' }} className="zero-value">
+        {stock} (+{minprod}) [{fprod}]
+      </td>
+    );
+  }
 
   return (
     <td style={{ textAlign: 'right' }}>
-      <span style={{ color: system.stockmin > 1000 ? 'green' : system.stockmin > 0 ? 'blue' : 'inherit' }}>
-        {system.stockmin ?? '—'}
-      </span>
-      &nbsp;(+{system.revenumin ?? '—'})
-      <span style={{ color: fMin < 0 ? 'red' : 'inherit' }}>
-        &nbsp;[{fMin}]
-      </span>
+      <span style={stockStyle}>{stock}</span>
+      <span style={minprodStyle}> (+{minprod})</span>
+      <span style={fprodStyle}> [{fprod}]</span>
     </td>
   );
 };
