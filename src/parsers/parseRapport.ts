@@ -174,6 +174,7 @@ export function parseRapportXml(text: string): Rapport {
     const sysNodes = qAll(joueurNode, ['systemes > s',]);
     sysNodes.forEach((s) => {
         const pos = parsePosString(getAttr(s, ['pos']) || '0_1_1');
+        const posKey = `${pos.x}_${pos.y}`;
         const nom = getAttr(s, ['nom']) || 'Système';
         const rawStar = getAttrNum(s, ['typeEtoile', 'typeetoile', 'type']);
         const typeEtoile = (rawStar ?? 0);
@@ -334,6 +335,7 @@ export function parseRapportXml(text: string): Rapport {
             besp: getAttrNum(s, ['besp']),
             btech: getAttrNum(s, ['btech']),
         });
+        
     });
 
     // Systèmes détectés (lowercase only)
