@@ -297,7 +297,7 @@ export function parseRapportXml(text: string): Rapport {
         const mostRepresentedRace = Object.keys(racePop).length > 0
             ? raceNames[parseInt(Object.keys(racePop).reduce((a, b) => racePop[parseInt(a)] > racePop[parseInt(b)] ? a : b))]
             : "";
-        const systeme: SystemeJoueur = {
+        systemesJoueur.push({
             type: 'joueur',
             nom,
             pos,
@@ -323,8 +323,8 @@ export function parseRapportXml(text: string): Rapport {
             bcont: getAttrNum(s, ['bcont']),
             besp: getAttrNum(s, ['besp']),
             btech: getAttrNum(s, ['btech']),
-        };
-        systemesJoueur.push(systeme);
+        });
+        
     });
 
     // Systèmes détectés (lowercase only)
