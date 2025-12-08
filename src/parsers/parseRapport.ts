@@ -175,7 +175,7 @@ export function parseRapportXml(text: string): Rapport {
         const racePop: { [key: number]: number } = {};
         const racePopAug: { [key: number]: number } = {};
         const marchandises: { code: number; num: number; prod: number }[] = [];
-        const mNodes = qAll(s, ['postes_commerciaux > p',]);
+        const mNodes = qAll(rapportNode, ['postes_commerciaux > p > m',]);
         mNodes.forEach((p) => {
             const code = getAttrNum(p, ['code']);
             const num = getAttrNum(p, ['num']);
