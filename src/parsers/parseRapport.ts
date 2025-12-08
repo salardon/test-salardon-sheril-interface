@@ -191,7 +191,14 @@ export function parseRapportXml(text: string): Rapport {
         let popAug = 0;
         const racePop: { [key: number]: number } = {};
         const racePopAug: { [key: number]: number } = {};
-        const marchandises = marchandisesBySystem.get(getAttr(s, ['pos'])) || [];
+        const marchandises: { code: number; num: number; prod: number }[] = [];
+        const mNodes = qAll(rapportNode, ['postes_commerciaux > p > m',]);
+        mNodes.forEach((p) => {
+            const code = getAttrNum(p, ['code']);
+            const num = getAttrNum(p, ['num']);
+            const prod = getAttrNum(p, ['prod']);
+            marchandises.push({ code, num, prod });
+        });
         const pNodes = qAll(s, ['planetes > p',]);
         pNodes.forEach((p) => {
             const proprietaire = getAttrNum(p, ['prop']);
