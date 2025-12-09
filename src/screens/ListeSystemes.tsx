@@ -32,7 +32,8 @@ type SortKey =
   | 'politique' | 'entretien' | 'revenu' | 'hscan' | 'bcont' | 'besp' | 'btech' | 'pdc'
   | 'minerai' | 'population' | 'race' | `marchandise-${number}`
   | 'sol-air-defense' | 'protection' | 'militia'
-  | 'capacite-0' | 'capacite-1' | 'capacite-2' | 'capacite-3' | 'capacite-5' | 'capacite-6' | 'capacite-8' | 'capacite-9';
+  | 'capacite-0' | 'capacite-1' | 'capacite-2' | 'capacite-3' | 'capacite-5' | 'capacite-6' | 'capacite-8' | 'capacite-9'
+  | 'batiments' | 'stabilite';
 type SortDir = 'asc' | 'desc';
 
 export default function ListeSystemes() {
@@ -42,8 +43,7 @@ export default function ListeSystemes() {
   const [sortKey, setSortKey] = useState<SortKey>('nom');
   const [sortDir, setSortDir] = useState<SortDir>('asc');
   const [visibleColumns, setVisibleColumns] = useState<SortKey[]>([
-    'etoile', 'pos', 'nom', 'nbpla', 'proprietaires', 'politique', 'entretien', 'revenu', 'hscan',
-    'bcont', 'besp', 'btech', 'pdc', 'minerai', 'population', 'race',
+    'etoile', 'pos', 'nbpla', 'race', 'population', 'proprietaires', 'politique', 'batiments',
   ]);
 
   const [filterOwned, setFilterOwned] = useState<'all' | 'owned' | 'notowned'>('all');
@@ -251,6 +251,23 @@ export default function ListeSystemes() {
     );
   }
 
+  function toggleColumnGroup(columns: SortKey[]) {
+    setVisibleColumns(prev => {
+      const allPresent = columns.every(c => prev.includes(c));
+      if (allPresent) {
+        return prev.filter(c => !columns.includes(c));
+      } else {
+        const newColumns = [...prev];
+        for (const col of columns) {
+          if (!newColumns.includes(col)) {
+            newColumns.push(col);
+          }
+        }
+        return newColumns;
+      }
+    });
+  }
+
   return (
     <div style={{ padding: 12, overflow: 'auto', width: 'calc(100% - 20px)', height: '100%', display: 'flex', flexDirection: 'column' }}>
       <h3>Systèmes</h3>
@@ -338,6 +355,8 @@ export default function ListeSystemes() {
             <option value="minerai">Minerai</option>
             <option value="population">Population</option>
             <option value="race">Race</option>
+            <option value="batiments">Batiments</option>
+            <option value="stabilite">Stabilité</option>
             <option value="sol-air-defense">Sol-Air Defense</option>
             <option value="protection">Protection</option>
             <option value="militia">Militia</option>
@@ -352,6 +371,13 @@ export default function ListeSystemes() {
             {global?.marchandises.map(m => <option key={m.code} value={`marchandise-${m.code}`}>{m.nom}</option>)}
           </select>
         </label>
+      </div>
+
+      <div style={{ display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap', marginBottom: 8 }}>
+        <button onClick={() => toggleColumnGroup(['stabilite', 'entretien', 'revenu', 'bcont', 'besp', 'btech', 'marchandise-0', 'marchandise-2', 'marchandise-5', 'marchandise-12', 'marchandise-3'])}>Economie</button>
+        <button onClick={() => toggleColumnGroup(['minerai', 'capacite-1', 'capacite-2', 'capacite-9'])}>Minier</button>
+        <button onClick={() => toggleColumnGroup(['sol-air-defense', 'protection', 'militia', 'capacite-6', 'capacite-8', 'capacite-5'])}>Défense</button>
+        <button onClick={() => toggleColumnGroup(['pdc', 'capacite-0', 'capacite-3', 'marchandise-4', 'marchandise-6', 'marchandise-7', 'marchandise-8', 'marchandise-9', 'marchandise-10', 'marchandise-13', 'marchandise-14', 'marchandise-15'])}>Production</button>
       </div>
 
       <div style={{ overflow: 'auto' }}>
@@ -374,6 +400,8 @@ export default function ListeSystemes() {
               {visibleColumns.includes('minerai') && header('minerai', 'Minerai')}
               {visibleColumns.includes('population') && header('population', 'Population')}
               {visibleColumns.includes('race') && header('race', 'Race')}
+              {visibleColumns.includes('batiments') && header('batiments', 'Batiments')}
+              {visibleColumns.includes('stabilite') && header('stabilite', 'Stabilité')}
               {visibleColumns.includes('sol-air-defense') && header('sol-air-defense', 'Sol-Air Defense')}
               {visibleColumns.includes('protection') && header('protection', 'Protection')}
               {visibleColumns.includes('militia') && header('militia', 'Militia')}
@@ -424,6 +452,10 @@ export default function ListeSystemes() {
                 {visibleColumns.includes('minerai') && <MineraiCell system={s} />}
                 {visibleColumns.includes('population') && <PopulationCell system={s} />}
                 {visibleColumns.includes('race') && <RaceCell system={s} />}
+                {/* Placeholder for Batiments column */}
+                {visibleColumns.includes('batiments') && <td></td>}
+                {/* Placeholder for Stabilite column */}
+                {visibleColumns.includes('stabilite') && <td></td>}
                 {visibleColumns.includes('sol-air-defense') && <td>{s.solAirDefense}</td>}
                 {visibleColumns.includes('protection') && <td className={s.protection === 0 ? 'zero-value' : ''}>{s.protection}</td>}
                 {visibleColumns.includes('militia') && <td></td>}
@@ -470,6 +502,8 @@ export default function ListeSystemes() {
               {visibleColumns.includes('minerai') && <td style={{ textAlign: 'right', fontWeight: 'bold' }}>{totals.stockmin} (+{totals.revenumin}) [{totals.stockmin + totals.revenumin}]</td>}
               {visibleColumns.includes('population') && <td style={{ textAlign: 'right', fontWeight: 'bold' }}>{totals.popAct} / {totals.popMax} [{(totals.popAct + totals.popAug).toFixed(0)}]</td>}
               {visibleColumns.includes('race') && <td></td>}
+              {visibleColumns.includes('batiments') && <td></td>}
+              {visibleColumns.includes('stabilite') && <td></td>}
               {visibleColumns.includes('sol-air-defense') && <td></td>}
               {visibleColumns.includes('protection') && <td></td>}
               {visibleColumns.includes('militia') && <td></td>}
