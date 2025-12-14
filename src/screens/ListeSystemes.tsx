@@ -8,6 +8,8 @@ import PopulationCell from '../components/systemes/PopulationCell';
 import MineraiCell from '../components/systemes/MineraiCell';
 import MarchandiseCell from '../components/systemes/MarchandiseCell';
 import RaceCell from '../components/systemes/RaceCell';
+import GroupedMarchandiseCell from '../components/systemes/GroupedMarchandiseCell';
+import { Marchandise } from '../types';
 
 const politiqueMap: { [key: number]: string } = {
     0: "impôts",
@@ -27,13 +29,20 @@ const politiqueMap: { [key: number]: string } = {
     14: "anti-Cyborg",
 };
 
+const groupedMarchandises1 = [10, 8, 4, 9, 6];
+const groupedMarchandises2 = [7, 11];
+const groupedMarchandises3 = [0, 5];
+const groupedMarchandises4 = [2, 12, 3];
+const groupedMarchandises5 = [15, 13, 14];
+
 type SortKey =
   | 'etoile' | 'pos' | 'nom' | 'nbpla' | 'proprietaires'
   | 'politique' | 'entretien' | 'revenu' | 'hscan' | 'bcont' | 'besp' | 'btech' | 'pdc'
   | 'minerai' | 'population' | 'race' | `marchandise-${number}`
   | 'sol-air-defense' | 'protection' | 'militia'
   | 'capacite-0' | 'capacite-1' | 'capacite-2' | 'capacite-3' | 'capacite-5' | 'capacite-6' | 'capacite-8' | 'capacite-9'
-  | 'batiments' | 'stabilite';
+  | 'batiments' | 'stabilite'
+  | 'grouped-marchandises-1' | 'grouped-marchandises-2' | 'grouped-marchandises-3' | 'grouped-marchandises-4' | 'grouped-marchandises-5';
 type SortDir = 'asc' | 'desc';
 
 export default function ListeSystemes() {
@@ -185,6 +194,26 @@ export default function ListeSystemes() {
         case 'capacite-6': av = a.capacites?.[6] ?? 0; bv = b.capacites?.[6] ?? 0; break;
         case 'capacite-8': av = a.capacites?.[8] ?? 0; bv = b.capacites?.[8] ?? 0; break;
         case 'capacite-9': av = a.capacites?.[9] ?? 0; bv = b.capacites?.[9] ?? 0; break;
+        case 'grouped-marchandises-1':
+          av = groupedMarchandises1.reduce((acc, code) => acc + (a.marchandises?.find((m: any) => m.code === code)?.num ?? 0) + (a.marchandises?.find((m: any) => m.code === code)?.prod ?? 0), 0);
+          bv = groupedMarchandises1.reduce((acc, code) => acc + (b.marchandises?.find((m: any) => m.code === code)?.num ?? 0) + (b.marchandises?.find((m: any) => m.code === code)?.prod ?? 0), 0);
+          break;
+        case 'grouped-marchandises-2':
+          av = groupedMarchandises2.reduce((acc, code) => acc + (a.marchandises?.find((m: any) => m.code === code)?.num ?? 0) + (a.marchandises?.find((m: any) => m.code === code)?.prod ?? 0), 0);
+          bv = groupedMarchandises2.reduce((acc, code) => acc + (b.marchandises?.find((m: any) => m.code === code)?.num ?? 0) + (b.marchandises?.find((m: any) => m.code === code)?.prod ?? 0), 0);
+          break;
+        case 'grouped-marchandises-3':
+          av = groupedMarchandises3.reduce((acc, code) => acc + (a.marchandises?.find((m: any) => m.code === code)?.num ?? 0) + (a.marchandises?.find((m: any) => m.code === code)?.prod ?? 0), 0);
+          bv = groupedMarchandises3.reduce((acc, code) => acc + (b.marchandises?.find((m: any) => m.code === code)?.num ?? 0) + (b.marchandises?.find((m: any) => m.code === code)?.prod ?? 0), 0);
+          break;
+        case 'grouped-marchandises-4':
+          av = groupedMarchandises4.reduce((acc, code) => acc + (a.marchandises?.find((m: any) => m.code === code)?.num ?? 0) + (a.marchandises?.find((m: any) => m.code === code)?.prod ?? 0), 0);
+          bv = groupedMarchandises4.reduce((acc, code) => acc + (b.marchandises?.find((m: any) => m.code === code)?.num ?? 0) + (b.marchandises?.find((m: any) => m.code === code)?.prod ?? 0), 0);
+          break;
+        case 'grouped-marchandises-5':
+          av = groupedMarchandises5.reduce((acc, code) => acc + (a.marchandises?.find((m: any) => m.code === code)?.num ?? 0) + (a.marchandises?.find((m: any) => m.code === code)?.prod ?? 0), 0);
+          bv = groupedMarchandises5.reduce((acc, code) => acc + (b.marchandises?.find((m: any) => m.code === code)?.num ?? 0) + (b.marchandises?.find((m: any) => m.code === code)?.prod ?? 0), 0);
+          break;
         default:
           if (sortKey.startsWith('marchandise-')) {
             const code = parseInt(sortKey.split('-')[1], 10);
@@ -267,6 +296,16 @@ export default function ListeSystemes() {
       }
     });
   }
+
+  const renderGroupedMarchandiseTotal = (marchandiseCodes: number[]) => {
+    const totalNum = marchandiseCodes.reduce((acc, code) => acc + (totals.marchandises[code]?.num ?? 0), 0);
+    const totalProd = marchandiseCodes.reduce((acc, code) => acc + (totals.marchandises[code]?.prod ?? 0), 0);
+    return (
+      <td style={{ textAlign: 'right', fontWeight: 'bold' }}>
+        {totalNum} (+{totalProd}) [{(totalNum + totalProd)}]
+      </td>
+    );
+  };
 
   return (
     <div style={{ padding: 12, overflow: 'auto', width: 'calc(100% - 20px)', height: '100%', display: 'flex', flexDirection: 'column' }}>
@@ -413,7 +452,12 @@ export default function ListeSystemes() {
               {visibleColumns.includes('capacite-6') && header('capacite-6', 'Bouclier magnétique')}
               {visibleColumns.includes('capacite-8') && header('capacite-8', 'Portée radar')}
               {visibleColumns.includes('capacite-9') && header('capacite-9', 'Capacité extraction avancée')}
-              {global?.marchandises.map(m => visibleColumns.includes(`marchandise-${m.code}`) && header(`marchandise-${m.code}`, m.nom))}
+              {header('grouped-marchandises-1', 'U. Ener, C. Elec, S. Guid, A&Exp, Logi')}
+              {header('grouped-marchandises-2', 'Robo, P. Indus')}
+              {header('grouped-marchandises-3', 'P. Alim, Med')}
+              {header('grouped-marchandises-4', 'A. Luxe, Mét. Pré. & Holo')}
+              {header('grouped-marchandises-5', 'Oxo, Tix, Lix')}
+              {global?.marchandises.filter(m => m.code !== 1).map(m => visibleColumns.includes(`marchandise-${m.code}`) && header(`marchandise-${m.code}`, m.nom))}
             </tr>
           </thead>
           <tbody>
@@ -467,7 +511,12 @@ export default function ListeSystemes() {
                 {visibleColumns.includes('capacite-6') && <td className={s.capacites?.[6] === 0 ? 'zero-value' : ''}>{s.capacites?.[6]}</td>}
                 {visibleColumns.includes('capacite-8') && <td className={s.capacites?.[8] === 0 ? 'zero-value' : ''}>{s.capacites?.[8]}</td>}
                 {visibleColumns.includes('capacite-9') && <td className={s.capacites?.[9] === 0 ? 'zero-value' : ''}>{s.capacites?.[9]}</td>}
-                {global?.marchandises.map(m => visibleColumns.includes(`marchandise-${m.code}`) && (
+                <GroupedMarchandiseCell system={s} marchandises={(global?.marchandises ?? []).filter(m => groupedMarchandises1.includes(m.code))} />
+                <GroupedMarchandiseCell system={s} marchandises={(global?.marchandises ?? []).filter(m => groupedMarchandises2.includes(m.code))} />
+                <GroupedMarchandiseCell system={s} marchandises={(global?.marchandises ?? []).filter(m => groupedMarchandises3.includes(m.code))} />
+                <GroupedMarchandiseCell system={s} marchandises={(global?.marchandises ?? []).filter(m => groupedMarchandises4.includes(m.code))} />
+                <GroupedMarchandiseCell system={s} marchandises={(global?.marchandises ?? []).filter(m => groupedMarchandises5.includes(m.code))} />
+                {global?.marchandises.filter(m => m.code !== 1).map(m => visibleColumns.includes(`marchandise-${m.code}`) && (
                   <MarchandiseCell
                     key={m.code}
                     marchandise={m}
@@ -515,7 +564,12 @@ export default function ListeSystemes() {
               {visibleColumns.includes('capacite-6') && <td></td>}
               {visibleColumns.includes('capacite-8') && <td></td>}
               {visibleColumns.includes('capacite-9') && <td></td>}
-              {global?.marchandises.map(m => visibleColumns.includes(`marchandise-${m.code}`) && (
+              {renderGroupedMarchandiseTotal(groupedMarchandises1)}
+              {renderGroupedMarchandiseTotal(groupedMarchandises2)}
+              {renderGroupedMarchandiseTotal(groupedMarchandises3)}
+              {renderGroupedMarchandiseTotal(groupedMarchandises4)}
+              {renderGroupedMarchandiseTotal(groupedMarchandises5)}
+              {global?.marchandises.filter(m => m.code !== 1).map(m => visibleColumns.includes(`marchandise-${m.code}`) && (
                   <td key={m.code} style={{ textAlign: 'right', fontWeight: 'bold' }}>
                       {totals.marchandises[m.code]?.num ?? 0} (+{totals.marchandises[m.code]?.prod ?? 0}) [{(totals.marchandises[m.code]?.num ?? 0) + (totals.marchandises[m.code]?.prod ?? 0)}]
                   </td>

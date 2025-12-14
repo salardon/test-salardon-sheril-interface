@@ -120,6 +120,7 @@ export interface SystemeJoueur extends SystemBase {
 
 export interface SystemeDetecte extends SystemBase {
     type: 'detecte';
+    marchandises?: MarchandiseData[];
 }
 
 export interface FlotteBase {
