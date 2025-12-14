@@ -47,7 +47,7 @@ export default function ListeSystemes() {
   const [sortKey, setSortKey] = useState<SortKey>('nom');
   const [sortDir, setSortDir] = useState<SortDir>('asc');
   const [visibleColumns, setVisibleColumns] = useState<SortKey[]>([
-    'etoile', 'proprietaires', 'pos', 'nom', 'nbpla', 'race', 'population', 'politique', 'batiments',
+    'etoile', 'proprietaires', 'pos', 'nom', 'nbpla', 'pdc', 'race', 'population', 'politique', 'batiments',
   ]);
 
   const [filterOwned, setFilterOwned] = useState<'all' | 'owned' | 'notowned'>('all');
