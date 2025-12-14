@@ -47,7 +47,7 @@ export default function ListeSystemes() {
   const [sortKey, setSortKey] = useState<SortKey>('nom');
   const [sortDir, setSortDir] = useState<SortDir>('asc');
   const [visibleColumns, setVisibleColumns] = useState<SortKey[]>([
-    'etoile', 'pos', 'nbpla', 'race', 'population', 'proprietaires', 'politique', 'batiments',
+    'etoile', 'proprietaires', 'pos', 'nom', 'nbpla', 'race', 'population', 'politique', 'batiments',
   ]);
 
   const [filterOwned, setFilterOwned] = useState<'all' | 'owned' | 'notowned'>('all');
@@ -352,7 +352,7 @@ export default function ListeSystemes() {
             <option value="pos">Position</option>
             <option value="nom">Nom</option>
             <option value="nbpla">Planètes</option>
-            <option value="pdc">Pdc</option>
+            {/* <option value="pdc">Pdc</option> */}
             <option value="proprietaires">Commandants</option>
             <option value="politique">Politique</option>
             <option value="entretien">Entretien</option>
@@ -394,11 +394,11 @@ export default function ListeSystemes() {
           <thead>
             <tr>
               {visibleColumns.includes('etoile') && header('etoile', 'Étoile')}
+              {visibleColumns.includes('proprietaires') && header('proprietaires', 'Commandants')}
               {visibleColumns.includes('pos') && header('pos', 'Position')}
               {visibleColumns.includes('nom') && header('nom', 'Nom')}
               {visibleColumns.includes('nbpla') && header('nbpla', 'Planètes')}
               {visibleColumns.includes('pdc') && header('pdc', 'Pdc')}
-              {visibleColumns.includes('proprietaires') && header('proprietaires', 'Commandants')}
               {visibleColumns.includes('politique') && header('politique', 'Politique')}
               {visibleColumns.includes('entretien') && header('entretien', 'Entretien')}
               {visibleColumns.includes('revenu') && header('revenu', 'Revenu')}
@@ -437,6 +437,9 @@ export default function ListeSystemes() {
                     style={{ display: 'block' }}
                   />
                 </td>}
+                {visibleColumns.includes('proprietaires') && <td style={{ whiteSpace: 'nowrap' }}>{s.proprietaires.map((p: number, key: number) =>
+                  <Commandant num={p} key={key} />
+                )}</td>}
                 {visibleColumns.includes('pos') && <td style={{ whiteSpace: 'nowrap' }}>
                   {s.owned
                     ? <NavLink to={'/player-system-detail/' + s.posStr}><Position pos={s.pos} /></NavLink>
@@ -447,9 +450,6 @@ export default function ListeSystemes() {
                 {visibleColumns.includes('pdc') && <td style={{ textAlign: 'right' }} className={s.pdc === 0 ? 'zero-value' : ''}>
                   {(s.marchandises?.find((m: any) => m.code === 7)?.num ?? 0) >= 100 ? '🤖 ' : ''}{s.pdc ?? '—'}
                 </td>}
-                {visibleColumns.includes('proprietaires') && <td style={{ whiteSpace: 'nowrap' }}>{s.proprietaires.map((p: number, key: number) =>
-                  <Commandant num={p} key={key} />
-                )}</td>}
                 {visibleColumns.includes('politique') && <td style={{ textAlign: 'right' }}>{s.politique !== undefined ? politiqueMap[s.politique] : '—'}</td>}
                 {visibleColumns.includes('entretien') && <td style={{ textAlign: 'right' }} className={s.entretien === 0 ? 'zero-value' : ''}>{typeof s.entretien === 'number' ? s.entretien.toFixed(1) : '—'}</td>}
                 {visibleColumns.includes('revenu') && <td style={{ textAlign: 'right' }} className={s.revenu === 0 ? 'zero-value' : ''}>
@@ -509,11 +509,11 @@ export default function ListeSystemes() {
           <tfoot>
           <tr>
               {visibleColumns.includes('etoile') && <td></td>}
+              {visibleColumns.includes('proprietaires') && <td></td>}
               {visibleColumns.includes('pos') && <td></td>}
               {visibleColumns.includes('nom') && <td style={{ textAlign: 'right', fontWeight: 'bold' }}>Totaux:</td>}
               {visibleColumns.includes('nbpla') && <td></td>}
               {visibleColumns.includes('pdc') && <td></td>}
-              {visibleColumns.includes('proprietaires') && <td></td>}
               {visibleColumns.includes('politique') && <td></td>}
               {visibleColumns.includes('entretien') && <td style={{ textAlign: 'right', fontWeight: 'bold' }}>{totals.entretien.toFixed(1)}</td>}
               {visibleColumns.includes('revenu') && <td style={{ textAlign: 'right', fontWeight: 'bold' }}>{totals.revenu.toFixed(1)} [{totals.revenuEstime.toFixed(1)}]</td>}
