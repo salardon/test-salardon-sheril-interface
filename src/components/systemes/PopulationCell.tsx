@@ -25,8 +25,20 @@ const PopulationCell: React.FC<PopulationCellProps> = ({ system }) => {
     : -1;
   const fMajorRaceColor = global?.races.find(r => r.id === fMajorRaceId)?.couleur ?? 'inherit';
 
+  const foodStock = system.marchandises?.find(m => m.code === 0)?.num ?? 0;
+  const medsStock = system.marchandises?.find(m => m.code === 5)?.num ?? 0;
+
+  let icons = '';
+  if (foodStock >= 100) {
+    icons += '🍎';
+  }
+  if (medsStock >= 100) {
+    icons += '💊';
+  }
+
   return (
     <td style={{ textAlign: 'right' }}>
+      {icons ? `${icons} ` : ''}
       <span style={{ color: majorRaceColor }}>
         {system.popAct ?? '—'}
       </span>

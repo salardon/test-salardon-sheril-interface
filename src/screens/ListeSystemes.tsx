@@ -444,15 +444,29 @@ export default function ListeSystemes() {
                 </td>}
                 {visibleColumns.includes('nom') && <td>{s.nom}</td>}
                 {visibleColumns.includes('nbpla') && <td style={{ textAlign: 'right' }}>{s.capacites?.[CONSTRUCTION_VAISSEAUX_CODE] === 'Oui' ? '🚀 ' : ''}{s.nbPla ?? 0}</td>}
-                {visibleColumns.includes('pdc') && <td style={{ textAlign: 'right' }} className={s.pdc === 0 ? 'zero-value' : ''}>{s.pdc ?? '—'}</td>}
+                {visibleColumns.includes('pdc') && <td style={{ textAlign: 'right' }} className={s.pdc === 0 ? 'zero-value' : ''}>
+                  {(s.marchandises?.find((m: any) => m.code === 7)?.num ?? 0) >= 100 ? '🤖 ' : ''}{s.pdc ?? '—'}
+                </td>}
                 {visibleColumns.includes('proprietaires') && <td style={{ whiteSpace: 'nowrap' }}>{s.proprietaires.map((p: number, key: number) =>
                   <Commandant num={p} key={key} />
                 )}</td>}
                 {visibleColumns.includes('politique') && <td style={{ textAlign: 'right' }}>{s.politique !== undefined ? politiqueMap[s.politique] : '—'}</td>}
                 {visibleColumns.includes('entretien') && <td style={{ textAlign: 'right' }} className={s.entretien === 0 ? 'zero-value' : ''}>{typeof s.entretien === 'number' ? s.entretien.toFixed(1) : '—'}</td>}
                 {visibleColumns.includes('revenu') && <td style={{ textAlign: 'right' }} className={s.revenu === 0 ? 'zero-value' : ''}>
-                  {typeof s.revenu === 'number' ? s.revenu.toFixed(1) : '—'}
-                  &nbsp;[{typeof s.revenuEstime === 'number' ? s.revenuEstime.toFixed(1) : '—'}]
+                  {(() => {
+                    const metauxStock = s.marchandises?.find((m: any) => m.code === 12)?.num ?? 0;
+                    const luxeStock = s.marchandises?.find((m: any) => m.code === 2)?.num ?? 0;
+                    let icons = '';
+                    if (metauxStock >= 100) icons += '🪙';
+                    if (luxeStock >= 100) icons += '💎';
+                    return (
+                      <>
+                        {icons ? `${icons} ` : ''}
+                        {typeof s.revenu === 'number' ? s.revenu.toFixed(1) : '—'}
+                        &nbsp;[{typeof s.revenuEstime === 'number' ? s.revenuEstime.toFixed(1) : '—'}]
+                      </>
+                    );
+                  })()}
                 </td>}
                 {visibleColumns.includes('hscan') && <td style={{ textAlign: 'right' }} className={s.scan === 0 ? 'zero-value' : ''}>{s.scan ?? '—'}</td>}
                 {visibleColumns.includes('bcont') && <td style={{ textAlign: 'right' }} className={s.bcont === 0 ? 'zero-value' : ''}>{s.bcont ?? '—'}</td>}
