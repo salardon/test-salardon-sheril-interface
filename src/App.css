@@ -202,3 +202,7 @@ a {
     color: var(--accent);
     font-weight: bold;
 }
+.contributing-buildings {
+  font-size: 0.8em;
+  color: grey;
+}
