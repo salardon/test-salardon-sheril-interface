@@ -8,7 +8,6 @@ import PopulationCell from '../components/systemes/PopulationCell';
 import MineraiCell from '../components/systemes/MineraiCell';
 import MarchandiseCell from '../components/systemes/MarchandiseCell';
 import RaceCell from '../components/systemes/RaceCell';
-import AggregatedMarchandiseCell from '../components/systemes/AggregatedMarchandiseCell';
 
 const politiqueMap: { [key: number]: string } = {
     0: "impôts",
@@ -34,17 +33,8 @@ type SortKey =
   | 'minerai' | 'population' | 'race' | `marchandise-${number}`
   | 'sol-air-defense' | 'protection' | 'militia'
   | 'capacite-0' | 'capacite-1' | 'capacite-2' | 'capacite-3' | 'capacite-5' | 'capacite-6' | 'capacite-8' | 'capacite-9'
-  | 'batiments' | 'stabilite'
-  | 'agg-marchandise-1' | 'agg-marchandise-2' | 'agg-marchandise-3' | 'agg-marchandise-4' | 'agg-marchandise-5';
+  | 'batiments' | 'stabilite';
 type SortDir = 'asc' | 'desc';
-
-const aggregatedMarchandiseColumns = [
-    { key: 'agg-marchandise-1', header: "U. Ener, C. Elec, S. Guid, A&Exp, Logi", codes: [4, 6, 7, 8, 9] },
-    { key: 'agg-marchandise-2', header: "Robo, P. Indus", codes: [10, 13] },
-    { key: 'agg-marchandise-3', header: "P. Alim, Med", codes: [0, 2] },
-    { key: 'agg-marchandise-4', header: "A. Luxe, Mét. Pré. & Holo", codes: [5, 12, 3] },
-    { key: 'agg-marchandise-5', header: "Oxo, Tix, Lix", codes: [14, 15, 16] },
-];
 
 export default function ListeSystemes() {
   const { rapport, global } = useReport();
@@ -54,7 +44,6 @@ export default function ListeSystemes() {
   const [sortDir, setSortDir] = useState<SortDir>('asc');
   const [visibleColumns, setVisibleColumns] = useState<SortKey[]>([
     'etoile', 'pos', 'nbpla', 'race', 'population', 'proprietaires', 'politique', 'batiments',
-    'agg-marchandise-1', 'agg-marchandise-2', 'agg-marchandise-3', 'agg-marchandise-4', 'agg-marchandise-5',
   ]);
 
   const [filterOwned, setFilterOwned] = useState<'all' | 'owned' | 'notowned'>('all');
@@ -379,17 +368,16 @@ export default function ListeSystemes() {
             <option value="capacite-6">Bouclier magnétique</option>
             <option value="capacite-8">Portée radar</option>
             <option value="capacite-9">Capacité extraction avancée</option>
-            {global?.marchandises.filter(m => m.code !== 1).map(m => <option key={m.code} value={`marchandise-${m.code}`}>{m.nom}</option>)}
-            {aggregatedMarchandiseColumns.map(col => <option key={col.key} value={col.key}>{col.header}</option>)}
+            {global?.marchandises.map(m => <option key={m.code} value={`marchandise-${m.code}`}>{m.nom}</option>)}
           </select>
         </label>
       </div>
 
       <div style={{ display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap', marginBottom: 8 }}>
-        <button onClick={() => toggleColumnGroup(['stabilite', 'entretien', 'revenu', 'bcont', 'besp', 'btech', 'agg-marchandise-3', 'agg-marchandise-4'])}>Economie</button>
+        <button onClick={() => toggleColumnGroup(['stabilite', 'entretien', 'revenu', 'bcont', 'besp', 'btech', 'marchandise-0', 'marchandise-2', 'marchandise-5', 'marchandise-12', 'marchandise-3'])}>Economie</button>
         <button onClick={() => toggleColumnGroup(['minerai', 'capacite-1', 'capacite-2', 'capacite-9'])}>Minier</button>
         <button onClick={() => toggleColumnGroup(['sol-air-defense', 'protection', 'militia', 'capacite-6', 'capacite-8', 'capacite-5'])}>Défense</button>
-        <button onClick={() => toggleColumnGroup(['pdc', 'capacite-0', 'capacite-3', 'agg-marchandise-1', 'agg-marchandise-2', 'agg-marchandise-5'])}>Production</button>
+        <button onClick={() => toggleColumnGroup(['pdc', 'capacite-0', 'capacite-3', 'marchandise-4', 'marchandise-6', 'marchandise-7', 'marchandise-8', 'marchandise-9', 'marchandise-10', 'marchandise-13', 'marchandise-14', 'marchandise-15'])}>Production</button>
       </div>
 
       <div style={{ overflow: 'auto' }}>
@@ -425,8 +413,7 @@ export default function ListeSystemes() {
               {visibleColumns.includes('capacite-6') && header('capacite-6', 'Bouclier magnétique')}
               {visibleColumns.includes('capacite-8') && header('capacite-8', 'Portée radar')}
               {visibleColumns.includes('capacite-9') && header('capacite-9', 'Capacité extraction avancée')}
-              {global?.marchandises.filter(m => m.code !== 1).map(m => visibleColumns.includes(`marchandise-${m.code}`) && header(`marchandise-${m.code}`, m.nom))}
-              {aggregatedMarchandiseColumns.map(col => visibleColumns.includes(col.key as SortKey) && <th key={col.key} style={{ whiteSpace: 'pre-line' }}>{col.header.replace(/, /g, ',\n')}</th>)}
+              {global?.marchandises.map(m => visibleColumns.includes(`marchandise-${m.code}`) && header(`marchandise-${m.code}`, m.nom))}
             </tr>
           </thead>
           <tbody>
@@ -480,20 +467,11 @@ export default function ListeSystemes() {
                 {visibleColumns.includes('capacite-6') && <td className={s.capacites?.[6] === 0 ? 'zero-value' : ''}>{s.capacites?.[6]}</td>}
                 {visibleColumns.includes('capacite-8') && <td className={s.capacites?.[8] === 0 ? 'zero-value' : ''}>{s.capacites?.[8]}</td>}
                 {visibleColumns.includes('capacite-9') && <td className={s.capacites?.[9] === 0 ? 'zero-value' : ''}>{s.capacites?.[9]}</td>}
-                {global?.marchandises.filter(m => m.code !== 1).map(m => visibleColumns.includes(`marchandise-${m.code}`) && (
+                {global?.marchandises.map(m => visibleColumns.includes(`marchandise-${m.code}`) && (
                   <MarchandiseCell
                     key={m.code}
                     marchandise={m}
                     marchandiseData={s.marchandises?.find((mar: any) => mar.code === m.code)}
-                  />
-                ))}
-                {aggregatedMarchandiseColumns.map(col => visibleColumns.includes(col.key as SortKey) && (
-                  <AggregatedMarchandiseCell
-                    key={col.key}
-                    marchandises={col.codes.map(code => ({
-                      marchandise: global?.marchandises.find(m => m.code === code),
-                      marchandiseData: s.marchandises?.find((mar: any) => mar.code === code),
-                    })).filter(item => item.marchandise)}
                   />
                 ))}
               </tr>
@@ -537,19 +515,10 @@ export default function ListeSystemes() {
               {visibleColumns.includes('capacite-6') && <td></td>}
               {visibleColumns.includes('capacite-8') && <td></td>}
               {visibleColumns.includes('capacite-9') && <td></td>}
-              {global?.marchandises.filter(m => m.code !== 1).map(m => visibleColumns.includes(`marchandise-${m.code}`) && (
+              {global?.marchandises.map(m => visibleColumns.includes(`marchandise-${m.code}`) && (
                   <td key={m.code} style={{ textAlign: 'right', fontWeight: 'bold' }}>
                       {totals.marchandises[m.code]?.num ?? 0} (+{totals.marchandises[m.code]?.prod ?? 0}) [{(totals.marchandises[m.code]?.num ?? 0) + (totals.marchandises[m.code]?.prod ?? 0)}]
                   </td>
-              ))}
-              {aggregatedMarchandiseColumns.map(col => visibleColumns.includes(col.key as SortKey) && (
-                  <AggregatedMarchandiseCell
-                      key={col.key}
-                      marchandises={col.codes.map(code => ({
-                          marchandise: global?.marchandises.find(m => m.code === code),
-                          marchandiseData: totals.marchandises[code],
-                      })).filter(item => item.marchandise)}
-                  />
               ))}
           </tr>
           </tfoot>
