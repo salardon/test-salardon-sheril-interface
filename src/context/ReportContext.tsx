@@ -50,15 +50,9 @@ export function ReportProvider({children}: { children: React.ReactNode }) {
         let alive = true;
         (async () => {
             try {
-                const storedData = localStorage.getItem('dataXml');
-                let data;
-                if (storedData) {
-                    data = parseDataXml(storedData);
-                } else {
-                    const txt = await fetch(`https://sheril.pbem-france.net/stats/data.xml`).then(r => r.text());
-                    if (!alive) return;
-                    data = parseDataXml(txt);
-                }
+                const txt = await fetch(`https://sheril.pbem-france.net/stats/data.xml`).then(r => r.text());
+                if (!alive) return;
+                const data = parseDataXml(txt);
                 setGlobal(data);
 
                 const style = document.createElement("style");
@@ -67,9 +61,10 @@ export function ReportProvider({children}: { children: React.ReactNode }) {
                     .join("\n");
                 document.head.appendChild(style);
 
-            } catch (err) {
-                console.error("Error loading global data:", err);
+            } catch {
+                // laisser global undefined
             }
+            // }
         })();
         return () => {
             alive = false;
