@@ -3,7 +3,7 @@ import { Marchandise, MarchandiseData } from '../../types';
 
 interface AggregatedMarchandiseCellProps {
   marchandises: {
-    marchandise: Marchandise;
+    marchandise?: Marchandise;
     marchandiseData?: MarchandiseData;
   }[];
 }
@@ -34,7 +34,11 @@ const AggregatedMarchandiseCell: React.FC<AggregatedMarchandiseCellProps> = ({ m
 
   return (
     <td style={cellStyle}>
-      {marchandises.map(({ marchandise, marchandiseData }) => {
+      {marchandises.map(({ marchandise, marchandiseData }, index) => {
+        if (!marchandise) {
+          return null;
+        }
+
         const num = marchandiseData?.num ?? 0;
         const prod = marchandiseData?.prod ?? 0;
         const total = num + prod;
@@ -55,9 +59,9 @@ const AggregatedMarchandiseCell: React.FC<AggregatedMarchandiseCellProps> = ({ m
         const symbol = symbolMap[marchandise.nom] || '📦';
 
         return (
-          <div key={marchandise.code}>
+          <div key={marchandise.code || index}>
             {symbol}{' '}
-            {num === 0 ? (
+            {num === 0 && prod === 0 ? (
               <span className="zero-value">
                 {num} (+{prod}) [{total}]
               </span>
