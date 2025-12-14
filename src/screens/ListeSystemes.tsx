@@ -8,6 +8,7 @@ import PopulationCell from '../components/systemes/PopulationCell';
 import MineraiCell from '../components/systemes/MineraiCell';
 import MarchandiseCell from '../components/systemes/MarchandiseCell';
 import RaceCell from '../components/systemes/RaceCell';
+import { SystemeJoueur, SystemeDetecte, BatimentQuantite, Planete, Batiment } from '../types';
 
 const CONSTRUCTION_VAISSEAUX_CODE = 0;
 
@@ -56,41 +57,33 @@ export default function ListeSystemes() {
   const currentId = rapport?.joueur.numero || 0;
 
   const allSystems = useMemo(() => {
-    // Construire une map par position pour éviter les doublons.
-    // On insère d'abord les systèmes détectés, puis on écrase avec ceux du joueur (prioritaires).
-    const byPos = new Map<string, any>();
+    const byPos = new Map<string, SystemeJoueur | SystemeDetecte>();
 
-    for (const s of (rapport?.systemesDetectes ?? [])) {
-      const key = `${s.pos.x}-${s.pos.y}`;
-      byPos.set(key, s);
-    }
-    for (const s of (rapport?.systemesJoueur ?? [])) {
-      const key = `${s.pos.x}-${s.pos.y}`;
-      byPos.set(key, s);
-    }
+    (rapport?.systemesDetectes ?? []).forEach(s => byPos.set(`${s.pos.x}-${s.pos.y}`, s));
+    (rapport?.systemesJoueur ?? []).forEach(s => byPos.set(`${s.pos.x}-${s.pos.y}`, s));
 
-    const list = Array.from(byPos.values()).map((s) => {
+    return Array.from(byPos.values()).map(s => {
       const batiments = global?.batiments ?? [];
       const caracteristiques = global?.caracteristiquesBatiment ?? [];
-      const systemBatiments = s.planetes?.flatMap((p: any) => p.batiments) ?? [];
+      const systemBatiments = (s as SystemeJoueur).planetes?.flatMap((p: Planete) => p.batiments) ?? [];
 
       const solAirDefense = systemBatiments
-        .map((b: any) => batiments.find(bat => bat.code === b.techCode))
-        .filter((b: any) => b && b.arme)
-        .map((b: any) => b.nom)
+        .map(b => batiments.find(bat => bat.code === b.techCode))
+        .filter((b): b is Batiment => !!b && !!b.arme)
+        .map(b => b.nom)
         .join(', ');
 
       const protection = systemBatiments
-        .map((b: any) => batiments.find(bat => bat.code === b.techCode))
-        .filter((b: any) => b)
-        .reduce((acc: number, b: any) => acc + b.structure, 0);
+        .map(b => batiments.find(bat => bat.code === b.techCode))
+        .filter((b): b is Batiment => !!b)
+        .reduce((acc, b) => acc + b.structure, 0);
 
       const capacites: { [key: number]: number | string } = {};
 
       caracteristiques.forEach(carac => {
         const buildingsWithCarac = systemBatiments
-          .map((b: any) => batiments.find(bat => bat.code === b.techCode))
-          .filter((b: any) => b && b.caracteristiques.some((c: any) => c.code === carac.code));
+          .map(b => batiments.find(bat => bat.code === b.techCode))
+          .filter((b): b is Batiment => !!b && b.caracteristiques.some(c => c.code === carac.code));
 
         if (buildingsWithCarac.length > 0) {
           switch (carac.code) {
@@ -98,26 +91,35 @@ export default function ListeSystemes() {
               capacites[carac.code] = "Oui";
               break;
             case 8:
-              capacites[carac.code] = Math.max(...buildingsWithCarac.map((b: any) => b.caracteristiques.find((c: any) => c.code === carac.code).value));
+              capacites[carac.code] = Math.max(...buildingsWithCarac.map(b => b.caracteristiques.find(c => c.code === carac.code)!.value));
               break;
             default:
-              capacites[carac.code] = buildingsWithCarac.reduce((acc: number, b: any) => acc + b.caracteristiques.find((c: any) => c.code === carac.code).value, 0);
+              capacites[carac.code] = buildingsWithCarac.reduce((acc, b) => acc + (b.caracteristiques.find(c => c.code === carac.code)?.value ?? 0), 0);
               break;
           }
         }
       });
 
+      const faciliteBatiments = systemBatiments
+      .map(b => ({
+        ...b,
+        globalBatiment: batiments.find(bat => bat.code === b.techCode),
+      }))
+      .filter((b): b is BatimentQuantite & { globalBatiment: Batiment } => !!b.globalBatiment)
+      .filter(b => b.globalBatiment.caracteristiques.some(c => c.code === 3))
+      .sort((a, b) => b.count - a.count);
+
       return {
         ...s,
         proprietaires: s.proprietaires || [],
         posStr: `${s.pos.x}-${s.pos.y}`,
-        owned: currentId ? (s.proprietaires || []).includes(currentId) || (s as any).type === 'joueur' : false,
+        owned: currentId ? (s.proprietaires || []).includes(currentId) || (s as SystemeJoueur).type === 'joueur' : false,
         solAirDefense,
         protection,
         capacites,
+        faciliteBatiments,
       };
     });
-    return list;
   }, [rapport, global, currentId]);
 
   const politiquesOptions = useMemo(() => {
@@ -164,19 +166,19 @@ export default function ListeSystemes() {
         case 'etoile': av = a.typeEtoile; bv = b.typeEtoile; break;
         case 'pos': av = a.pos.x * 1000 + a.pos.y; bv = b.pos.x * 1000 + b.pos.y; break;
         case 'nom': av = a.nom.toLowerCase(); bv = b.nom.toLowerCase(); break;
-        case 'nbpla': av = a.nbPla ?? a.nombrePla ?? 0; bv = b.nbPla ?? b.nombrePla ?? 0; break;
-        case 'pdc': av = a.pdc ?? 0; bv = b.pdc ?? 0; break;
+        case 'nbpla': av = a.nbPla ?? 0; bv = b.nbPla ?? 0; break;
+        case 'pdc': av = (a as SystemeJoueur).pdc ?? 0; bv = (b as SystemeJoueur).pdc ?? 0; break;
         case 'proprietaires': av = a.proprietaires; bv = b.proprietaires; break;
         case 'politique': av = a.politique ?? -9999; bv = b.politique ?? -9999; break;
         case 'entretien': av = a.entretien ?? 0; bv = b.entretien ?? 0; break;
         case 'revenu': av = a.revenu ?? 0; bv = b.revenu ?? 0; break;
-        case 'hscan': av = a.scan ?? 0; bv = b.scan ?? 0; break;
+        case 'hscan': av = (a as SystemeJoueur).scan ?? 0; bv = (b as SystemeJoueur).scan ?? 0; break;
         case 'bcont': av = a.bcont ?? 0; bv = b.bcont ?? 0; break;
         case 'besp': av = a.besp ?? 0; bv = b.besp ?? 0; break;
         case 'btech': av = a.btech ?? 0; bv = b.btech ?? 0; break;
-        case 'minerai': av = (a.stockmin ?? 0) + (a.revenumin ?? 0); bv = (b.stockmin ?? 0) + (b.revenumin ?? 0); break;
-        case 'population': av = (a.popAct ?? 0) + (a.popAug ?? 0); bv = (b.popAct ?? 0) + (b.popAug ?? 0); break;
-        case 'race': av = a.race ?? ''; bv = b.race ?? ''; break;
+        case 'minerai': av = ((a as SystemeJoueur).stockmin ?? 0) + ((a as SystemeJoueur).revenumin ?? 0); bv = ((b as SystemeJoueur).stockmin ?? 0) + ((b as SystemeJoueur).revenumin ?? 0); break;
+        case 'population': av = ((a as SystemeJoueur).popAct ?? 0) + ((a as SystemeJoueur).popAug ?? 0); bv = ((b as SystemeJoueur).popAct ?? 0) + ((b as SystemeJoueur).popAug ?? 0); break;
+        case 'race': av = (a as SystemeJoueur).race ?? ''; bv = (b as SystemeJoueur).race ?? ''; break;
         case 'sol-air-defense': av = a.solAirDefense ?? ''; bv = b.solAirDefense ?? ''; break;
         case 'protection': av = a.protection ?? 0; bv = b.protection ?? 0; break;
         case 'capacite-0': av = a.capacites?.[0] === 'Oui' ? 1 : 0; bv = b.capacites?.[0] === 'Oui' ? 1 : 0; break;
@@ -208,19 +210,20 @@ export default function ListeSystemes() {
 
   const totals = useMemo(() => {
     return filtered.reduce((acc, s) => {
+      const sj = s as SystemeJoueur;
       acc.entretien += s.entretien ?? 0;
       acc.revenu += s.revenu ?? 0;
-      acc.revenuEstime += s.revenuEstime ?? 0;
-      acc.technologique += (s.revenuEstime ?? 0) * (s.btech ?? 0) / 100;
-      acc.contreEspionnage += (s.revenuEstime ?? 0) * (s.bcont ?? 0) / 100;
-      acc.espionnage += (s.revenuEstime ?? 0) * (s.besp ?? 0) / 100;
-      acc.pdc += s.pdc ?? 0;
-      acc.revenumin += s.revenumin ?? 0;
-      acc.stockmin += s.stockmin ?? 0;
-      acc.popAct += s.popAct ?? 0;
-      acc.popMax += s.popMax ?? 0;
-      acc.popAug += s.popAug ?? 0;
-      (s.marchandises || []).forEach((m: any) => {
+      acc.revenuEstime += sj.revenuEstime ?? 0;
+      acc.technologique += (sj.revenuEstime ?? 0) * (s.btech ?? 0) / 100;
+      acc.contreEspionnage += (sj.revenuEstime ?? 0) * (s.bcont ?? 0) / 100;
+      acc.espionnage += (sj.revenuEstime ?? 0) * (s.besp ?? 0) / 100;
+      acc.pdc += sj.pdc ?? 0;
+      acc.revenumin += sj.revenumin ?? 0;
+      acc.stockmin += sj.stockmin ?? 0;
+      acc.popAct += sj.popAct ?? 0;
+      acc.popMax += sj.popMax ?? 0;
+      acc.popAug += sj.popAug ?? 0;
+      (sj.marchandises || []).forEach(m => {
         if (!acc.marchandises[m.code]) {
           acc.marchandises[m.code] = { num: 0, prod: 0 };
         }
@@ -464,7 +467,17 @@ export default function ListeSystemes() {
                 {visibleColumns.includes('capacite-0') && <td>{s.capacites?.[0]}</td>}
                 {visibleColumns.includes('capacite-1') && <td className={s.capacites?.[1] === 0 ? 'zero-value' : ''}>{s.capacites?.[1]}</td>}
                 {visibleColumns.includes('capacite-2') && <td className={s.capacites?.[2] === 0 ? 'zero-value' : ''}>{s.capacites?.[2]}</td>}
-                {visibleColumns.includes('capacite-3') && <td className={s.capacites?.[3] === 0 ? 'zero-value' : ''}>{s.capacites?.[3]}</td>}
+                {visibleColumns.includes('capacite-3') && (
+                  <td className={s.capacites?.[3] === 0 ? 'zero-value' : ''}>
+                    {s.capacites?.[3]}
+                    {s.faciliteBatiments?.map((b: any) => (
+                      <React.Fragment key={b.techCode}>
+                        <br />
+                        {b.count} {b.techCode}
+                      </React.Fragment>
+                    ))}
+                  </td>
+                )}
                 {visibleColumns.includes('capacite-5') && <td className={s.capacites?.[5] === 0 ? 'zero-value' : ''}>{s.capacites?.[5]}</td>}
                 {visibleColumns.includes('capacite-6') && <td className={s.capacites?.[6] === 0 ? 'zero-value' : ''}>{s.capacites?.[6]}</td>}
                 {visibleColumns.includes('capacite-8') && <td className={s.capacites?.[8] === 0 ? 'zero-value' : ''}>{s.capacites?.[8]}</td>}
