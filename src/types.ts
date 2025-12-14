@@ -65,7 +65,7 @@ export type Planete = {
     minerai?: number;
     revenumin: number;
     stockmin: number;
-    batiments: BatimentQuantite[];
+    batiments: { techCode: string; count: number }[];
     populations: {
         raceId: number;
         nb: number,
@@ -79,11 +79,6 @@ export type Planete = {
     temperature: number,
     terraformation: number,
     size: number,
-};
-
-export type BatimentQuantite = {
-    techCode: string;
-    count: number;
 };
 
 export interface SystemBase {
