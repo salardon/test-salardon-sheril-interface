@@ -10,6 +10,7 @@ import MarchandiseCell from '../components/systemes/MarchandiseCell';
 import RaceCell from '../components/systemes/RaceCell';
 import SolAirDefenseCell from '../components/systemes/SolAirDefenseCell';
 import BatimentsCell from '../components/systemes/BatimentsCell';
+import CapabilityCell from '../components/systemes/CapabilityCell';
 
 const CONSTRUCTION_VAISSEAUX_CODE = 0;
 
@@ -90,24 +91,47 @@ export default function ListeSystemes() {
         .reduce((acc: number, b: any) => acc + b.structure, 0);
 
       const capacites: { [key: number]: number | string } = {};
+      const contributingBuildings: { [key: number]: { techCode: string; count: number }[] } = {};
 
       caracteristiques.forEach(carac => {
-        const buildingsWithCarac = systemBatiments
-          .map((b: any) => batiments.find(bat => bat.code === b.techCode))
-          .filter((b: any) => b && b.caracteristiques.some((c: any) => c.code === carac.code));
+        const contributingSystemBatiments = systemBatiments.filter((b: any) => {
+            const globalBat = batiments.find(bat => bat.code === b.techCode);
+            return globalBat && globalBat.caracteristiques.some((c: any) => c.code === carac.code);
+        });
 
-        if (buildingsWithCarac.length > 0) {
-          switch (carac.code) {
-            case 0:
-              capacites[carac.code] = "Oui";
-              break;
-            case 8:
-              capacites[carac.code] = Math.max(...buildingsWithCarac.map((b: any) => b.caracteristiques.find((c: any) => c.code === carac.code).value));
-              break;
-            default:
-              capacites[carac.code] = buildingsWithCarac.reduce((acc: number, b: any) => acc + b.caracteristiques.find((c: any) => c.code === carac.code).value, 0);
-              break;
-          }
+        if (contributingSystemBatiments.length > 0) {
+            const buildingsWithCarac = contributingSystemBatiments
+                .map((b: any) => batiments.find(bat => bat.code === b.techCode))
+                .filter((b: any): b is NonNullable<typeof b> => b);
+
+            switch (carac.code) {
+                case 0:
+                    capacites[carac.code] = "Oui";
+                    break;
+                case 8:
+                    capacites[carac.code] = Math.max(...buildingsWithCarac.map((b: any) => b.caracteristiques.find((c: any) => c.code === carac.code).value));
+                    break;
+                default:
+                    capacites[carac.code] = buildingsWithCarac.reduce((acc: number, b: any) => acc + b.caracteristiques.find((c: any) => c.code === carac.code).value, 0);
+                    break;
+            }
+
+            if ([3, 5, 6].includes(carac.code)) {
+                const grouped = new Map<string, number>();
+                contributingSystemBatiments.forEach((b: any) => {
+                    grouped.set(b.techCode, (grouped.get(b.techCode) || 0) + b.count);
+                });
+
+                const sorted = Array.from(grouped.entries())
+                    .map(([techCode, count]) => ({ techCode, count }))
+                    .sort((a, b) => {
+                        if (b.count !== a.count) {
+                            return b.count - a.count;
+                        }
+                        return a.techCode.localeCompare(b.techCode);
+                    });
+                contributingBuildings[carac.code] = sorted;
+            }
         }
       });
 
@@ -119,6 +143,7 @@ export default function ListeSystemes() {
         solAirDefense,
         protection,
         capacites,
+        contributingBuildings,
       };
     });
     return list;
@@ -484,9 +509,9 @@ export default function ListeSystemes() {
                 {visibleColumns.includes('capacite-0') && <td>{s.capacites?.[0]}</td>}
                 {visibleColumns.includes('capacite-1') && <td className={s.capacites?.[1] === 0 ? 'zero-value' : ''}>{s.capacites?.[1]}</td>}
                 {visibleColumns.includes('capacite-2') && <td className={s.capacites?.[2] === 0 ? 'zero-value' : ''}>{s.capacites?.[2]}</td>}
-                {visibleColumns.includes('capacite-3') && <td className={s.capacites?.[3] === 0 ? 'zero-value' : ''}>{s.capacites?.[3]}</td>}
-                {visibleColumns.includes('capacite-5') && <td className={s.capacites?.[5] === 0 ? 'zero-value' : ''}>{s.capacites?.[5]}</td>}
-                {visibleColumns.includes('capacite-6') && <td className={s.capacites?.[6] === 0 ? 'zero-value' : ''}>{s.capacites?.[6]}</td>}
+                {visibleColumns.includes('capacite-3') && <CapabilityCell value={s.capacites?.[3] ?? 0} contributingBuildings={s.contributingBuildings?.[3] ?? []} />}
+                {visibleColumns.includes('capacite-5') && <CapabilityCell value={s.capacites?.[5] ?? 0} contributingBuildings={s.contributingBuildings?.[5] ?? []} />}
+                {visibleColumns.includes('capacite-6') && <CapabilityCell value={s.capacites?.[6] ?? 0} contributingBuildings={s.contributingBuildings?.[6] ?? []} />}
                 {visibleColumns.includes('capacite-8') && <td className={s.capacites?.[8] === 0 ? 'zero-value' : ''}>{s.capacites?.[8]}</td>}
                 {visibleColumns.includes('capacite-9') && <td className={s.capacites?.[9] === 0 ? 'zero-value' : ''}>{s.capacites?.[9]}</td>}
                 {global?.marchandises.map(m => visibleColumns.includes(`marchandise-${m.code}`) && (
