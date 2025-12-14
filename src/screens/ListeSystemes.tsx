@@ -9,6 +9,7 @@ import MineraiCell from '../components/systemes/MineraiCell';
 import MarchandiseCell from '../components/systemes/MarchandiseCell';
 import RaceCell from '../components/systemes/RaceCell';
 import SolAirDefenseCell from '../components/systemes/SolAirDefenseCell';
+import BatimentsCell from '../components/systemes/BatimentsCell';
 
 const CONSTRUCTION_VAISSEAUX_CODE = 0;
 
@@ -460,8 +461,7 @@ export default function ListeSystemes() {
                 {visibleColumns.includes('minerai') && <MineraiCell system={s} />}
                 {visibleColumns.includes('population') && <PopulationCell system={s} />}
                 {visibleColumns.includes('race') && <RaceCell system={s} />}
-                {/* Placeholder for Batiments column */}
-                {visibleColumns.includes('batiments') && <td></td>}
+                {visibleColumns.includes('batiments') && <BatimentsCell system={s} />}
                 {/* Placeholder for Stabilite column */}
                 {visibleColumns.includes('stabilite') && <td></td>}
                 {visibleColumns.includes('sol-air-defense') && <SolAirDefenseCell buildings={s.solAirDefense} />}
