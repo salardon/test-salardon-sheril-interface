@@ -24,7 +24,19 @@ const BatimentsCell: React.FC<BatimentsCellProps> = ({ system }) => {
     return <td></td>;
   }
 
-  const sortedBatiments = [...batiments].sort((a, b) => b.count - a.count);
+  const groupedBatiments = batiments.reduce((acc, batiment) => {
+    acc[batiment.techCode] = (acc[batiment.techCode] || 0) + batiment.count;
+    return acc;
+  }, {} as Record<string, number>);
+
+  const sortedBatiments = Object.entries(groupedBatiments)
+    .map(([techCode, count]) => ({ techCode, count }))
+    .sort((a, b) => {
+      if (b.count !== a.count) {
+        return b.count - a.count;
+      }
+      return a.techCode.localeCompare(b.techCode);
+    });
 
   return (
     <td style={{ fontSize: '0.8em', color: '#666' }}>
