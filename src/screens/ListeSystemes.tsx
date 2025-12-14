@@ -8,6 +8,7 @@ import PopulationCell from '../components/systemes/PopulationCell';
 import MineraiCell from '../components/systemes/MineraiCell';
 import MarchandiseCell from '../components/systemes/MarchandiseCell';
 import RaceCell from '../components/systemes/RaceCell';
+import GroupedMarchandiseCell from '../components/systemes/GroupedMarchandiseCell';
 import SolAirDefenseCell from '../components/systemes/SolAirDefenseCell';
 
 const CONSTRUCTION_VAISSEAUX_CODE = 0;
@@ -36,8 +37,32 @@ type SortKey =
   | 'minerai' | 'population' | 'race' | `marchandise-${number}`
   | 'sol-air-defense' | 'protection' | 'militia'
   | 'capacite-0' | 'capacite-1' | 'capacite-2' | 'capacite-3' | 'capacite-5' | 'capacite-6' | 'capacite-8' | 'capacite-9'
-  | 'batiments' | 'stabilite';
+  | 'batiments' | 'stabilite'
+  | 'grouped-marchandise-1' | 'grouped-marchandise-2' | 'grouped-marchandise-3' | 'grouped-marchandise-4' | 'grouped-marchandise-5';
 type SortDir = 'asc' | 'desc';
+
+const groupedMarchandises: { [key: string]: { header: React.ReactNode, names: string[] } } = {
+    'grouped-marchandise-1': {
+        header: <>U. Ener,<br />C. Elec,<br />S. Guid,<br />A&Exp,<br />Logi</>,
+        names: ["unité énergétique", "composants électroniques", "systèmes de guidage", "armement et explosifs", "logiciels"]
+    },
+    'grouped-marchandise-2': {
+        header: <>Robo,<br />P. Indus</>,
+        names: ["robots", "pièces industrielles"]
+    },
+    'grouped-marchandise-3': {
+        header: <>P. Alim,<br />Med</>,
+        names: ["produits alimentaires", "médicaments"]
+    },
+    'grouped-marchandise-4': {
+        header: <>A. Luxe,<br />Mét. Pré. & Holo</>,
+        names: ["articles de luxe", "métaux précieux", "holofilms et hololivres"]
+    },
+    'grouped-marchandise-5': {
+        header: <>Oxo,<br />Tix,<br />Lix</>,
+        names: ["oxole", "tixium", "lixiam"]
+    }
+};
 
 export default function ListeSystemes() {
   const { rapport, global } = useReport();
@@ -48,6 +73,10 @@ export default function ListeSystemes() {
   const [visibleColumns, setVisibleColumns] = useState<SortKey[]>([
     'etoile', 'pos', 'nbpla', 'race', 'population', 'proprietaires', 'politique', 'batiments',
   ]);
+
+  const marchandisesToDisplay = useMemo(() => {
+    return global?.marchandises.filter(m => m.nom !== 'Déchets') ?? [];
+  }, [global]);
 
   const [filterOwned, setFilterOwned] = useState<'all' | 'owned' | 'notowned'>('all');
   const [filterNom, setFilterNom] = useState('');
@@ -376,7 +405,10 @@ export default function ListeSystemes() {
             <option value="capacite-6">Bouclier magnétique</option>
             <option value="capacite-8">Portée radar</option>
             <option value="capacite-9">Capacité extraction avancée</option>
-            {global?.marchandises.map(m => <option key={m.code} value={`marchandise-${m.code}`}>{m.nom}</option>)}
+            {marchandisesToDisplay.map(m => <option key={m.code} value={`marchandise-${m.code}`}>{m.nom}</option>)}
+            {Object.keys(groupedMarchandises).map(key => (
+              <option key={key} value={key}>{groupedMarchandises[key].names.join(', ')}</option>
+            ))}
           </select>
         </label>
       </div>
@@ -421,7 +453,12 @@ export default function ListeSystemes() {
               {visibleColumns.includes('capacite-6') && header('capacite-6', 'Bouclier magnétique')}
               {visibleColumns.includes('capacite-8') && header('capacite-8', 'Portée radar')}
               {visibleColumns.includes('capacite-9') && header('capacite-9', 'Capacité extraction avancée')}
-              {global?.marchandises.map(m => visibleColumns.includes(`marchandise-${m.code}`) && header(`marchandise-${m.code}`, m.nom))}
+              {marchandisesToDisplay.map(m => visibleColumns.includes(`marchandise-${m.code}`) && header(`marchandise-${m.code}`, m.nom))}
+              {Object.keys(groupedMarchandises).map(key => visibleColumns.includes(key as SortKey) && (
+                <th key={key} style={{ whiteSpace: 'normal', wordBreak: 'break-word' }}>
+                  {groupedMarchandises[key].header}
+                </th>
+              ))}
             </tr>
           </thead>
           <tbody>
@@ -475,11 +512,19 @@ export default function ListeSystemes() {
                 {visibleColumns.includes('capacite-6') && <td className={s.capacites?.[6] === 0 ? 'zero-value' : ''}>{s.capacites?.[6]}</td>}
                 {visibleColumns.includes('capacite-8') && <td className={s.capacites?.[8] === 0 ? 'zero-value' : ''}>{s.capacites?.[8]}</td>}
                 {visibleColumns.includes('capacite-9') && <td className={s.capacites?.[9] === 0 ? 'zero-value' : ''}>{s.capacites?.[9]}</td>}
-                {global?.marchandises.map(m => visibleColumns.includes(`marchandise-${m.code}`) && (
+                {marchandisesToDisplay.map(m => visibleColumns.includes(`marchandise-${m.code}`) && (
                   <MarchandiseCell
                     key={m.code}
                     marchandise={m}
                     marchandiseData={s.marchandises?.find((mar: any) => mar.code === m.code)}
+                  />
+                ))}
+                {Object.keys(groupedMarchandises).map(key => visibleColumns.includes(key as SortKey) && (
+                  <GroupedMarchandiseCell
+                    key={key}
+                    system={s}
+                    marchandiseNames={groupedMarchandises[key].names}
+                    marchandiseDefs={global?.marchandises ?? []}
                   />
                 ))}
               </tr>
@@ -523,11 +568,31 @@ export default function ListeSystemes() {
               {visibleColumns.includes('capacite-6') && <td></td>}
               {visibleColumns.includes('capacite-8') && <td></td>}
               {visibleColumns.includes('capacite-9') && <td></td>}
-              {global?.marchandises.map(m => visibleColumns.includes(`marchandise-${m.code}`) && (
+              {marchandisesToDisplay.map(m => visibleColumns.includes(`marchandise-${m.code}`) && (
                   <td key={m.code} style={{ textAlign: 'right', fontWeight: 'bold' }}>
                       {totals.marchandises[m.code]?.num ?? 0} (+{totals.marchandises[m.code]?.prod ?? 0}) [{(totals.marchandises[m.code]?.num ?? 0) + (totals.marchandises[m.code]?.prod ?? 0)}]
                   </td>
               ))}
+              {Object.keys(groupedMarchandises).map(key => {
+                  if (!visibleColumns.includes(key as SortKey)) return null;
+                  const marchandiseCodes = (global?.marchandises ?? [])
+                      .filter(m => groupedMarchandises[key].names.includes(m.nom))
+                      .map(m => m.code);
+
+                  let totalNum = 0;
+                  let totalProd = 0;
+
+                  marchandiseCodes.forEach(code => {
+                      totalNum += totals.marchandises[code]?.num ?? 0;
+                      totalProd += totals.marchandises[code]?.prod ?? 0;
+                  });
+
+                  return (
+                      <td key={key} style={{ textAlign: 'right', fontWeight: 'bold' }}>
+                          {totalNum} (+{totalProd}) [{totalNum + totalProd}]
+                      </td>
+                  );
+              })}
           </tr>
           </tfoot>
         </table>
