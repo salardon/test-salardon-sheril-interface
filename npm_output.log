@@ -1,0 +1,387 @@
+
+> test-interface-sheril@0.1.0 start
+> react-scripts start
+
+(node:2279) [DEP_WEBPACK_DEV_SERVER_ON_AFTER_SETUP_MIDDLEWARE] DeprecationWarning: 'onAfterSetupMiddleware' option is deprecated. Please use the 'setupMiddlewares' option.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+(node:2279) [DEP_WEBPACK_DEV_SERVER_ON_BEFORE_SETUP_MIDDLEWARE] DeprecationWarning: 'onBeforeSetupMiddleware' option is deprecated. Please use the 'setupMiddlewares' option.
+Starting the development server...
+
+Compiled successfully!
+
+You can now view test-interface-sheril in the browser.
+
+  Local:            http://localhost:3000/test-salardon-sheril-interface
+  On Your Network:  http://192.168.0.2:3000/test-salardon-sheril-interface
+
+Note that the development build is not optimized.
+To create a production build, use npm run build.
+
+webpack compiled successfully
+No issues found.
+Compiling...
+Compiled successfully!
+webpack compiled successfully
+No issues found.
+Compiling...
+Compiled successfully!
+webpack compiled successfully
+No issues found.
+Compiling...
+Compiled successfully!
+webpack compiled successfully
+Files successfully emitted, waiting for typecheck results...
+Issues checking in progress...
+No issues found.
+Compiling...
+Compiled with warnings.
+
+[eslint]
+src/screens/ListeSystemes.tsx
+  Line 11:10:  'SystemeJoueur' is defined but never used     @typescript-eslint/no-unused-vars
+  Line 11:25:  'SystemeDetecte' is defined but never used    @typescript-eslint/no-unused-vars
+  Line 11:41:  'BatimentQuantite' is defined but never used  @typescript-eslint/no-unused-vars
+  Line 11:59:  'Planete' is defined but never used           @typescript-eslint/no-unused-vars
+  Line 11:68:  'Batiment' is defined but never used          @typescript-eslint/no-unused-vars
+
+Search for the keywords to learn more about each warning.
+To ignore, add // eslint-disable-next-line to the line before.
+
+WARNING in [eslint]
+src/screens/ListeSystemes.tsx
+  Line 11:10:  'SystemeJoueur' is defined but never used     @typescript-eslint/no-unused-vars
+  Line 11:25:  'SystemeDetecte' is defined but never used    @typescript-eslint/no-unused-vars
+  Line 11:41:  'BatimentQuantite' is defined but never used  @typescript-eslint/no-unused-vars
+  Line 11:59:  'Planete' is defined but never used           @typescript-eslint/no-unused-vars
+  Line 11:68:  'Batiment' is defined but never used          @typescript-eslint/no-unused-vars
+
+webpack compiled with 1 warning
+No issues found.
+Compiling...
+Compiled successfully!
+webpack compiled successfully
+ERROR in src/screens/ListeSystemes.tsx:215:29
+TS2339: Property 'revenuEstime' does not exist on type '{ proprietaires: number[]; posStr: string; owned: boolean; solAirDefense: string; protection: number; capacites: { [key: number]: string | number; }; faciliteBatiments: (BatimentQuantite & { ...; })[]; ... 23 more ...; btech?: number | undefined; } | { ...; }'.
+  Property 'revenuEstime' does not exist on type '{ proprietaires: number[]; posStr: string; owned: boolean; solAirDefense: string; protection: number; capacites: { [key: number]: string | number; }; faciliteBatiments: (BatimentQuantite & { ...; })[]; ... 10 more ...; btech?: number | undefined; }'.
+    213 |       acc.entretien += s.entretien ?? 0;
+    214 |       acc.revenu += s.revenu ?? 0;
+  > 215 |       acc.revenuEstime += s.revenuEstime ?? 0;
+        |                             ^^^^^^^^^^^^
+    216 |       acc.technologique += (s.revenuEstime ?? 0) * (s.btech ?? 0) / 100;
+    217 |       acc.contreEspionnage += (s.revenuEstime ?? 0) * (s.bcont ?? 0) / 100;
+    218 |       acc.espionnage += (s.revenuEstime ?? 0) * (s.besp ?? 0) / 100;
+
+ERROR in src/screens/ListeSystemes.tsx:216:31
+TS2339: Property 'revenuEstime' does not exist on type '{ proprietaires: number[]; posStr: string; owned: boolean; solAirDefense: string; protection: number; capacites: { [key: number]: string | number; }; faciliteBatiments: (BatimentQuantite & { ...; })[]; ... 23 more ...; btech?: number | undefined; } | { ...; }'.
+  Property 'revenuEstime' does not exist on type '{ proprietaires: number[]; posStr: string; owned: boolean; solAirDefense: string; protection: number; capacites: { [key: number]: string | number; }; faciliteBatiments: (BatimentQuantite & { ...; })[]; ... 10 more ...; btech?: number | undefined; }'.
+    214 |       acc.revenu += s.revenu ?? 0;
+    215 |       acc.revenuEstime += s.revenuEstime ?? 0;
+  > 216 |       acc.technologique += (s.revenuEstime ?? 0) * (s.btech ?? 0) / 100;
+        |                               ^^^^^^^^^^^^
+    217 |       acc.contreEspionnage += (s.revenuEstime ?? 0) * (s.bcont ?? 0) / 100;
+    218 |       acc.espionnage += (s.revenuEstime ?? 0) * (s.besp ?? 0) / 100;
+    219 |       acc.pdc += s.pdc ?? 0;
+
+ERROR in src/screens/ListeSystemes.tsx:217:34
+TS2339: Property 'revenuEstime' does not exist on type '{ proprietaires: number[]; posStr: string; owned: boolean; solAirDefense: string; protection: number; capacites: { [key: number]: string | number; }; faciliteBatiments: (BatimentQuantite & { ...; })[]; ... 23 more ...; btech?: number | undefined; } | { ...; }'.
+  Property 'revenuEstime' does not exist on type '{ proprietaires: number[]; posStr: string; owned: boolean; solAirDefense: string; protection: number; capacites: { [key: number]: string | number; }; faciliteBatiments: (BatimentQuantite & { ...; })[]; ... 10 more ...; btech?: number | undefined; }'.
+    215 |       acc.revenuEstime += s.revenuEstime ?? 0;
+    216 |       acc.technologique += (s.revenuEstime ?? 0) * (s.btech ?? 0) / 100;
+  > 217 |       acc.contreEspionnage += (s.revenuEstime ?? 0) * (s.bcont ?? 0) / 100;
+        |                                  ^^^^^^^^^^^^
+    218 |       acc.espionnage += (s.revenuEstime ?? 0) * (s.besp ?? 0) / 100;
+    219 |       acc.pdc += s.pdc ?? 0;
+    220 |       acc.revenumin += s.revenumin ?? 0;
+
+ERROR in src/screens/ListeSystemes.tsx:218:28
+TS2339: Property 'revenuEstime' does not exist on type '{ proprietaires: number[]; posStr: string; owned: boolean; solAirDefense: string; protection: number; capacites: { [key: number]: string | number; }; faciliteBatiments: (BatimentQuantite & { ...; })[]; ... 23 more ...; btech?: number | undefined; } | { ...; }'.
+  Property 'revenuEstime' does not exist on type '{ proprietaires: number[]; posStr: string; owned: boolean; solAirDefense: string; protection: number; capacites: { [key: number]: string | number; }; faciliteBatiments: (BatimentQuantite & { ...; })[]; ... 10 more ...; btech?: number | undefined; }'.
+    216 |       acc.technologique += (s.revenuEstime ?? 0) * (s.btech ?? 0) / 100;
+    217 |       acc.contreEspionnage += (s.revenuEstime ?? 0) * (s.bcont ?? 0) / 100;
+  > 218 |       acc.espionnage += (s.revenuEstime ?? 0) * (s.besp ?? 0) / 100;
+        |                            ^^^^^^^^^^^^
+    219 |       acc.pdc += s.pdc ?? 0;
+    220 |       acc.revenumin += s.revenumin ?? 0;
+    221 |       acc.stockmin += s.stockmin ?? 0;
+
+ERROR in src/screens/ListeSystemes.tsx:219:20
+TS2339: Property 'pdc' does not exist on type '{ proprietaires: number[]; posStr: string; owned: boolean; solAirDefense: string; protection: number; capacites: { [key: number]: string | number; }; faciliteBatiments: (BatimentQuantite & { ...; })[]; ... 23 more ...; btech?: number | undefined; } | { ...; }'.
+  Property 'pdc' does not exist on type '{ proprietaires: number[]; posStr: string; owned: boolean; solAirDefense: string; protection: number; capacites: { [key: number]: string | number; }; faciliteBatiments: (BatimentQuantite & { ...; })[]; ... 10 more ...; btech?: number | undefined; }'.
+    217 |       acc.contreEspionnage += (s.revenuEstime ?? 0) * (s.bcont ?? 0) / 100;
+    218 |       acc.espionnage += (s.revenuEstime ?? 0) * (s.besp ?? 0) / 100;
+  > 219 |       acc.pdc += s.pdc ?? 0;
+        |                    ^^^
+    220 |       acc.revenumin += s.revenumin ?? 0;
+    221 |       acc.stockmin += s.stockmin ?? 0;
+    222 |       acc.popAct += s.popAct ?? 0;
+
+ERROR in src/screens/ListeSystemes.tsx:220:26
+TS2551: Property 'revenumin' does not exist on type '{ proprietaires: number[]; posStr: string; owned: boolean; solAirDefense: string; protection: number; capacites: { [key: number]: string | number; }; faciliteBatiments: (BatimentQuantite & { ...; })[]; ... 23 more ...; btech?: number | undefined; } | { ...; }'. Did you mean 'revenu'?
+  Property 'revenumin' does not exist on type '{ proprietaires: number[]; posStr: string; owned: boolean; solAirDefense: string; protection: number; capacites: { [key: number]: string | number; }; faciliteBatiments: (BatimentQuantite & { ...; })[]; ... 10 more ...; btech?: number | undefined; }'.
+    218 |       acc.espionnage += (s.revenuEstime ?? 0) * (s.besp ?? 0) / 100;
+    219 |       acc.pdc += s.pdc ?? 0;
+  > 220 |       acc.revenumin += s.revenumin ?? 0;
+        |                          ^^^^^^^^^
+    221 |       acc.stockmin += s.stockmin ?? 0;
+    222 |       acc.popAct += s.popAct ?? 0;
+    223 |       acc.popMax += s.popMax ?? 0;
+
+ERROR in src/screens/ListeSystemes.tsx:221:25
+TS2339: Property 'stockmin' does not exist on type '{ proprietaires: number[]; posStr: string; owned: boolean; solAirDefense: string; protection: number; capacites: { [key: number]: string | number; }; faciliteBatiments: (BatimentQuantite & { ...; })[]; ... 23 more ...; btech?: number | undefined; } | { ...; }'.
+  Property 'stockmin' does not exist on type '{ proprietaires: number[]; posStr: string; owned: boolean; solAirDefense: string; protection: number; capacites: { [key: number]: string | number; }; faciliteBatiments: (BatimentQuantite & { ...; })[]; ... 10 more ...; btech?: number | undefined; }'.
+    219 |       acc.pdc += s.pdc ?? 0;
+    220 |       acc.revenumin += s.revenumin ?? 0;
+  > 221 |       acc.stockmin += s.stockmin ?? 0;
+        |                         ^^^^^^^^
+    222 |       acc.popAct += s.popAct ?? 0;
+    223 |       acc.popMax += s.popMax ?? 0;
+    224 |       acc.popAug += s.popAug ?? 0;
+
+ERROR in src/screens/ListeSystemes.tsx:222:23
+TS2339: Property 'popAct' does not exist on type '{ proprietaires: number[]; posStr: string; owned: boolean; solAirDefense: string; protection: number; capacites: { [key: number]: string | number; }; faciliteBatiments: (BatimentQuantite & { ...; })[]; ... 23 more ...; btech?: number | undefined; } | { ...; }'.
+  Property 'popAct' does not exist on type '{ proprietaires: number[]; posStr: string; owned: boolean; solAirDefense: string; protection: number; capacites: { [key: number]: string | number; }; faciliteBatiments: (BatimentQuantite & { ...; })[]; ... 10 more ...; btech?: number | undefined; }'.
+    220 |       acc.revenumin += s.revenumin ?? 0;
+    221 |       acc.stockmin += s.stockmin ?? 0;
+  > 222 |       acc.popAct += s.popAct ?? 0;
+        |                       ^^^^^^
+    223 |       acc.popMax += s.popMax ?? 0;
+    224 |       acc.popAug += s.popAug ?? 0;
+    225 |       (s.marchandises || []).forEach((m: any) => {
+
+ERROR in src/screens/ListeSystemes.tsx:223:23
+TS2339: Property 'popMax' does not exist on type '{ proprietaires: number[]; posStr: string; owned: boolean; solAirDefense: string; protection: number; capacites: { [key: number]: string | number; }; faciliteBatiments: (BatimentQuantite & { ...; })[]; ... 23 more ...; btech?: number | undefined; } | { ...; }'.
+  Property 'popMax' does not exist on type '{ proprietaires: number[]; posStr: string; owned: boolean; solAirDefense: string; protection: number; capacites: { [key: number]: string | number; }; faciliteBatiments: (BatimentQuantite & { ...; })[]; ... 10 more ...; btech?: number | undefined; }'.
+    221 |       acc.stockmin += s.stockmin ?? 0;
+    222 |       acc.popAct += s.popAct ?? 0;
+  > 223 |       acc.popMax += s.popMax ?? 0;
+        |                       ^^^^^^
+    224 |       acc.popAug += s.popAug ?? 0;
+    225 |       (s.marchandises || []).forEach((m: any) => {
+    226 |         if (!acc.marchandises[m.code]) {
+
+ERROR in src/screens/ListeSystemes.tsx:224:23
+TS2339: Property 'popAug' does not exist on type '{ proprietaires: number[]; posStr: string; owned: boolean; solAirDefense: string; protection: number; capacites: { [key: number]: string | number; }; faciliteBatiments: (BatimentQuantite & { ...; })[]; ... 23 more ...; btech?: number | undefined; } | { ...; }'.
+  Property 'popAug' does not exist on type '{ proprietaires: number[]; posStr: string; owned: boolean; solAirDefense: string; protection: number; capacites: { [key: number]: string | number; }; faciliteBatiments: (BatimentQuantite & { ...; })[]; ... 10 more ...; btech?: number | undefined; }'.
+    222 |       acc.popAct += s.popAct ?? 0;
+    223 |       acc.popMax += s.popMax ?? 0;
+  > 224 |       acc.popAug += s.popAug ?? 0;
+        |                       ^^^^^^
+    225 |       (s.marchandises || []).forEach((m: any) => {
+    226 |         if (!acc.marchandises[m.code]) {
+    227 |           acc.marchandises[m.code] = { num: 0, prod: 0 };
+
+ERROR in src/screens/ListeSystemes.tsx:225:10
+TS2339: Property 'marchandises' does not exist on type '{ proprietaires: number[]; posStr: string; owned: boolean; solAirDefense: string; protection: number; capacites: { [key: number]: string | number; }; faciliteBatiments: (BatimentQuantite & { ...; })[]; ... 23 more ...; btech?: number | undefined; } | { ...; }'.
+  Property 'marchandises' does not exist on type '{ proprietaires: number[]; posStr: string; owned: boolean; solAirDefense: string; protection: number; capacites: { [key: number]: string | number; }; faciliteBatiments: (BatimentQuantite & { ...; })[]; ... 10 more ...; btech?: number | undefined; }'.
+    223 |       acc.popMax += s.popMax ?? 0;
+    224 |       acc.popAug += s.popAug ?? 0;
+  > 225 |       (s.marchandises || []).forEach((m: any) => {
+        |          ^^^^^^^^^^^^
+    226 |         if (!acc.marchandises[m.code]) {
+    227 |           acc.marchandises[m.code] = { num: 0, prod: 0 };
+    228 |         }
+
+Compiling...
+Compiled successfully!
+webpack compiled successfully
+ERROR in src/screens/ListeSystemes.tsx:215:29
+TS2339: Property 'revenuEstime' does not exist on type '{ proprietaires: number[]; posStr: string; owned: boolean; solAirDefense: string; protection: number; capacites: { [key: number]: string | number; }; faciliteBatiments: (BatimentQuantite & { ...; })[]; ... 23 more ...; btech?: number | undefined; } | { ...; }'.
+  Property 'revenuEstime' does not exist on type '{ proprietaires: number[]; posStr: string; owned: boolean; solAirDefense: string; protection: number; capacites: { [key: number]: string | number; }; faciliteBatiments: (BatimentQuantite & { ...; })[]; ... 10 more ...; btech?: number | undefined; }'.
+    213 |       acc.entretien += s.entretien ?? 0;
+    214 |       acc.revenu += s.revenu ?? 0;
+  > 215 |       acc.revenuEstime += s.revenuEstime ?? 0;
+        |                             ^^^^^^^^^^^^
+    216 |       acc.technologique += (s.revenuEstime ?? 0) * (s.btech ?? 0) / 100;
+    217 |       acc.contreEspionnage += (s.revenuEstime ?? 0) * (s.bcont ?? 0) / 100;
+    218 |       acc.espionnage += (s.revenuEstime ?? 0) * (s.besp ?? 0) / 100;
+
+ERROR in src/screens/ListeSystemes.tsx:216:31
+TS2339: Property 'revenuEstime' does not exist on type '{ proprietaires: number[]; posStr: string; owned: boolean; solAirDefense: string; protection: number; capacites: { [key: number]: string | number; }; faciliteBatiments: (BatimentQuantite & { ...; })[]; ... 23 more ...; btech?: number | undefined; } | { ...; }'.
+  Property 'revenuEstime' does not exist on type '{ proprietaires: number[]; posStr: string; owned: boolean; solAirDefense: string; protection: number; capacites: { [key: number]: string | number; }; faciliteBatiments: (BatimentQuantite & { ...; })[]; ... 10 more ...; btech?: number | undefined; }'.
+    214 |       acc.revenu += s.revenu ?? 0;
+    215 |       acc.revenuEstime += s.revenuEstime ?? 0;
+  > 216 |       acc.technologique += (s.revenuEstime ?? 0) * (s.btech ?? 0) / 100;
+        |                               ^^^^^^^^^^^^
+    217 |       acc.contreEspionnage += (s.revenuEstime ?? 0) * (s.bcont ?? 0) / 100;
+    218 |       acc.espionnage += (s.revenuEstime ?? 0) * (s.besp ?? 0) / 100;
+    219 |       acc.pdc += s.pdc ?? 0;
+
+ERROR in src/screens/ListeSystemes.tsx:217:34
+TS2339: Property 'revenuEstime' does not exist on type '{ proprietaires: number[]; posStr: string; owned: boolean; solAirDefense: string; protection: number; capacites: { [key: number]: string | number; }; faciliteBatiments: (BatimentQuantite & { ...; })[]; ... 23 more ...; btech?: number | undefined; } | { ...; }'.
+  Property 'revenuEstime' does not exist on type '{ proprietaires: number[]; posStr: string; owned: boolean; solAirDefense: string; protection: number; capacites: { [key: number]: string | number; }; faciliteBatiments: (BatimentQuantite & { ...; })[]; ... 10 more ...; btech?: number | undefined; }'.
+    215 |       acc.revenuEstime += s.revenuEstime ?? 0;
+    216 |       acc.technologique += (s.revenuEstime ?? 0) * (s.btech ?? 0) / 100;
+  > 217 |       acc.contreEspionnage += (s.revenuEstime ?? 0) * (s.bcont ?? 0) / 100;
+        |                                  ^^^^^^^^^^^^
+    218 |       acc.espionnage += (s.revenuEstime ?? 0) * (s.besp ?? 0) / 100;
+    219 |       acc.pdc += s.pdc ?? 0;
+    220 |       acc.revenumin += s.revenumin ?? 0;
+
+ERROR in src/screens/ListeSystemes.tsx:218:28
+TS2339: Property 'revenuEstime' does not exist on type '{ proprietaires: number[]; posStr: string; owned: boolean; solAirDefense: string; protection: number; capacites: { [key: number]: string | number; }; faciliteBatiments: (BatimentQuantite & { ...; })[]; ... 23 more ...; btech?: number | undefined; } | { ...; }'.
+  Property 'revenuEstime' does not exist on type '{ proprietaires: number[]; posStr: string; owned: boolean; solAirDefense: string; protection: number; capacites: { [key: number]: string | number; }; faciliteBatiments: (BatimentQuantite & { ...; })[]; ... 10 more ...; btech?: number | undefined; }'.
+    216 |       acc.technologique += (s.revenuEstime ?? 0) * (s.btech ?? 0) / 100;
+    217 |       acc.contreEspionnage += (s.revenuEstime ?? 0) * (s.bcont ?? 0) / 100;
+  > 218 |       acc.espionnage += (s.revenuEstime ?? 0) * (s.besp ?? 0) / 100;
+        |                            ^^^^^^^^^^^^
+    219 |       acc.pdc += s.pdc ?? 0;
+    220 |       acc.revenumin += s.revenumin ?? 0;
+    221 |       acc.stockmin += s.stockmin ?? 0;
+
+ERROR in src/screens/ListeSystemes.tsx:219:20
+TS2339: Property 'pdc' does not exist on type '{ proprietaires: number[]; posStr: string; owned: boolean; solAirDefense: string; protection: number; capacites: { [key: number]: string | number; }; faciliteBatiments: (BatimentQuantite & { ...; })[]; ... 23 more ...; btech?: number | undefined; } | { ...; }'.
+  Property 'pdc' does not exist on type '{ proprietaires: number[]; posStr: string; owned: boolean; solAirDefense: string; protection: number; capacites: { [key: number]: string | number; }; faciliteBatiments: (BatimentQuantite & { ...; })[]; ... 10 more ...; btech?: number | undefined; }'.
+    217 |       acc.contreEspionnage += (s.revenuEstime ?? 0) * (s.bcont ?? 0) / 100;
+    218 |       acc.espionnage += (s.revenuEstime ?? 0) * (s.besp ?? 0) / 100;
+  > 219 |       acc.pdc += s.pdc ?? 0;
+        |                    ^^^
+    220 |       acc.revenumin += s.revenumin ?? 0;
+    221 |       acc.stockmin += s.stockmin ?? 0;
+    222 |       acc.popAct += s.popAct ?? 0;
+
+ERROR in src/screens/ListeSystemes.tsx:220:26
+TS2551: Property 'revenumin' does not exist on type '{ proprietaires: number[]; posStr: string; owned: boolean; solAirDefense: string; protection: number; capacites: { [key: number]: string | number; }; faciliteBatiments: (BatimentQuantite & { ...; })[]; ... 23 more ...; btech?: number | undefined; } | { ...; }'. Did you mean 'revenu'?
+  Property 'revenumin' does not exist on type '{ proprietaires: number[]; posStr: string; owned: boolean; solAirDefense: string; protection: number; capacites: { [key: number]: string | number; }; faciliteBatiments: (BatimentQuantite & { ...; })[]; ... 10 more ...; btech?: number | undefined; }'.
+    218 |       acc.espionnage += (s.revenuEstime ?? 0) * (s.besp ?? 0) / 100;
+    219 |       acc.pdc += s.pdc ?? 0;
+  > 220 |       acc.revenumin += s.revenumin ?? 0;
+        |                          ^^^^^^^^^
+    221 |       acc.stockmin += s.stockmin ?? 0;
+    222 |       acc.popAct += s.popAct ?? 0;
+    223 |       acc.popMax += s.popMax ?? 0;
+
+ERROR in src/screens/ListeSystemes.tsx:221:25
+TS2339: Property 'stockmin' does not exist on type '{ proprietaires: number[]; posStr: string; owned: boolean; solAirDefense: string; protection: number; capacites: { [key: number]: string | number; }; faciliteBatiments: (BatimentQuantite & { ...; })[]; ... 23 more ...; btech?: number | undefined; } | { ...; }'.
+  Property 'stockmin' does not exist on type '{ proprietaires: number[]; posStr: string; owned: boolean; solAirDefense: string; protection: number; capacites: { [key: number]: string | number; }; faciliteBatiments: (BatimentQuantite & { ...; })[]; ... 10 more ...; btech?: number | undefined; }'.
+    219 |       acc.pdc += s.pdc ?? 0;
+    220 |       acc.revenumin += s.revenumin ?? 0;
+  > 221 |       acc.stockmin += s.stockmin ?? 0;
+        |                         ^^^^^^^^
+    222 |       acc.popAct += s.popAct ?? 0;
+    223 |       acc.popMax += s.popMax ?? 0;
+    224 |       acc.popAug += s.popAug ?? 0;
+
+ERROR in src/screens/ListeSystemes.tsx:222:23
+TS2339: Property 'popAct' does not exist on type '{ proprietaires: number[]; posStr: string; owned: boolean; solAirDefense: string; protection: number; capacites: { [key: number]: string | number; }; faciliteBatiments: (BatimentQuantite & { ...; })[]; ... 23 more ...; btech?: number | undefined; } | { ...; }'.
+  Property 'popAct' does not exist on type '{ proprietaires: number[]; posStr: string; owned: boolean; solAirDefense: string; protection: number; capacites: { [key: number]: string | number; }; faciliteBatiments: (BatimentQuantite & { ...; })[]; ... 10 more ...; btech?: number | undefined; }'.
+    220 |       acc.revenumin += s.revenumin ?? 0;
+    221 |       acc.stockmin += s.stockmin ?? 0;
+  > 222 |       acc.popAct += s.popAct ?? 0;
+        |                       ^^^^^^
+    223 |       acc.popMax += s.popMax ?? 0;
+    224 |       acc.popAug += s.popAug ?? 0;
+    225 |       (s.marchandises || []).forEach((m: any) => {
+
+ERROR in src/screens/ListeSystemes.tsx:223:23
+TS2339: Property 'popMax' does not exist on type '{ proprietaires: number[]; posStr: string; owned: boolean; solAirDefense: string; protection: number; capacites: { [key: number]: string | number; }; faciliteBatiments: (BatimentQuantite & { ...; })[]; ... 23 more ...; btech?: number | undefined; } | { ...; }'.
+  Property 'popMax' does not exist on type '{ proprietaires: number[]; posStr: string; owned: boolean; solAirDefense: string; protection: number; capacites: { [key: number]: string | number; }; faciliteBatiments: (BatimentQuantite & { ...; })[]; ... 10 more ...; btech?: number | undefined; }'.
+    221 |       acc.stockmin += s.stockmin ?? 0;
+    222 |       acc.popAct += s.popAct ?? 0;
+  > 223 |       acc.popMax += s.popMax ?? 0;
+        |                       ^^^^^^
+    224 |       acc.popAug += s.popAug ?? 0;
+    225 |       (s.marchandises || []).forEach((m: any) => {
+    226 |         if (!acc.marchandises[m.code]) {
+
+ERROR in src/screens/ListeSystemes.tsx:224:23
+TS2339: Property 'popAug' does not exist on type '{ proprietaires: number[]; posStr: string; owned: boolean; solAirDefense: string; protection: number; capacites: { [key: number]: string | number; }; faciliteBatiments: (BatimentQuantite & { ...; })[]; ... 23 more ...; btech?: number | undefined; } | { ...; }'.
+  Property 'popAug' does not exist on type '{ proprietaires: number[]; posStr: string; owned: boolean; solAirDefense: string; protection: number; capacites: { [key: number]: string | number; }; faciliteBatiments: (BatimentQuantite & { ...; })[]; ... 10 more ...; btech?: number | undefined; }'.
+    222 |       acc.popAct += s.popAct ?? 0;
+    223 |       acc.popMax += s.popMax ?? 0;
+  > 224 |       acc.popAug += s.popAug ?? 0;
+        |                       ^^^^^^
+    225 |       (s.marchandises || []).forEach((m: any) => {
+    226 |         if (!acc.marchandises[m.code]) {
+    227 |           acc.marchandises[m.code] = { num: 0, prod: 0 };
+
+ERROR in src/screens/ListeSystemes.tsx:225:10
+TS2339: Property 'marchandises' does not exist on type '{ proprietaires: number[]; posStr: string; owned: boolean; solAirDefense: string; protection: number; capacites: { [key: number]: string | number; }; faciliteBatiments: (BatimentQuantite & { ...; })[]; ... 23 more ...; btech?: number | undefined; } | { ...; }'.
+  Property 'marchandises' does not exist on type '{ proprietaires: number[]; posStr: string; owned: boolean; solAirDefense: string; protection: number; capacites: { [key: number]: string | number; }; faciliteBatiments: (BatimentQuantite & { ...; })[]; ... 10 more ...; btech?: number | undefined; }'.
+    223 |       acc.popMax += s.popMax ?? 0;
+    224 |       acc.popAug += s.popAug ?? 0;
+  > 225 |       (s.marchandises || []).forEach((m: any) => {
+        |          ^^^^^^^^^^^^
+    226 |         if (!acc.marchandises[m.code]) {
+    227 |           acc.marchandises[m.code] = { num: 0, prod: 0 };
+    228 |         }
+
+Compiling...
+Compiled successfully!
+webpack compiled successfully
+No issues found.
+Compiling...
+Compiled successfully!
+webpack compiled successfully
+ERROR in src/screens/ListeSystemes.tsx:106:62
+TS2339: Property 'code' does not exist on type 'BatimentQuantite'.
+    104 |       .map(b => ({
+    105 |         ...b,
+  > 106 |         globalBatiment: batiments.find(bat => bat.code === b.code),
+        |                                                              ^^^^
+    107 |       }))
+    108 |       .filter((b): b is BatimentQuantite & { globalBatiment: Batiment } => !!b.globalBatiment)
+    109 |       .filter(b => b.globalBatiment.caracteristiques.some(c => c.code === 3))
+
+ERROR in src/screens/ListeSystemes.tsx:110:25
+TS2339: Property 'nombre' does not exist on type 'BatimentQuantite & { globalBatiment: Batiment; }'.
+    108 |       .filter((b): b is BatimentQuantite & { globalBatiment: Batiment } => !!b.globalBatiment)
+    109 |       .filter(b => b.globalBatiment.caracteristiques.some(c => c.code === 3))
+  > 110 |       .sort((a, b) => b.nombre - a.nombre);
+        |                         ^^^^^^
+    111 |
+    112 |       return {
+    113 |         ...s,
+
+ERROR in src/screens/ListeSystemes.tsx:110:36
+TS2339: Property 'nombre' does not exist on type 'BatimentQuantite & { globalBatiment: Batiment; }'.
+    108 |       .filter((b): b is BatimentQuantite & { globalBatiment: Batiment } => !!b.globalBatiment)
+    109 |       .filter(b => b.globalBatiment.caracteristiques.some(c => c.code === 3))
+  > 110 |       .sort((a, b) => b.nombre - a.nombre);
+        |                                    ^^^^^^
+    111 |
+    112 |       return {
+    113 |         ...s,
+
+Compiling...
+Compiled successfully!
+webpack compiled successfully
+ERROR in src/screens/ListeSystemes.tsx:106:62
+TS2339: Property 'code' does not exist on type 'BatimentQuantite'.
+    104 |       .map(b => ({
+    105 |         ...b,
+  > 106 |         globalBatiment: batiments.find(bat => bat.code === b.code),
+        |                                                              ^^^^
+    107 |       }))
+    108 |       .filter((b): b is BatimentQuantite & { globalBatiment: Batiment } => !!b.globalBatiment)
+    109 |       .filter(b => b.globalBatiment.caracteristiques.some(c => c.code === 3))
+
+ERROR in src/screens/ListeSystemes.tsx:110:25
+TS2339: Property 'nombre' does not exist on type 'BatimentQuantite & { globalBatiment: Batiment; }'.
+    108 |       .filter((b): b is BatimentQuantite & { globalBatiment: Batiment } => !!b.globalBatiment)
+    109 |       .filter(b => b.globalBatiment.caracteristiques.some(c => c.code === 3))
+  > 110 |       .sort((a, b) => b.nombre - a.nombre);
+        |                         ^^^^^^
+    111 |
+    112 |       return {
+    113 |         ...s,
+
+ERROR in src/screens/ListeSystemes.tsx:110:36
+TS2339: Property 'nombre' does not exist on type 'BatimentQuantite & { globalBatiment: Batiment; }'.
+    108 |       .filter((b): b is BatimentQuantite & { globalBatiment: Batiment } => !!b.globalBatiment)
+    109 |       .filter(b => b.globalBatiment.caracteristiques.some(c => c.code === 3))
+  > 110 |       .sort((a, b) => b.nombre - a.nombre);
+        |                                    ^^^^^^
+    111 |
+    112 |       return {
+    113 |         ...s,
+
+Compiling...
+Compiled successfully!
+webpack compiled successfully
+No issues found.
+Compiling...
+Compiled successfully!
+webpack compiled successfully
+Files successfully emitted, waiting for typecheck results...
+Issues checking in progress...
+No issues found.
