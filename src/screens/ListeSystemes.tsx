@@ -9,6 +9,8 @@ import MineraiCell from '../components/systemes/MineraiCell';
 import MarchandiseCell from '../components/systemes/MarchandiseCell';
 import RaceCell from '../components/systemes/RaceCell';
 
+const CONSTRUCTION_VAISSEAUX_CODE = 0;
+
 const politiqueMap: { [key: number]: string } = {
     0: "impôts",
     1: "commerce",
@@ -434,7 +436,7 @@ export default function ListeSystemes() {
                     : <Position pos={s.pos} />}
                 </td>}
                 {visibleColumns.includes('nom') && <td>{s.nom}</td>}
-                {visibleColumns.includes('nbpla') && <td style={{ textAlign: 'right' }}>{s.nbPla ?? 0}</td>}
+                {visibleColumns.includes('nbpla') && <td style={{ textAlign: 'right' }}>{s.capacites?.[CONSTRUCTION_VAISSEAUX_CODE] === 'Oui' ? '🚀 ' : ''}{s.nbPla ?? 0}</td>}
                 {visibleColumns.includes('pdc') && <td style={{ textAlign: 'right' }} className={s.pdc === 0 ? 'zero-value' : ''}>{s.pdc ?? '—'}</td>}
                 {visibleColumns.includes('proprietaires') && <td style={{ whiteSpace: 'nowrap' }}>{s.proprietaires.map((p: number, key: number) =>
                   <Commandant num={p} key={key} />
