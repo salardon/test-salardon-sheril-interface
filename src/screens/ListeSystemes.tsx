@@ -8,6 +8,7 @@ import PopulationCell from '../components/systemes/PopulationCell';
 import MineraiCell from '../components/systemes/MineraiCell';
 import MarchandiseCell from '../components/systemes/MarchandiseCell';
 import RaceCell from '../components/systemes/RaceCell';
+import SolAirDefenseCell from '../components/systemes/SolAirDefenseCell';
 
 const CONSTRUCTION_VAISSEAUX_CODE = 0;
 
@@ -75,10 +76,12 @@ export default function ListeSystemes() {
       const systemBatiments = s.planetes?.flatMap((p: any) => p.batiments) ?? [];
 
       const solAirDefense = systemBatiments
-        .map((b: any) => batiments.find(bat => bat.code === b.techCode))
-        .filter((b: any) => b && b.arme)
-        .map((b: any) => b.nom)
-        .join(', ');
+        .map((b: any) => {
+            const batiment = batiments.find(bat => bat.code === b.techCode);
+            return batiment ? { ...b, batiment } : null;
+        })
+        .filter((b: any) => b && b.batiment.arme)
+        .sort((a: any, b: any) => b.count - a.count);
 
       const protection = systemBatiments
         .map((b: any) => batiments.find(bat => bat.code === b.techCode))
@@ -177,7 +180,10 @@ export default function ListeSystemes() {
         case 'minerai': av = (a.stockmin ?? 0) + (a.revenumin ?? 0); bv = (b.stockmin ?? 0) + (b.revenumin ?? 0); break;
         case 'population': av = (a.popAct ?? 0) + (a.popAug ?? 0); bv = (b.popAct ?? 0) + (b.popAug ?? 0); break;
         case 'race': av = a.race ?? ''; bv = b.race ?? ''; break;
-        case 'sol-air-defense': av = a.solAirDefense ?? ''; bv = b.solAirDefense ?? ''; break;
+        case 'sol-air-defense':
+            av = a.solAirDefense.reduce((total: number, b: any) => total + b.count, 0);
+            bv = b.solAirDefense.reduce((total: number, b: any) => total + b.count, 0);
+            break;
         case 'protection': av = a.protection ?? 0; bv = b.protection ?? 0; break;
         case 'capacite-0': av = a.capacites?.[0] === 'Oui' ? 1 : 0; bv = b.capacites?.[0] === 'Oui' ? 1 : 0; break;
         case 'capacite-1': av = a.capacites?.[1] ?? 0; bv = b.capacites?.[1] ?? 0; break;
@@ -458,7 +464,7 @@ export default function ListeSystemes() {
                 {visibleColumns.includes('batiments') && <td></td>}
                 {/* Placeholder for Stabilite column */}
                 {visibleColumns.includes('stabilite') && <td></td>}
-                {visibleColumns.includes('sol-air-defense') && <td>{s.solAirDefense}</td>}
+                {visibleColumns.includes('sol-air-defense') && <SolAirDefenseCell buildings={s.solAirDefense} />}
                 {visibleColumns.includes('protection') && <td className={s.protection === 0 ? 'zero-value' : ''}>{s.protection}</td>}
                 {visibleColumns.includes('militia') && <td></td>}
                 {visibleColumns.includes('capacite-0') && <td>{s.capacites?.[0]}</td>}
