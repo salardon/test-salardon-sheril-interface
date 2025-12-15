@@ -4,12 +4,30 @@ import { Marchandise, MarchandiseData } from '../../types';
 interface MarchandiseCellProps {
   marchandise: Marchandise;
   marchandiseData?: MarchandiseData;
+  contributingBuildings?: { techCode: string; count: number }[];
 }
 
-const MarchandiseCell: React.FC<MarchandiseCellProps> = ({ marchandise, marchandiseData }) => {
+const MarchandiseCell: React.FC<MarchandiseCellProps> = ({ marchandise, marchandiseData, contributingBuildings }) => {
   const num = marchandiseData?.num ?? 0;
   const prod = marchandiseData?.prod ?? 0;
   const total = num + prod;
+
+  const renderContributingBuildings = () => {
+    if (!contributingBuildings || contributingBuildings.length === 0) {
+      return null;
+    }
+
+    const buildingsHtml = contributingBuildings
+      .map(b => `${b.count} ${b.techCode}`)
+      .join('<br/>');
+
+    return (
+      <div
+        className="contributing-buildings"
+        dangerouslySetInnerHTML={{ __html: buildingsHtml }}
+      />
+    );
+  };
 
   // Cell style is now simpler, no conditional background
   const cellStyle: React.CSSProperties = {
@@ -34,10 +52,11 @@ const MarchandiseCell: React.FC<MarchandiseCellProps> = ({ marchandise, marchand
   };
 
   // When num is 0, use the 'zero-value' class for default styling
-  if (num === 0) {
+  if (num === 0 && prod === 0) {
     return (
       <td key={marchandise.code} style={cellStyle} className="zero-value">
         {num} (+{prod}) [{total}]
+        {renderContributingBuildings()}
       </td>
     );
   }
@@ -45,9 +64,12 @@ const MarchandiseCell: React.FC<MarchandiseCellProps> = ({ marchandise, marchand
   // Render for non-zero values
   return (
     <td key={marchandise.code} style={cellStyle}>
-      <span style={nbStyle}>{num}</span>
-      <span style={prodStyle}> (+{prod})</span>
-      <span style={totalStyle}> [{total}]</span>
+      <div>
+        <span style={nbStyle}>{num}</span>
+        <span style={prodStyle}> (+{prod})</span>
+        <span style={totalStyle}> [{total}]</span>
+      </div>
+      {renderContributingBuildings()}
     </td>
   );
 };
