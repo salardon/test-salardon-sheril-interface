@@ -19,8 +19,8 @@ const MarchandiseCell: React.FC<MarchandiseCellProps> = ({ marchandise, marchand
 
   // Style for the 'nb' (stock) value
   const nbStyle: React.CSSProperties = {
-    color: num >= 100 ? '#1a1a1a' : num > 0 ? '#4fc3f7' : 'inherit',
-    textDecoration: num >= 100 ? 'underline' : 'none',
+    color: num >= 100 ? '#81d4fa' : num > 0 ? '#4fc3f7' : 'inherit',
+    fontWeight: num >= 100 ? 'bold' : 'normal',
   };
 
   // Style for the 'prod' (production) value
@@ -30,7 +30,7 @@ const MarchandiseCell: React.FC<MarchandiseCellProps> = ({ marchandise, marchand
 
   // Style for the 'total' value
   const totalStyle: React.CSSProperties = {
-    color: num >= 100 ? '#1a1a1a' : 'inherit',
+    color: num >= 100 ? '#81d4fa' : 'inherit',
   };
 
   // When num is 0, use the 'zero-value' class for default styling
