@@ -35,14 +35,14 @@ const MineraiCell: React.FC<MineraiCellProps> = ({ system }) => {
 
   if (stock === 0) {
     return (
-      <td style={{ textAlign: 'right' }} className="zero-value">
+      <td style={cellStyle} className="zero-value">
         {stock} (+{minprod}) [{fprod}]
       </td>
     );
   }
-
+  
   return (
-    <td style={{ textAlign: 'right' }}>
+    <td style={cellStyle}>
       <span style={stockStyle}>{stock}</span>
       <span style={minprodStyle}> (+{minprod})</span>
       <span style={fprodStyle}> [{fprod}]</span>
