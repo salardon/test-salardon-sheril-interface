@@ -116,7 +116,7 @@ export default function ListeSystemes() {
                     break;
             }
 
-            if ([3, 5, 6].includes(carac.code)) {
+            if ([3, 5, 6, 8].includes(carac.code)) {
                 const grouped = new Map<string, number>();
                 contributingSystemBatiments.forEach((b: any) => {
                     grouped.set(b.techCode, (grouped.get(b.techCode) || 0) + b.count);
@@ -135,6 +135,40 @@ export default function ListeSystemes() {
         }
       });
 
+      const marchandiseContributingBuildings: { [key: number]: { techCode: string; count: number }[] } = {};
+
+      if (s.marchandises) {
+          s.marchandises.forEach((marchandise: any) => {
+              const contributing = systemBatiments
+                  .map((b: any) => {
+                      const buildingDef = global?.technologies.find(t => t.code === b.techCode && t.type === 0);
+                      if (buildingDef && buildingDef.marchandises?.some(m => m.code === marchandise.code)) {
+                          return b;
+                      }
+                      return null;
+                  })
+                  .filter((b: any): b is any => b !== null);
+
+              if (contributing.length > 0) {
+                  const grouped = new Map<string, number>();
+                  contributing.forEach((b: any) => {
+                      grouped.set(b.techCode, (grouped.get(b.techCode) || 0) + b.count);
+                  });
+
+                  const sorted = Array.from(grouped.entries())
+                      .map(([techCode, count]) => ({ techCode, count }))
+                      .sort((a, b) => {
+                          if (b.count !== a.count) {
+                              return b.count - a.count;
+                          }
+                          return a.techCode.localeCompare(b.techCode);
+                      });
+
+                  marchandiseContributingBuildings[marchandise.code] = sorted;
+              }
+          });
+      }
+
       return {
         ...s,
         proprietaires: s.proprietaires || [],
@@ -144,6 +178,7 @@ export default function ListeSystemes() {
         protection,
         capacites,
         contributingBuildings,
+        marchandiseContributingBuildings,
       };
     });
     return list;
@@ -512,13 +547,14 @@ export default function ListeSystemes() {
                 {visibleColumns.includes('capacite-3') && <CapabilityCell value={s.capacites?.[3] ?? 0} contributingBuildings={s.contributingBuildings?.[3] ?? []} />}
                 {visibleColumns.includes('capacite-5') && <CapabilityCell value={s.capacites?.[5] ?? 0} contributingBuildings={s.contributingBuildings?.[5] ?? []} />}
                 {visibleColumns.includes('capacite-6') && <CapabilityCell value={s.capacites?.[6] ?? 0} contributingBuildings={s.contributingBuildings?.[6] ?? []} />}
-                {visibleColumns.includes('capacite-8') && <td className={s.capacites?.[8] === 0 ? 'zero-value' : ''}>{s.capacites?.[8]}</td>}
+                {visibleColumns.includes('capacite-8') && <CapabilityCell value={s.capacites?.[8] ?? 0} contributingBuildings={s.contributingBuildings?.[8] ?? []} />}
                 {visibleColumns.includes('capacite-9') && <td className={s.capacites?.[9] === 0 ? 'zero-value' : ''}>{s.capacites?.[9]}</td>}
                 {global?.marchandises.map(m => visibleColumns.includes(`marchandise-${m.code}`) && (
                   <MarchandiseCell
                     key={m.code}
                     marchandise={m}
                     marchandiseData={s.marchandises?.find((mar: any) => mar.code === m.code)}
+                    contributingBuildings={s.marchandiseContributingBuildings?.[m.code]}
                   />
                 ))}
               </tr>
