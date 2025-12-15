@@ -178,7 +178,6 @@ export default function ListeSystemes() {
         protection,
         capacites,
         contributingBuildings,
-        marchandiseContributingBuildings,
       };
     });
     return list;
@@ -554,7 +553,6 @@ export default function ListeSystemes() {
                     key={m.code}
                     marchandise={m}
                     marchandiseData={s.marchandises?.find((mar: any) => mar.code === m.code)}
-                    contributingBuildings={s.marchandiseContributingBuildings?.[m.code]}
                   />
                 ))}
               </tr>
