@@ -411,7 +411,7 @@ export default function ListeSystemes() {
         <button onClick={() => toggleColumnGroup(['stabilite', 'entretien', 'revenu', 'bcont', 'besp', 'btech'])}>Economie</button>
         <button onClick={() => toggleColumnGroup(['minerai', 'capacite-1', 'capacite-2', 'capacite-9'])}>Minier</button>
         <button onClick={() => toggleColumnGroup(['sol-air-defense', 'protection', 'militia', 'capacite-6', 'capacite-8', 'capacite-5'])}>Défense</button>
-        <button onClick={() => toggleColumnGroup(['capacite-0', 'capacite-3', 'marchandise-0', 'marchandise-1', 'marchandise-2', 'marchandise-3', 'marchandise-4', 'marchandise-5', 'marchandise-6', 'marchandise-7', 'marchandise-8', 'marchandise-9', 'marchandise-10', 'marchandise-11', 'marchandise-12', 'marchandise-13', 'marchandise-14', 'marchandise-15'])}>Production</button>
+        <button onClick={() => toggleColumnGroup(['capacite-3', 'marchandise-0', 'marchandise-1', 'marchandise-2', 'marchandise-3', 'marchandise-4', 'marchandise-5', 'marchandise-6', 'marchandise-7', 'marchandise-8', 'marchandise-9', 'marchandise-10', 'marchandise-11', 'marchandise-12', 'marchandise-13', 'marchandise-14', 'marchandise-15'])}>Production</button>
       </div>
 
       <div style={{ overflow: 'auto' }}>
