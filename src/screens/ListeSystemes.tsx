@@ -410,7 +410,7 @@ export default function ListeSystemes() {
       <div style={{ display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap', marginBottom: 8 }}>
         <button onClick={() => toggleColumnGroup(['stabilite', 'entretien', 'revenu', 'bcont', 'besp', 'btech'])}>Economie</button>
         <button onClick={() => toggleColumnGroup(['minerai', 'capacite-1', 'capacite-2', 'capacite-9'])}>Minier</button>
-        <button onClick={() => toggleColumnGroup(['sol-air-defense', 'protection', 'militia', 'capacite-6', 'capacite-8', 'capacite-5'])}>Défense</button>
+        <button onClick={() => toggleColumnGroup(['sol-air-defense', 'protection', 'capacite-6', 'capacite-8', 'capacite-5'])}>Défense</button>
         <button onClick={() => toggleColumnGroup(['capacite-3', 'marchandise-0', 'marchandise-1', 'marchandise-2', 'marchandise-3', 'marchandise-4', 'marchandise-5', 'marchandise-6', 'marchandise-7', 'marchandise-8', 'marchandise-9', 'marchandise-10', 'marchandise-11', 'marchandise-12', 'marchandise-13', 'marchandise-14', 'marchandise-15'])}>Production</button>
       </div>
 
@@ -425,6 +425,10 @@ export default function ListeSystemes() {
               {visibleColumns.includes('nbpla') && header('nbpla', 'Planètes')}
               {visibleColumns.includes('pdc') && header('pdc', 'Pdc')}
               {visibleColumns.includes('politique') && header('politique', 'Politique')}
+              {visibleColumns.includes('population') && header('population', 'Population')}
+              {visibleColumns.includes('race') && header('race', 'Race')}
+              {visibleColumns.includes('batiments') && header('batiments', 'Batiments')}
+              {visibleColumns.includes('stabilite') && header('stabilite', 'Stabilité')}
               {visibleColumns.includes('entretien') && header('entretien', 'Entretien')}
               {visibleColumns.includes('revenu') && header('revenu', 'Revenu')}
               {visibleColumns.includes('hscan') && header('hscan', 'Portée détect.')}
@@ -432,21 +436,17 @@ export default function ListeSystemes() {
               {visibleColumns.includes('besp') && header('besp', 'Espionnage')}
               {visibleColumns.includes('btech') && header('btech', 'Technologique')}
               {visibleColumns.includes('minerai') && header('minerai', 'Minerai')}
-              {visibleColumns.includes('population') && header('population', 'Population')}
-              {visibleColumns.includes('race') && header('race', 'Race')}
-              {visibleColumns.includes('batiments') && header('batiments', 'Batiments')}
-              {visibleColumns.includes('stabilite') && header('stabilite', 'Stabilité')}
+              {visibleColumns.includes('capacite-1') && header('capacite-1', 'Extraction de minerai')}
+              {visibleColumns.includes('capacite-2') && header('capacite-2', 'Retraitement de minerai')}
+              {visibleColumns.includes('capacite-9') && header('capacite-9', 'Capacité extraction avancée')}
               {visibleColumns.includes('sol-air-defense') && header('sol-air-defense', 'Sol-Air Defense')}
               {visibleColumns.includes('protection') && header('protection', 'Protection')}
               {visibleColumns.includes('militia') && header('militia', 'Militia')}
               {visibleColumns.includes('capacite-0') && header('capacite-0', 'Construction de vaisseaux')}
-              {visibleColumns.includes('capacite-1') && header('capacite-1', 'Extraction de minerai')}
-              {visibleColumns.includes('capacite-2') && header('capacite-2', 'Retraitement de minerai')}
               {visibleColumns.includes('capacite-3') && header('capacite-3', 'Facilités de construction')}
               {visibleColumns.includes('capacite-5') && header('capacite-5', 'Capacité réparation vaisseaux')}
               {visibleColumns.includes('capacite-6') && header('capacite-6', 'Bouclier magnétique')}
               {visibleColumns.includes('capacite-8') && header('capacite-8', 'Portée radar')}
-              {visibleColumns.includes('capacite-9') && header('capacite-9', 'Capacité extraction avancée')}
               {global?.marchandises.map(m => visibleColumns.includes(`marchandise-${m.code}`) && header(`marchandise-${m.code}`, m.nom))}
             </tr>
           </thead>
@@ -476,6 +476,11 @@ export default function ListeSystemes() {
                   {(s.marchandises?.find((m: any) => m.code === 7)?.num ?? 0) >= 100 ? '🤖 ' : ''}{s.pdc ?? '—'}
                 </td>}
                 {visibleColumns.includes('politique') && <td style={{ textAlign: 'right' }}>{s.politique !== undefined ? politiqueMap[s.politique] : '—'}</td>}
+                {visibleColumns.includes('population') && <PopulationCell system={s} />}
+                {visibleColumns.includes('race') && <RaceCell system={s} />}
+                {visibleColumns.includes('batiments') && <BatimentsCell system={s} />}
+                {/* Placeholder for Stabilite column */}
+                {visibleColumns.includes('stabilite') && <td></td>}
                 {visibleColumns.includes('entretien') && <td style={{ textAlign: 'right' }} className={s.entretien === 0 ? 'zero-value' : ''}>{typeof s.entretien === 'number' ? s.entretien.toFixed(1) : '—'}</td>}
                 {visibleColumns.includes('revenu') && <td style={{ textAlign: 'right' }} className={s.revenu === 0 ? 'zero-value' : ''}>
                   {(() => {
@@ -498,22 +503,17 @@ export default function ListeSystemes() {
                 {visibleColumns.includes('besp') && <td style={{ textAlign: 'right' }} className={s.besp === 0 ? 'zero-value' : ''}>{s.besp ?? '—'}</td>}
                 {visibleColumns.includes('btech') && <td style={{ textAlign: 'right' }} className={s.btech === 0 ? 'zero-value' : ''}>{s.btech ?? '—'}</td>}
                 {visibleColumns.includes('minerai') && <MineraiCell system={s} />}
-                {visibleColumns.includes('population') && <PopulationCell system={s} />}
-                {visibleColumns.includes('race') && <RaceCell system={s} />}
-                {visibleColumns.includes('batiments') && <BatimentsCell system={s} />}
-                {/* Placeholder for Stabilite column */}
-                {visibleColumns.includes('stabilite') && <td></td>}
+                {visibleColumns.includes('capacite-1') && <td className={s.capacites?.[1] === 0 ? 'zero-value' : ''}>{s.capacites?.[1]}</td>}
+                {visibleColumns.includes('capacite-2') && <td className={s.capacites?.[2] === 0 ? 'zero-value' : ''}>{s.capacites?.[2]}</td>}
+                {visibleColumns.includes('capacite-9') && <td className={s.capacites?.[9] === 0 ? 'zero-value' : ''}>{s.capacites?.[9]}</td>}
                 {visibleColumns.includes('sol-air-defense') && <SolAirDefenseCell buildings={s.solAirDefense} />}
                 {visibleColumns.includes('protection') && <td className={s.protection === 0 ? 'zero-value' : ''}>{s.protection}</td>}
                 {visibleColumns.includes('militia') && <td></td>}
                 {visibleColumns.includes('capacite-0') && <td>{s.capacites?.[0]}</td>}
-                {visibleColumns.includes('capacite-1') && <td className={s.capacites?.[1] === 0 ? 'zero-value' : ''}>{s.capacites?.[1]}</td>}
-                {visibleColumns.includes('capacite-2') && <td className={s.capacites?.[2] === 0 ? 'zero-value' : ''}>{s.capacites?.[2]}</td>}
                 {visibleColumns.includes('capacite-3') && <CapabilityCell value={s.capacites?.[3] ?? 0} contributingBuildings={s.contributingBuildings?.[3] ?? []} />}
                 {visibleColumns.includes('capacite-5') && <CapabilityCell value={s.capacites?.[5] ?? 0} contributingBuildings={s.contributingBuildings?.[5] ?? []} />}
                 {visibleColumns.includes('capacite-6') && <CapabilityCell value={s.capacites?.[6] ?? 0} contributingBuildings={s.contributingBuildings?.[6] ?? []} />}
                 {visibleColumns.includes('capacite-8') && <td className={s.capacites?.[8] === 0 ? 'zero-value' : ''}>{s.capacites?.[8]}</td>}
-                {visibleColumns.includes('capacite-9') && <td className={s.capacites?.[9] === 0 ? 'zero-value' : ''}>{s.capacites?.[9]}</td>}
                 {global?.marchandises.map(m => visibleColumns.includes(`marchandise-${m.code}`) && (
                   <MarchandiseCell
                     key={m.code}
@@ -540,6 +540,10 @@ export default function ListeSystemes() {
               {visibleColumns.includes('nbpla') && <td></td>}
               {visibleColumns.includes('pdc') && <td></td>}
               {visibleColumns.includes('politique') && <td></td>}
+              {visibleColumns.includes('population') && <td style={{ textAlign: 'right', fontWeight: 'bold' }}>{totals.popAct} / {totals.popMax} [{(totals.popAct + totals.popAug).toFixed(0)}]</td>}
+              {visibleColumns.includes('race') && <td></td>}
+              {visibleColumns.includes('batiments') && <td></td>}
+              {visibleColumns.includes('stabilite') && <td></td>}
               {visibleColumns.includes('entretien') && <td style={{ textAlign: 'right', fontWeight: 'bold' }}>{totals.entretien.toFixed(1)}</td>}
               {visibleColumns.includes('revenu') && <td style={{ textAlign: 'right', fontWeight: 'bold' }}>{totals.revenu.toFixed(1)} [{totals.revenuEstime.toFixed(1)}]</td>}
               {visibleColumns.includes('hscan') && <td></td>}
@@ -547,21 +551,17 @@ export default function ListeSystemes() {
               {visibleColumns.includes('besp') && <td style={{ textAlign: 'right', fontWeight: 'bold' }}>{totals.espionnage.toFixed(1)}</td>}
               {visibleColumns.includes('btech') && <td style={{ textAlign: 'right', fontWeight: 'bold' }}>{totals.technologique.toFixed(1)}</td>}
               {visibleColumns.includes('minerai') && <td style={{ textAlign: 'right', fontWeight: 'bold' }}>{totals.stockmin} (+{totals.revenumin}) [{totals.stockmin + totals.revenumin}]</td>}
-              {visibleColumns.includes('population') && <td style={{ textAlign: 'right', fontWeight: 'bold' }}>{totals.popAct} / {totals.popMax} [{(totals.popAct + totals.popAug).toFixed(0)}]</td>}
-              {visibleColumns.includes('race') && <td></td>}
-              {visibleColumns.includes('batiments') && <td></td>}
-              {visibleColumns.includes('stabilite') && <td></td>}
+              {visibleColumns.includes('capacite-1') && <td></td>}
+              {visibleColumns.includes('capacite-2') && <td></td>}
+              {visibleColumns.includes('capacite-9') && <td></td>}
               {visibleColumns.includes('sol-air-defense') && <td></td>}
               {visibleColumns.includes('protection') && <td></td>}
               {visibleColumns.includes('militia') && <td></td>}
               {visibleColumns.includes('capacite-0') && <td></td>}
-              {visibleColumns.includes('capacite-1') && <td></td>}
-              {visibleColumns.includes('capacite-2') && <td></td>}
               {visibleColumns.includes('capacite-3') && <td></td>}
               {visibleColumns.includes('capacite-5') && <td></td>}
               {visibleColumns.includes('capacite-6') && <td></td>}
               {visibleColumns.includes('capacite-8') && <td></td>}
-              {visibleColumns.includes('capacite-9') && <td></td>}
               {global?.marchandises.map(m => visibleColumns.includes(`marchandise-${m.code}`) && (
                   <td key={m.code} style={{ textAlign: 'right', fontWeight: 'bold' }}>
                       {totals.marchandises[m.code]?.num ?? 0} (+{totals.marchandises[m.code]?.prod ?? 0}) [{(totals.marchandises[m.code]?.num ?? 0) + (totals.marchandises[m.code]?.prod ?? 0)}]
