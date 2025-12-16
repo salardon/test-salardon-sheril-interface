@@ -503,7 +503,7 @@ export default function ListeSystemes() {
                 {visibleColumns.includes('besp') && <td style={{ textAlign: 'right' }} className={s.besp === 0 ? 'zero-value' : ''}>{s.besp ?? '—'}</td>}
                 {visibleColumns.includes('btech') && <td style={{ textAlign: 'right' }} className={s.btech === 0 ? 'zero-value' : ''}>{s.btech ?? '—'}</td>}
                 {visibleColumns.includes('minerai') && <MineraiCell system={s} />}
-                {visibleColumns.includes('capacite-1') && <td className={s.capacites?.[1] === 0 ? 'zero-value' : ''}>{s.capacites?.[1]}</td>}
+                {visibleColumns.includes('capacite-1') && <CapabilityCell value={s.capacites?.[1] ?? 0} contributingBuildings={s.contributingBuildings?.[1] ?? []} />}
                 {visibleColumns.includes('capacite-2') && <td className={s.capacites?.[2] === 0 ? 'zero-value' : ''}>{s.capacites?.[2]}</td>}
                 {visibleColumns.includes('capacite-9') && <td className={s.capacites?.[9] === 0 ? 'zero-value' : ''}>{s.capacites?.[9]}</td>}
                 {visibleColumns.includes('sol-air-defense') && <SolAirDefenseCell buildings={s.solAirDefense} />}
