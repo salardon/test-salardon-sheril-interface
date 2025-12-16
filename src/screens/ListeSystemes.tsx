@@ -501,7 +501,11 @@ export default function ListeSystemes() {
                 {visibleColumns.includes('hscan') && <td style={{ textAlign: 'right' }} className={s.scan === 0 ? 'zero-value' : ''}>{s.scan ?? '—'}</td>}
                 {visibleColumns.includes('bcont') && <td style={{ textAlign: 'right' }} className={s.bcont === 0 ? 'zero-value' : ''}>{s.bcont ?? '—'}</td>}
                 {visibleColumns.includes('besp') && <td style={{ textAlign: 'right' }} className={s.besp === 0 ? 'zero-value' : ''}>{s.besp ?? '—'}</td>}
-                {visibleColumns.includes('btech') && <td style={{ textAlign: 'right' }} className={s.btech === 0 ? 'zero-value' : ''}>{s.btech ?? '—'}</td>}
+                {visibleColumns.includes('btech') && <td style={{ textAlign: 'right' }} className={s.btech === 0 ? 'zero-value' : ''}>
+                    
+                    {(s.marchandises?.find((m: any) => m.code === 6)?.num ?? 0) >= 100 ? '🤖 ' : ''}{s.btech ?? '—'}
+                </td>}
+                  
                 {visibleColumns.includes('minerai') && <MineraiCell system={s} />}
                 {visibleColumns.includes('capacite-1') && <CapabilityCell value={s.capacites?.[1] ?? 0} contributingBuildings={s.contributingBuildings?.[1] ?? []} />}
                 {visibleColumns.includes('capacite-2') && <td className={s.capacites?.[2] === 0 ? 'zero-value' : ''}>{s.capacites?.[2]}</td>}
