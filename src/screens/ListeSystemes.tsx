@@ -499,11 +499,15 @@ export default function ListeSystemes() {
                   })()}
                 </td>}
                 {visibleColumns.includes('hscan') && <td style={{ textAlign: 'right' }} className={s.scan === 0 ? 'zero-value' : ''}>{s.scan ?? '—'}</td>}
-                {visibleColumns.includes('bcont') && <td style={{ textAlign: 'right' }} className={s.bcont === 0 ? 'zero-value' : ''}>{s.bcont ?? '—'}</td>}
-                {visibleColumns.includes('besp') && <td style={{ textAlign: 'right' }} className={s.besp === 0 ? 'zero-value' : ''}>{s.besp ?? '—'}</td>}
+                {visibleColumns.includes('bcont') && <td style={{ textAlign: 'right' }} className={s.bcont === 0 ? 'zero-value' : ''}>
+                    {(s.marchandises?.find((m: any) => m.code === 8)?.num ?? 0) >= 100 ? '🔋 ' : ''}{s.bcont ?? '—'}
+                </td>}
+                {visibleColumns.includes('besp') && <td style={{ textAlign: 'right' }} className={s.besp === 0 ? 'zero-value' : ''}>
+                    {(s.marchandises?.find((m: any) => m.code === 8)?.num ?? 0) >= 100 ? '🔋 ' : ''}{s.besp ?? '—'}
+                </td>}
                 {visibleColumns.includes('btech') && <td style={{ textAlign: 'right' }} className={s.btech === 0 ? 'zero-value' : ''}>
                     
-                    {(s.marchandises?.find((m: any) => m.code === 6)?.num ?? 0) >= 100 ? '🤖 ' : ''}{s.btech ?? '—'}
+                    {(s.marchandises?.find((m: any) => m.code === 6)?.num ?? 0) >= 100 ? '💻 ' : ''}{s.btech ?? '—'}
                 </td>}
                   
                 {visibleColumns.includes('minerai') && <MineraiCell system={s} />}
