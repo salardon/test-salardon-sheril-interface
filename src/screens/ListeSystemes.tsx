@@ -513,7 +513,7 @@ export default function ListeSystemes() {
                 {visibleColumns.includes('capacite-3') && <CapabilityCell value={s.capacites?.[3] ?? 0} contributingBuildings={s.contributingBuildings?.[3] ?? []} />}
                 {visibleColumns.includes('capacite-5') && <CapabilityCell value={s.capacites?.[5] ?? 0} contributingBuildings={s.contributingBuildings?.[5] ?? []} />}
                 {visibleColumns.includes('capacite-6') && <CapabilityCell value={s.capacites?.[6] ?? 0} contributingBuildings={s.contributingBuildings?.[6] ?? []} />}
-                {visibleColumns.includes('capacite-8') && <td className={s.capacites?.[8] === 0 ? 'zero-value' : ''}>{s.capacites?.[8]}</td>}
+                {visibleColumns.includes('capacite-8') && <CapabilityCell value={s.capacites?.[8] ?? 0} contributingBuildings={s.contributingBuildings?.[8] ?? []} />}
                 {global?.marchandises.map(m => visibleColumns.includes(`marchandise-${m.code}`) && (
                   <MarchandiseCell
                     key={m.code}
