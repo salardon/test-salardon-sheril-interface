@@ -425,6 +425,10 @@ export default function ListeSystemes() {
               {visibleColumns.includes('nbpla') && header('nbpla', 'Planètes')}
               {visibleColumns.includes('pdc') && header('pdc', 'Pdc')}
               {visibleColumns.includes('politique') && header('politique', 'Politique')}
+              {visibleColumns.includes('population') && header('population', 'Population')}
+              {visibleColumns.includes('race') && header('race', 'Race')}
+              {visibleColumns.includes('batiments') && header('batiments', 'Batiments')}
+              {visibleColumns.includes('stabilite') && header('stabilite', 'Stabilité')}
               {visibleColumns.includes('entretien') && header('entretien', 'Entretien')}
               {visibleColumns.includes('revenu') && header('revenu', 'Revenu')}
               {visibleColumns.includes('hscan') && header('hscan', 'Portée détect.')}
@@ -432,10 +436,6 @@ export default function ListeSystemes() {
               {visibleColumns.includes('besp') && header('besp', 'Espionnage')}
               {visibleColumns.includes('btech') && header('btech', 'Technologique')}
               {visibleColumns.includes('minerai') && header('minerai', 'Minerai')}
-              {visibleColumns.includes('population') && header('population', 'Population')}
-              {visibleColumns.includes('race') && header('race', 'Race')}
-              {visibleColumns.includes('batiments') && header('batiments', 'Batiments')}
-              {visibleColumns.includes('stabilite') && header('stabilite', 'Stabilité')}
               {visibleColumns.includes('sol-air-defense') && header('sol-air-defense', 'Sol-Air Defense')}
               {visibleColumns.includes('protection') && header('protection', 'Protection')}
               {visibleColumns.includes('militia') && header('militia', 'Militia')}
@@ -476,7 +476,13 @@ export default function ListeSystemes() {
                   {(s.marchandises?.find((m: any) => m.code === 7)?.num ?? 0) >= 100 ? '🤖 ' : ''}{s.pdc ?? '—'}
                 </td>}
                 {visibleColumns.includes('politique') && <td style={{ textAlign: 'right' }}>{s.politique !== undefined ? politiqueMap[s.politique] : '—'}</td>}
-                {visibleColumns.includes('entretien') && <td style={{ textAlign: 'right' }} className={s.entretien === 0 ? 'zero-value' : ''}>{typeof s.entretien === 'number' ? s.entretien.toFixed(1) : '—'}</td>}
+                {visibleColumns.includes('minerai') && <MineraiCell system={s} />}
+                {visibleColumns.includes('population') && <PopulationCell system={s} />}
+                {visibleColumns.includes('race') && <RaceCell system={s} />}
+                {visibleColumns.includes('batiments') && <BatimentsCell system={s} />}
+                {/* Placeholder for Stabilite column */}
+                {visibleColumns.includes('stabilite') && <td></td>}
+                  {visibleColumns.includes('entretien') && <td style={{ textAlign: 'right' }} className={s.entretien === 0 ? 'zero-value' : ''}>{typeof s.entretien === 'number' ? s.entretien.toFixed(1) : '—'}</td>}
                 {visibleColumns.includes('revenu') && <td style={{ textAlign: 'right' }} className={s.revenu === 0 ? 'zero-value' : ''}>
                   {(() => {
                     const metauxStock = s.marchandises?.find((m: any) => m.code === 12)?.num ?? 0;
@@ -497,12 +503,6 @@ export default function ListeSystemes() {
                 {visibleColumns.includes('bcont') && <td style={{ textAlign: 'right' }} className={s.bcont === 0 ? 'zero-value' : ''}>{s.bcont ?? '—'}</td>}
                 {visibleColumns.includes('besp') && <td style={{ textAlign: 'right' }} className={s.besp === 0 ? 'zero-value' : ''}>{s.besp ?? '—'}</td>}
                 {visibleColumns.includes('btech') && <td style={{ textAlign: 'right' }} className={s.btech === 0 ? 'zero-value' : ''}>{s.btech ?? '—'}</td>}
-                {visibleColumns.includes('minerai') && <MineraiCell system={s} />}
-                {visibleColumns.includes('population') && <PopulationCell system={s} />}
-                {visibleColumns.includes('race') && <RaceCell system={s} />}
-                {visibleColumns.includes('batiments') && <BatimentsCell system={s} />}
-                {/* Placeholder for Stabilite column */}
-                {visibleColumns.includes('stabilite') && <td></td>}
                 {visibleColumns.includes('sol-air-defense') && <SolAirDefenseCell buildings={s.solAirDefense} />}
                 {visibleColumns.includes('protection') && <td className={s.protection === 0 ? 'zero-value' : ''}>{s.protection}</td>}
                 {visibleColumns.includes('militia') && <td></td>}
@@ -540,17 +540,17 @@ export default function ListeSystemes() {
               {visibleColumns.includes('nbpla') && <td></td>}
               {visibleColumns.includes('pdc') && <td></td>}
               {visibleColumns.includes('politique') && <td></td>}
+                {visibleColumns.includes('minerai') && <td style={{ textAlign: 'right', fontWeight: 'bold' }}>{totals.stockmin} (+{totals.revenumin}) [{totals.stockmin + totals.revenumin}]</td>}
+              {visibleColumns.includes('population') && <td style={{ textAlign: 'right', fontWeight: 'bold' }}>{totals.popAct} / {totals.popMax} [{(totals.popAct + totals.popAug).toFixed(0)}]</td>}
+              {visibleColumns.includes('race') && <td></td>}
+              {visibleColumns.includes('batiments') && <td></td>}
+              {visibleColumns.includes('stabilite') && <td></td>}
               {visibleColumns.includes('entretien') && <td style={{ textAlign: 'right', fontWeight: 'bold' }}>{totals.entretien.toFixed(1)}</td>}
               {visibleColumns.includes('revenu') && <td style={{ textAlign: 'right', fontWeight: 'bold' }}>{totals.revenu.toFixed(1)} [{totals.revenuEstime.toFixed(1)}]</td>}
               {visibleColumns.includes('hscan') && <td></td>}
               {visibleColumns.includes('bcont') && <td style={{ textAlign: 'right', fontWeight: 'bold' }}>{totals.contreEspionnage.toFixed(1)}</td>}
               {visibleColumns.includes('besp') && <td style={{ textAlign: 'right', fontWeight: 'bold' }}>{totals.espionnage.toFixed(1)}</td>}
               {visibleColumns.includes('btech') && <td style={{ textAlign: 'right', fontWeight: 'bold' }}>{totals.technologique.toFixed(1)}</td>}
-              {visibleColumns.includes('minerai') && <td style={{ textAlign: 'right', fontWeight: 'bold' }}>{totals.stockmin} (+{totals.revenumin}) [{totals.stockmin + totals.revenumin}]</td>}
-              {visibleColumns.includes('population') && <td style={{ textAlign: 'right', fontWeight: 'bold' }}>{totals.popAct} / {totals.popMax} [{(totals.popAct + totals.popAug).toFixed(0)}]</td>}
-              {visibleColumns.includes('race') && <td></td>}
-              {visibleColumns.includes('batiments') && <td></td>}
-              {visibleColumns.includes('stabilite') && <td></td>}
               {visibleColumns.includes('sol-air-defense') && <td></td>}
               {visibleColumns.includes('protection') && <td></td>}
               {visibleColumns.includes('militia') && <td></td>}
