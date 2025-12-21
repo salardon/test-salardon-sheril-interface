@@ -17,21 +17,30 @@ function getWeaponCategory(techBase: string): WeaponCategory | null {
 
 function getLevelAdjustedDCDB(baseDC: number, baseDB: number, level: number): { adjustedDC: number; adjustedDB: number } {
     let dcAdjustment = 0;
-    if (level === 1) {
+    if (level < 4) {
+        dcAdjustment = 0;
+    } else if (level < 8) {
         dcAdjustment = 1;
-    } else if (level < 5) {
+    } else if (level === 8) {
         dcAdjustment = 2;
-    } else if (level === 5) {
-        dcAdjustment = 3;
-    } else if (level < 9) {
-        dcAdjustment = 4;
     } else {
-        dcAdjustment = 5;
+        dcAdjustment = 3;
+    }
+
+    let dbAdjustment = 0;
+    if (level < 3) {
+        dbAdjustment = 0;
+    } else if (level < 7) {
+        dbAdjustment = 1;
+    } else if (level < 9) {
+        dbAdjustment = 2;
+    } else {
+        dbAdjustment = 3;
     }
 
     return {
         adjustedDC: baseDC > 0 ? baseDC + dcAdjustment : 0,
-        adjustedDB: baseDB > 0 ? baseDB + dcAdjustment : 0,
+        adjustedDB: baseDB > 0 ? baseDB + dbAdjustment : 0,
     };
 }
 
