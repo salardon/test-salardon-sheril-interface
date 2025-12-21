@@ -1,4 +1,4 @@
-import {Alliance, FlotteDetectee, FlotteJoueur, Rapport, SystemeDetecte, SystemeJoueur, PlanVaisseau} from '../types';
+import {Alliance, FlotteDetectee, FlotteJoueur, GlobalData, Rapport, SystemeDetecte, SystemeJoueur, PlanVaisseau} from '../types';
 import {isPos, parsePosString} from '../utils/position';
 
 export function getAttr(el: Element | null | undefined, names: string[]): string  {
@@ -112,7 +112,7 @@ function saveDetectedToLS(map: Map<string, SystemeDetecte>): void {
 
 const keyOf = (sd: Pick<SystemeDetecte, 'pos'>) => `${sd.pos.x}_${sd.pos.y}`;
 
-export function parseRapportXml(text: string): Rapport {
+export function parseRapportXml(text: string, globalData: GlobalData): Rapport {
     const doc = new DOMParser().parseFromString(text, 'text/xml');
 
     // Nœuds racines strictement en lowercase
@@ -371,10 +371,12 @@ export function parseRapportXml(text: string): Rapport {
         const pos = parsePosString(getAttr(f, ['pos']) || '0_1_1');
         const nom = getAttr(f, ['nom']) || 'Flotte';
         const num = getAttrNum(f, ['num']) ?? 0;
-        const vaisseaux: { type: string; plan: string; nb?: number; puissance?: string }[] = [];
+        const vaisseaux: { plan: string; exp: number; moral: number; }[] = [];
         qAll(f, ['vaisseau']).forEach((v) => {
             vaisseaux.push({
-                type: getAttr(v, ['type']) || getAttr(v, ['plan']) || 'Vaisseau', plan: getAttr(v, ['plan']) || '',
+                plan: getAttr(v, ['plan']) || '',
+                exp: getAttrNum(v, ['exp']),
+                moral: getAttrNum(v, ['moral']),
             });
         });
         const direction = getAttr(f, ['direction']);
@@ -456,10 +458,19 @@ export function parseRapportXml(text: string): Rapport {
         }
     });
 
+    const plansByName: { [key: string]: PlanVaisseau } = {};
+    (globalData.plansPublic || []).forEach(p => {
+        plansByName[p.nom] = p;
+    });
+    plansVaisseaux.forEach(p => {
+        plansByName[p.nom] = p;
+    });
+
     const rapport: Rapport = {
         tour,
         technologiesAtteignables,
         technologiesConnues, joueur, systemesJoueur, systemesDetectes: mergedSystemesDetectes, flottesJoueur, flottesDetectees, plansVaisseaux,
+        plansByName,
         budgetTechnologique,
     };
 
