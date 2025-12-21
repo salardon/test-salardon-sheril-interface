@@ -38,12 +38,8 @@ describe('parseRapportXml - XML lowercase only', () => {
     </rapport>
   `;
 
-  const mockGlobalData: any = {
-    plansPublic: [],
-  };
-
   it('extrait les systèmes du joueur avec typeetoile exact (sans +1), nom, pos et nombrepla', () => {
-    const res = parseRapportXml(xml, mockGlobalData);
+    const res = parseRapportXml(xml);
     expect(res.systemesJoueur).toHaveLength(2);
 
     const s1 = res.systemesJoueur[0];
@@ -60,7 +56,7 @@ describe('parseRapportXml - XML lowercase only', () => {
   });
 
   it('extrait les systèmes détectés en lowercase et lit typeetoile correctement', () => {
-    const res = parseRapportXml(xml, mockGlobalData);
+    const res = parseRapportXml(xml);
     expect(res.systemesDetectes).toHaveLength(1);
     const d1 = res.systemesDetectes[0];
     expect(d1.nom).toBe('pyj');
@@ -71,7 +67,7 @@ describe('parseRapportXml - XML lowercase only', () => {
   });
 
   it('extrait les flottes (joueur et détectées) avec les champs essentiels', () => {
-    const res = parseRapportXml(xml, mockGlobalData);
+    const res = parseRapportXml(xml);
 
     expect(res.flottesJoueur).toHaveLength(1);
     expect(res.flottesJoueur[0]).toMatchObject({
@@ -81,9 +77,8 @@ describe('parseRapportXml - XML lowercase only', () => {
       pos: { x: 4, y: 6 },
     });
     expect(res.flottesJoueur[0].vaisseaux[0]).toMatchObject({
+      type: 'intercepteur standard',
       plan: 'intercepteur standard',
-      exp: 0,
-      moral: 0,
     });
 
     expect(res.flottesDetectees).toHaveLength(1);
@@ -111,8 +106,7 @@ describe('parseRapportXml - conservation des systèmes détectés entre tours', 
         </commandant>
       </rapport>
     `;
-    const mockGlobalData: any = { plansPublic: [] };
-    const res3 = parseRapportXml(xmlTour3, mockGlobalData);
+    const res3 = parseRapportXml(xmlTour3);
     expect(res3.systemesDetectes).toHaveLength(1);
     expect(res3.systemesDetectes[0]).toMatchObject({ nom: 'Ancien', pos: { x: 6, y: 2 }, typeEtoile: 1, nbPla: 10, proprietaires: [9] });
 
@@ -130,7 +124,7 @@ describe('parseRapportXml - conservation des systèmes détectés entre tours', 
         </commandant>
       </rapport>
     `;
-    const res4 = parseRapportXml(xmlTour4, mockGlobalData);
+    const res4 = parseRapportXml(xmlTour4);
     // Nous devons avoir 2 systèmes: l'ancien (remplacé) et le nouveau
     expect(res4.systemesDetectes).toHaveLength(2);
 
