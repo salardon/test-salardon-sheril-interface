@@ -131,6 +131,14 @@ export interface FlotteBase {
     proprio: number;
 }
 
+export type VaisseauRapport = {
+    exp: number;
+    moral: number;
+    plan: string;
+    race: number;
+    type: string;
+};
+
 export interface FlotteJoueur extends FlotteBase {
     type: 'joueur';
     direction?: XY;
@@ -140,7 +148,7 @@ export interface FlotteJoueur extends FlotteBase {
     as?: number;
     scan: number;
     nbVso: number;
-    vaisseaux: { type: string; plan: string; nb?: number; puissance?: string }[];
+    vaisseaux: VaisseauRapport[];
 }
 
 export interface FlotteDetectee extends FlotteBase {
