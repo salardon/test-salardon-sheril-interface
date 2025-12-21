@@ -3,10 +3,8 @@ import { useReport } from '../context/ReportContext';
 import Commandant from "../components/utils/Commandant";
 import {commandantAsString} from "../utils/commandant";
 import Position from "../components/utils/Position";
-import { FlotteJoueur } from '../types';
-import { calculateAllFleetStats } from '../utils/fleetCalculations';
 
-type SortKey = 'pos' | 'nom' | 'direction' | 'directive' | 'vitesse' | 'as' | 'ap' | 'nbv' | 'proprio' | 'dc' | 'db' | 'cases' | 'dcPerCase' | 'dbPerCase' | 'exp' | 'moral';
+type SortKey = 'pos' | 'nom' | 'direction' | 'directive' | 'vitesse' | 'as' | 'ap' | 'nbv' | 'proprio';
 type SortDir = 'asc' | 'desc';
 
 export default function ListeFlottes() {
@@ -30,23 +28,19 @@ export default function ListeFlottes() {
   }, [rapport, currentId]);
 
   const all = useMemo(() => {
-    if (!rapport || !global) return [];
-    const own = rapport.flottesJoueur.map(f => {
-      const stats = calculateAllFleetStats(f, rapport.plansVaisseaux, global.plansPublic, global.technologies);
-      return {
-        ...f,
-        ...stats,
-        nbv: f.nbVso ?? 0,
-        posKey: f.pos.x * 1000 + f.pos.y,
-      }
-    });
+    if (!rapport) return [];
+    const own = rapport.flottesJoueur.map(f => ({
+      ...f,
+      nbv: f.nbVso ?? 0,
+      posKey: f.pos.x * 1000 + f.pos.y,
+    }));
     const det = rapport.flottesDetectees.map(f => ({
       ...f,
       nbv: f.nbVso ?? 0,
       posKey: f.pos.x * 1000 + f.pos.y,
     }));
     return [...own, ...det];
-  }, [rapport, global]);
+  }, [rapport]);
 
   const filtered = useMemo(() => {
     const q = filterNom.trim().toLowerCase();
@@ -72,13 +66,6 @@ export default function ListeFlottes() {
         case 'ap': av = a.ap ?? 0; bv = b.ap ?? 0; break;
         case 'nbv': av = a.nbv ?? 0; bv = b.nbv ?? 0; break;
         case 'proprio': av = a.proprio ?? 0; bv = b.proprio ?? 0; break;
-        case 'dc': av = a.dc ?? 0; bv = b.dc ?? 0; break;
-        case 'db': av = a.db ?? 0; bv = b.db ?? 0; break;
-        case 'cases': av = a.cases ?? 0; bv = b.cases ?? 0; break;
-        case 'dcPerCase': av = a.dcPerCase ?? 0; bv = b.dcPerCase ?? 0; break;
-        case 'dbPerCase': av = a.dbPerCase ?? 0; bv = b.dbPerCase ?? 0; break;
-        case 'exp': av = a.avgExp ?? 0; bv = b.avgExp ?? 0; break;
-        case 'moral': av = a.avgMoral ?? 0; bv = b.avgMoral ?? 0; break;
         default: av = 0; bv = 0;
       }
       if (av < bv) return sortDir === 'asc' ? -1 : 1;
@@ -161,13 +148,6 @@ export default function ListeFlottes() {
             <tr>
               {header('pos', 'Position')}
               {header('nom', 'Nom')}
-              {header('dc', 'D.C.')}
-              {header('db', 'D.B.')}
-              {header('cases', 'Cases')}
-              {header('dcPerCase', 'D.C./Case')}
-              {header('dbPerCase', 'D.B./Case')}
-              {header('exp', 'Exp')}
-              {header('moral', 'Moral')}
               {header('direction', 'Direction')}
               {header('directive', 'Directive')}
               {header('vitesse', 'Vitesse')}
@@ -182,13 +162,6 @@ export default function ListeFlottes() {
               <tr key={`${f.type}-${f.num}-${i}`}>
                 <td style={{ whiteSpace: 'nowrap' }}><Position pos={f.pos} /></td>
                 <td>{f.nom}</td>
-                <td style={{ textAlign: 'right' }}>{f.dc?.toFixed(2) ?? '—'}</td>
-                <td style={{ textAlign: 'right' }}>{f.db?.toFixed(2) ?? '—'}</td>
-                <td style={{ textAlign: 'right' }}>{f.cases ?? '—'}</td>
-                <td style={{ textAlign: 'right' }}>{f.dcPerCase?.toFixed(2) ?? '—'}</td>
-                <td style={{ textAlign: 'right' }}>{f.dbPerCase?.toFixed(2) ?? '—'}</td>
-                <td style={{ textAlign: 'right' }}>{f.avgExp?.toFixed(0) ?? '—'}</td>
-                <td style={{ textAlign: 'right' }}>{f.avgMoral?.toFixed(0) ?? '—'}</td>
                 <td><Position pos={f.direction} /></td>
                 <td>{f.directive ?? '—'}</td>
                 <td style={{ textAlign: 'right' }}>{f.vitesse ?? '—'}</td>
@@ -200,7 +173,7 @@ export default function ListeFlottes() {
             ))}
             {pageItems.length === 0 && (
               <tr>
-                <td colSpan={16} style={{ textAlign: 'center', padding: 12, color: '#aaa' }}>
+                <td colSpan={9} style={{ textAlign: 'center', padding: 12, color: '#aaa' }}>
                   Aucune flotte ne correspond aux filtres.
                 </td>
               </tr>
