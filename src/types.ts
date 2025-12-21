@@ -140,7 +140,7 @@ export interface FlotteJoueur extends FlotteBase {
     as?: number;
     scan: number;
     nbVso: number;
-    vaisseaux: { plan: string; exp: number; moral: number }[];
+    vaisseaux: { type: string; plan: string; nb?: number; puissance?: string }[];
 }
 
 export interface FlotteDetectee extends FlotteBase {
@@ -177,7 +177,6 @@ export type Rapport = {
     flottesJoueur: FlotteJoueur[];
     flottesDetectees: FlotteDetectee[];
     plansVaisseaux: PlanVaisseau[];
-    plansByName: { [key: string]: PlanVaisseau };
     budgetTechnologique: number;
 };
 export type GlobalData = {
