@@ -34,8 +34,8 @@ export function lightenHexColor(hex: string, percent: number) {
             color = color.split('').map(c => c + c).join('');
         } else {
             // Fallback ou erreur pour les cas non standard
-            console.error(`Format hex invalide: "${hex}". Utilisation d'une couleur par défaut.`);
-            return '#FFFFFF'; // Return a valid default color to prevent crashes
+            console.error("Format hex invalide.");
+            return hex;
         }
     }
 
