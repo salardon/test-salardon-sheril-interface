@@ -3,6 +3,8 @@ import { useReport } from '../context/ReportContext';
 import Commandant from "../components/utils/Commandant";
 import {commandantAsString} from "../utils/commandant";
 import Position from "../components/utils/Position";
+import { calculateFleetStats } from '../utils/fleetCalculations';
+import { FlotteJoueur } from '../types';
 
 type SortKey = 'pos' | 'nom' | 'direction' | 'directive' | 'vitesse' | 'as' | 'ap' | 'nbv' | 'proprio';
 type SortDir = 'asc' | 'desc';
@@ -28,19 +30,21 @@ export default function ListeFlottes() {
   }, [rapport, currentId]);
 
   const all = useMemo(() => {
-    if (!rapport) return [];
+    if (!rapport || !global) return [];
     const own = rapport.flottesJoueur.map(f => ({
       ...f,
       nbv: f.nbVso ?? 0,
       posKey: f.pos.x * 1000 + f.pos.y,
+      stats: calculateFleetStats(f as FlotteJoueur, rapport, global),
     }));
     const det = rapport.flottesDetectees.map(f => ({
       ...f,
       nbv: f.nbVso ?? 0,
       posKey: f.pos.x * 1000 + f.pos.y,
+      stats: { dc: 0, db: 0, cases: 0, exp: 0, moral: 0 }, // Placeholder for detected fleets
     }));
     return [...own, ...det];
-  }, [rapport]);
+  }, [rapport, global]);
 
   const filtered = useMemo(() => {
     const q = filterNom.trim().toLowerCase();
@@ -152,8 +156,15 @@ export default function ListeFlottes() {
               {header('directive', 'Directive')}
               {header('vitesse', 'Vitesse')}
               {header('as', 'AS')}
+              <th>D.C.</th>
+              <th>D.B.</th>
               {header('ap', 'AP')}
               {header('nbv', 'Vaisseaux')}
+              <th>Cases</th>
+              <th>D.C./Case</th>
+              <th>D.B./Case</th>
+              <th>Exp</th>
+              <th>Moral</th>
               {header('proprio', 'Propriétaire')}
             </tr>
           </thead>
@@ -166,14 +177,25 @@ export default function ListeFlottes() {
                 <td>{f.directive ?? '—'}</td>
                 <td style={{ textAlign: 'right' }}>{f.vitesse ?? '—'}</td>
                 <td style={{ textAlign: 'right' }}>{f.as ?? '—'}</td>
+                <td style={{ textAlign: 'right' }}>{f.stats.dc.toFixed(1)}</td>
+                <td style={{ textAlign: 'right' }}>{f.stats.db.toFixed(1)}</td>
                 <td style={{ textAlign: 'right' }}>{f.ap ?? '—'}</td>
                 <td style={{ textAlign: 'right' }}>{f.nbv ?? '—'}</td>
+                <td style={{ textAlign: 'right' }}>{f.stats.cases}</td>
+                <td style={{ textAlign: 'right' }}>
+                  {f.stats.cases > 0 ? (f.stats.dc / f.stats.cases).toFixed(1) : 'N/A'}
+                </td>
+                <td style={{ textAlign: 'right' }}>
+                  {f.stats.cases > 0 ? (f.stats.db / f.stats.cases).toFixed(1) : 'N/A'}
+                </td>
+                <td style={{ textAlign: 'right' }}>{f.stats.exp.toFixed(1)}</td>
+                <td style={{ textAlign: 'right' }}>{f.stats.moral.toFixed(1)}</td>
                 <td style={{ textAlign: 'right' }}><Commandant num={f.proprio || 0} /></td>
               </tr>
             ))}
             {pageItems.length === 0 && (
               <tr>
-                <td colSpan={9} style={{ textAlign: 'center', padding: 12, color: '#aaa' }}>
+                <td colSpan={16} style={{ textAlign: 'center', padding: 12, color: '#aaa' }}>
                   Aucune flotte ne correspond aux filtres.
                 </td>
               </tr>
