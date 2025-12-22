@@ -2,9 +2,9 @@
 > test-interface-sheril@0.1.0 start
 > react-scripts start
 
-(node:3500) [DEP_WEBPACK_DEV_SERVER_ON_AFTER_SETUP_MIDDLEWARE] DeprecationWarning: 'onAfterSetupMiddleware' option is deprecated. Please use the 'setupMiddlewares' option.
+(node:2656) [DEP_WEBPACK_DEV_SERVER_ON_AFTER_SETUP_MIDDLEWARE] DeprecationWarning: 'onAfterSetupMiddleware' option is deprecated. Please use the 'setupMiddlewares' option.
 (Use `node --trace-deprecation ...` to show where the warning was created)
-(node:3500) [DEP_WEBPACK_DEV_SERVER_ON_BEFORE_SETUP_MIDDLEWARE] DeprecationWarning: 'onBeforeSetupMiddleware' option is deprecated. Please use the 'setupMiddlewares' option.
+(node:2656) [DEP_WEBPACK_DEV_SERVER_ON_BEFORE_SETUP_MIDDLEWARE] DeprecationWarning: 'onBeforeSetupMiddleware' option is deprecated. Please use the 'setupMiddlewares' option.
 Starting the development server...
 
 Compiled successfully!
@@ -18,72 +18,7 @@ Note that the development build is not optimized.
 To create a production build, use npm run build.
 
 webpack compiled successfully
-ERROR in src/parsers/parseRapport.ts:482:33
-TS2802: Type 'Set<number>' can only be iterated through when using the '--downlevelIteration' flag or with a '--target' of 'es2015' or higher.
-    480 |         const lieutenant = lieutenants.find(l => /^\d+$/.test(l.pos) && parseInt(l.pos, 10) === num);
-    481 |
-  > 482 |         const uniqueRaces = [...new Set(vaisseaux.map(v => v.race))];
-        |                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    483 |         const equipage = uniqueRaces.map(raceId => {
-    484 |             const raceInfo = globalData.races.find(r => r.id === raceId);
-    485 |             return {
-
-Compiling...
-Compiled successfully!
-webpack compiled successfully
-Files successfully emitted, waiting for typecheck results...
-Issues checking in progress...
-ERROR in src/parsers/parseRapport.ts:482:33
-TS2802: Type 'Set<number>' can only be iterated through when using the '--downlevelIteration' flag or with a '--target' of 'es2015' or higher.
-    480 |         const lieutenant = lieutenants.find(l => /^\d+$/.test(l.pos) && parseInt(l.pos, 10) === num);
-    481 |
-  > 482 |         const uniqueRaces = [...new Set(vaisseaux.map(v => v.race))];
-        |                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    483 |         const equipage = uniqueRaces.map(raceId => {
-    484 |             const raceInfo = globalData.races.find(r => r.id === raceId);
-    485 |             return {
-
-Compiling...
-Compiled successfully!
-webpack compiled successfully
-ERROR in src/parsers/parseRapport.ts:482:33
-TS2802: Type 'Set<number>' can only be iterated through when using the '--downlevelIteration' flag or with a '--target' of 'es2015' or higher.
-    480 |         const lieutenant = lieutenants.find(l => /^\d+$/.test(l.pos) && parseInt(l.pos, 10) === num);
-    481 |
-  > 482 |         const uniqueRaces = [...new Set(vaisseaux.map(v => v.race))];
-        |                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    483 |         const equipage = uniqueRaces.map(raceId => {
-    484 |             const raceInfo = globalData.races.find(r => r.id === raceId);
-    485 |             return {
-
-Compiling...
-Compiled successfully!
-webpack compiled successfully
-ERROR in src/parsers/parseRapport.ts:482:33
-TS2802: Type 'Set<number>' can only be iterated through when using the '--downlevelIteration' flag or with a '--target' of 'es2015' or higher.
-    480 |         const lieutenant = lieutenants.find(l => /^\d+$/.test(l.pos) && parseInt(l.pos, 10) === num);
-    481 |
-  > 482 |         const uniqueRaces = [...new Set(vaisseaux.map(v => v.race))];
-        |                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    483 |         const equipage = uniqueRaces.map(raceId => {
-    484 |             const raceInfo = globalData.races.find(r => r.id === raceId);
-    485 |             return {
-
-Compiling...
-Compiled successfully!
-webpack compiled successfully
-Files successfully emitted, waiting for typecheck results...
-Issues checking in progress...
-ERROR in src/parsers/parseRapport.ts:482:33
-TS2802: Type 'Set<number>' can only be iterated through when using the '--downlevelIteration' flag or with a '--target' of 'es2015' or higher.
-    480 |         const lieutenant = lieutenants.find(l => /^\d+$/.test(l.pos) && parseInt(l.pos, 10) === num);
-    481 |
-  > 482 |         const uniqueRaces = [...new Set(vaisseaux.map(v => v.race))];
-        |                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    483 |         const equipage = uniqueRaces.map(raceId => {
-    484 |             const raceInfo = globalData.races.find(r => r.id === raceId);
-    485 |             return {
-
+No issues found.
 Compiling...
 Compiled successfully!
 webpack compiled successfully
