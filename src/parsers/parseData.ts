@@ -72,7 +72,7 @@ export function parseDataXml(text: string): GlobalData {
         races.push({
             id: getAttrNum(r, ['code']),
             nom: getAttr(r, ['nom']),
-            couleur: getAttr(r, ['color']),
+            couleur: getAttr(r, ['couleur']),
             graviteSupporte: {min: getAttrNum(r, ['grav_min']), max: getAttrNum(r, ['grav_max'])},
             temperatureSupporte: {min: getAttrNum(r, ['temp_min']), max: getAttrNum(r, ['temp_max'])},
             radiationSupporte: {min: getAttrNum(r, ['rad_min']), max: getAttrNum(r, ['rad_max'])},

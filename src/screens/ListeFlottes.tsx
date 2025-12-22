@@ -208,7 +208,7 @@ export default function ListeFlottes() {
                   ))}
                 </td>
                 <td>{f.heros ?? '—'}</td>
-                <td style={{ textAlign: 'right' }}>{f.cdt?.toFixed(2) ?? '—'}</td>
+                <td style={{ textAlign: 'right' }}>{f.cdt === undefined ? 'N/A' : f.cdt}</td>
                 <td style={{ textAlign: 'right' }}>{f.nbv ?? '—'}</td>
                 <td style={{ textAlign: 'right' }}><Commandant num={f.proprio || 0} /></td>
               </tr>

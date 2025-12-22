@@ -17,8 +17,8 @@ function calculateCdT(
     plan: PlanVaisseau | undefined,
     technologies: Technologie[],
     lieutenant?: any
-): number {
-    if (!plan) return 0;
+): number | null {
+    if (!plan) return null;
 
     const techMap = new Map(technologies.map(t => [t.code, t]));
 
@@ -27,10 +27,10 @@ function calculateCdT(
         .filter(c => c.tech) as (PlanComposant & { tech: Technologie })[];
 
     const weaponComponents = componentsWithTech.filter(c => c.tech.specification?.type === 'arme');
-    if (weaponComponents.length === 0) return 0;
+    if (weaponComponents.length === 0) return null;
 
     const avgChanceToucherArme = weaponComponents
-        .map(c => 0.01 * (50 + (c.tech.niv * 5)))
+        .map(c => (50 + (c.tech.niv * 5)))
         .reduce((sum, val) => sum + val, 0) / weaponComponents.length;
 
     let experienceEquipage = 0;
@@ -490,10 +490,16 @@ export function parseRapportXml(text: string, globalData: GlobalData): Rapport {
 
         const allPlans = [...plansVaisseaux, ...globalData.plansPublic];
 
-        const cdt = vaisseaux.length > 0 ? vaisseaux.map(v => {
-            const plan = allPlans.find(p => p.nom === v.plan);
-            return calculateCdT(v, plan, globalData.technologies, lieutenant);
-        }).reduce((sum, val) => sum + val, 0) / vaisseaux.length : 0;
+        const cdtValues = vaisseaux
+            .map(v => {
+                const plan = allPlans.find(p => p.nom === v.plan);
+                return calculateCdT(v, plan, globalData.technologies, lieutenant);
+            })
+            .filter((cdt): cdt is number => cdt !== null);
+
+        const cdt = cdtValues.length > 0
+            ? Math.round(cdtValues.reduce((sum, val) => sum + val, 0) / cdtValues.length)
+            : undefined;
 
         flottesJoueur.push({
             type: 'joueur',
