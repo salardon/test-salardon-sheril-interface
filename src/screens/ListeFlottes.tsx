@@ -201,7 +201,7 @@ export default function ListeFlottes() {
                 <td style={{ textAlign: 'right' }}>{f.exp?.toFixed(0) ?? '—'}</td>
                 <td style={{ textAlign: 'right' }}>{f.moral?.toFixed(0) ?? '—'}</td>
                 <td>
-                  {(f.equipage || []).map((e: any, i: number) => (
+                  {(f.equipage || []).map((e: { nom: string; couleur: string }, i: number) => (
                     <span key={i} style={{ color: e.couleur }}>
                       {e.nom}{i < f.equipage.length - 1 ? ', ' : ''}
                     </span>
