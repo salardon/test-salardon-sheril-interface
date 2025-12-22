@@ -140,10 +140,7 @@ export interface FlotteJoueur extends FlotteBase {
     as?: number;
     scan: number;
     nbVso: number;
-    vaisseaux: { type: string; plan: string; nb?: number; puissance?: string; exp: number; moral: number; race: number }[];
-    equipage: { nom: string; couleur: string }[];
-    heros?: string;
-    cdt?: number;
+    vaisseaux: { type: string; plan: string; nb?: number; puissance?: string; exp: number; moral: number }[];
 }
 
 export interface FlotteDetectee extends FlotteBase {
