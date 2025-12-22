@@ -53,7 +53,7 @@ function calculateCdT(
         raceheros += lieutenant.competences.reduce((sum: number, c: any) => c.comp === 5 ? sum + c.val : sum, 0);
     }
 
-    return avgChanceToucherArme + experienceEquipage + attaqueHero + modifracial + raceheros;
+    return 0.01 * (avgChanceToucherArme + experienceEquipage + attaqueHero + modifracial + raceheros);
 }
 
 export function getAttr(el: Element | null | undefined, names: string[]): string {
@@ -498,7 +498,7 @@ export function parseRapportXml(text: string, globalData: GlobalData): Rapport {
             .filter((cdt): cdt is number => cdt !== null);
 
         const cdt = cdtValues.length > 0
-            ? Math.round(cdtValues.reduce((sum, val) => sum + val, 0) / cdtValues.length)
+            ? cdtValues.reduce((sum, val) => sum + val, 0) / cdtValues.length
             : undefined;
 
         flottesJoueur.push({
