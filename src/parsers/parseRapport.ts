@@ -1,4 +1,4 @@
-import {Alliance, FlotteDetectee, FlotteJoueur, Rapport, SystemeDetecte, SystemeJoueur, PlanVaisseau} from '../types';
+import {Alliance, FlotteDetectee, FlotteJoueur, Lieutenant, Rapport, SystemeDetecte, SystemeJoueur, PlanVaisseau} from '../types';
 import {isPos, parsePosString} from '../utils/position';
 
 export function getAttr(el: Element | null | undefined, names: string[]): string  {
@@ -115,6 +115,16 @@ const keyOf = (sd: Pick<SystemeDetecte, 'pos'>) => `${sd.pos.x}_${sd.pos.y}`;
 export function parseRapportXml(text: string): Rapport {
     const doc = new DOMParser().parseFromString(text, 'text/xml');
 
+    const raceNames: { [key: number]: { nom: string, couleur: string } } = {
+        0: { nom: "Fremens", couleur: "#CC00FF" },
+        1: { nom: "Atalantes", couleur: "#0066CC" },
+        2: { nom: "Zwaias", couleur: "#FFCC00" },
+        3: { nom: "Yoksor", couleur: "#CC0033" },
+        4: { nom: "Fergok", couleur: "#009933" },
+        5: { nom: "Cyborg", couleur: "#777777" },
+        6: { nom: "Koros", couleur: "#CC6600" },
+    };
+
     // Nœuds racines strictement en lowercase
     const rapportNode = qOne(doc, ['rapport']);
     const joueurNode = qOne(rapportNode, ['commandant']);
@@ -167,6 +177,14 @@ export function parseRapportXml(text: string): Rapport {
             });
             marchandisesBySystem.set(posStr, marchandises);
         }
+    });
+
+    const lieutenants: Lieutenant[] = [];
+    qAll(joueurNode, ['lieutenants > l']).forEach((l) => {
+        lieutenants.push({
+            nom: getAttr(l, ['nom']),
+            pos: getAttr(l, ['pos']),
+        });
     });
 
     // Systèmes du joueur (lowercase only)
@@ -296,16 +314,8 @@ export function parseRapportXml(text: string): Rapport {
             pdc *= 2;
         }
 
-        const raceNames: { [key: number]: string } = {
-            0: "Fremens",
-            1: "Atalantes",
-            2: "Zwaias",
-            3: "Yoksors",
-            4: "Fergoks",
-            5: "Cyborgs",
-        };
         const mostRepresentedRace = Object.keys(racePop).length > 0
-            ? raceNames[parseInt(Object.keys(racePop).reduce((a, b) => racePop[parseInt(a)] > racePop[parseInt(b)] ? a : b))]
+            ? raceNames[parseInt(Object.keys(racePop).reduce((a, b) => racePop[parseInt(a)] > racePop[parseInt(b)] ? a : b))].nom
             : "";
         systemesJoueur.push({
             type: 'joueur',
@@ -378,12 +388,24 @@ export function parseRapportXml(text: string): Rapport {
                 plan: getAttr(v, ['plan']) || '',
                 exp: getAttrNum(v, ['exp']),
                 moral: getAttrNum(v, ['moral']),
+                race: getAttrNum(v, ['race']),
             });
         });
+
+        const raceIds = new Set(vaisseaux.map(v => v.race).filter(r => r !== undefined));
+        const equipage = Array.from(raceIds).sort((a, b) => a! - b!).map(raceId => {
+            const race = raceNames[raceId!] || { nom: String(raceId), couleur: '#FFFFFF' };
+            return { nom: race.nom, couleur: race.couleur };
+        });
+
         const direction = getAttr(f, ['direction']);
+        const lieutenant = lieutenants.find(l => /^\d+$/.test(l.pos) && parseInt(l.pos, 10) === num);
+
         flottesJoueur.push({
             type: 'joueur', proprio: joueur.numero,
             num, nom, pos, vaisseaux,
+            equipage,
+            heros: lieutenant?.nom,
             nbVso: vaisseaux.length,
             scan: getAttrNum(f, ['hscan']),
             as: getAttrNum(f, ['as']) ?? 0,
@@ -461,6 +483,7 @@ export function parseRapportXml(text: string): Rapport {
 
     const rapport: Rapport = {
         tour,
+        lieutenants,
         technologiesAtteignables,
         technologiesConnues, joueur, systemesJoueur, systemesDetectes: mergedSystemesDetectes, flottesJoueur, flottesDetectees, plansVaisseaux,
         budgetTechnologique,

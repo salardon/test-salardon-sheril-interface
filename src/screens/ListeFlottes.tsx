@@ -6,7 +6,7 @@ import Position from "../components/utils/Position";
 import { calculateFleetCombatStats } from '../utils/fleetCombat';
 import { FlotteJoueur } from '../types';
 
-type SortKey = 'pos' | 'nom' | 'direction' | 'directive' | 'vitesse' | 'as' | 'ap' | 'nbv' | 'proprio' | 'dc' | 'db' | 'cases' | 'dcPerCase' | 'dbPerCase' | 'exp' | 'moral';
+type SortKey = 'pos' | 'nom' | 'direction' | 'directive' | 'vitesse' | 'as' | 'ap' | 'nbv' | 'proprio' | 'dc' | 'db' | 'cases' | 'dcPerCase' | 'dbPerCase' | 'exp' | 'moral' | 'equipage' | 'heros';
 type SortDir = 'asc' | 'desc';
 
 export default function ListeFlottes() {
@@ -79,6 +79,8 @@ export default function ListeFlottes() {
         case 'dbPerCase': av = a.dbPerCase ?? 0; bv = b.dbPerCase ?? 0; break;
         case 'exp': av = a.exp ?? 0; bv = b.exp ?? 0; break;
         case 'moral': av = a.moral ?? 0; bv = b.moral ?? 0; break;
+        case 'equipage': av = a.equipage?.map((e: { nom: string; couleur: string }) => e.nom).join(', ') ?? ''; bv = b.equipage?.map((e: { nom: string; couleur: string }) => e.nom).join(', ') ?? ''; break;
+        case 'heros': av = a.heros ?? ''; bv = b.heros ?? ''; break;
         default: av = 0; bv = 0;
       }
       if (av < bv) return sortDir === 'asc' ? -1 : 1;
@@ -173,6 +175,8 @@ export default function ListeFlottes() {
               {header('dbPerCase', 'D.B./Case')}
               {header('exp', 'Exp')}
               {header('moral', 'Moral')}
+              {header('equipage', 'Equipage')}
+              {header('heros', 'Héros')}
               {header('nbv', 'Vaisseaux')}
               {header('proprio', 'Propriétaire')}
             </tr>
@@ -194,13 +198,24 @@ export default function ListeFlottes() {
                 <td style={{ textAlign: 'right' }}>{f.dbPerCase?.toFixed(1) ?? '—'}</td>
                 <td style={{ textAlign: 'right' }}>{f.exp?.toFixed(0) ?? '—'}</td>
                 <td style={{ textAlign: 'right' }}>{f.moral?.toFixed(0) ?? '—'}</td>
+                <td>
+                  {f.equipage?.length > 0 ? (
+                    f.equipage.map((e: { nom: string; couleur: string }, i: number) => (
+                      <React.Fragment key={i}>
+                        <span style={{ color: e.couleur }}>{e.nom}</span>
+                        {i < f.equipage.length - 1 && ', '}
+                      </React.Fragment>
+                    ))
+                  ) : 'N/A'}
+                </td>
+                <td>{f.heros ?? ''}</td>
                 <td style={{ textAlign: 'right' }}>{f.nbv ?? '—'}</td>
                 <td style={{ textAlign: 'right' }}><Commandant num={f.proprio || 0} /></td>
               </tr>
             ))}
             {pageItems.length === 0 && (
               <tr>
-                <td colSpan={16} style={{ textAlign: 'center', padding: 12, color: '#aaa' }}>
+                <td colSpan={18} style={{ textAlign: 'center', padding: 12, color: '#aaa' }}>
                   Aucune flotte ne correspond aux filtres.
                 </td>
               </tr>

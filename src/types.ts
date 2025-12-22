@@ -140,7 +140,9 @@ export interface FlotteJoueur extends FlotteBase {
     as?: number;
     scan: number;
     nbVso: number;
-    vaisseaux: { type: string; plan: string; nb?: number; puissance?: string; exp: number; moral: number }[];
+    vaisseaux: { type: string; plan: string; nb?: number; puissance?: string; exp: number; moral: number; race?: number }[];
+    equipage: { nom: string; couleur: string }[];
+    heros?: string;
 }
 
 export interface FlotteDetectee extends FlotteBase {
@@ -156,8 +158,14 @@ export interface Alliance {
     commandants: number[];
 }
 
+export interface Lieutenant {
+    nom: string;
+    pos: string;
+}
+
 export type Rapport = {
     tour: number;
+    lieutenants: Lieutenant[];
     joueur: {
         numero: number;
         nom: string;
