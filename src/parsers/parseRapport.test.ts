@@ -1,139 +1,81 @@
 import { parseRapportXml } from './parseRapport';
+import { GlobalData } from '../types';
 
-describe('parseRapportXml - XML lowercase only', () => {
-  const xml = `
-    <rapport numtour="8" version="1.152">
-      <commandant capitale="0_4_5" grade="comte" nom="mab" numero="1" planetes="127" puissance="100563" race="1" reputation="85" statut="neutre">
-        <systemes>
-          <s nom="pavbzyb" pos="0_1_2" typeetoile="8" nombrepla="17">
-            <planetes>
-              <p num="0" pdc="1" stockmin="28">
-                <batiment code="minei" nombre="3" />
-                <population race="1" popact="523" />
-              </p>
-            </planetes>
-          </s>
-          <s nom="syqo" pos="0_4_5" typeetoile="0" nbpla="18">
-            <planetes>
-              <p num="1" pdc="2" stockmin="42">
-                <batiment code="minei" nombre="4" />
-              </p>
-            </planetes>
-          </s>
-        </systemes>
+const mockGlobalData: GlobalData = {
+    races: [
+        { id: 0, nom: 'Fremens', couleur: '#CC00FF', graviteSupporte: { min: 0, max: 0 }, temperatureSupporte: { min: 0, max: 0 }, radiationSupporte: { min: 0, max: 0 } },
+        { id: 5, nom: 'Cyborg', couleur: '#777777', graviteSupporte: { min: 0, max: 0 }, temperatureSupporte: { min: 0, max: 0 }, radiationSupporte: { min: 0, max: 0 } },
+    ],
+    technologies: [
+        { techId: 'arme1', base: 'Arme', niv: 1, nom: 'Laser', cat: 'D.C.', valeur: 10, recherche: 0, parents: [], caracteristiques: [] },
+    ],
+    commandants: [],
+    marchandises: [],
+    politiques: {},
+    caracteristiquesBatiment: [],
+    caracteristiquesComposant: {},
+    plansPublic: [
+        { nom: 'Vaisseau Test', tech: [{ code: 'arme1', nombre: 1 }] }
+    ],
+    tailleVaisseaux: [],
+    batiments: [],
+};
 
-        <detection>
-          <systeme nbpla="18" nom="pyj" pos="0_6_2" typeetoile="3">
-            <proprio>14</proprio>
-          </systeme>
-          <flotte nbvso="36" nom="bimzor 2" num="4" pos="0_7_39" proprio="3" puiss="grande"/>
-        </detection>
-
-        <flottes>
-          <f nom="flotte de départ" num="0" pos="0_4_6">
-            <vaisseau plan="intercepteur standard" type="intercepteur standard"/>
-          </f>
-        </flottes>
-      </commandant>
-    </rapport>
-  `;
-
-  it('extrait les systèmes du joueur avec typeetoile exact (sans +1), nom, pos et nombrepla', () => {
-    const res = parseRapportXml(xml);
-    expect(res.systemesJoueur).toHaveLength(2);
-
-    const s1 = res.systemesJoueur[0];
-    expect(s1.nom).toBe('pavbzyb');
-    expect(s1.pos).toEqual({ x: 1, y: 2 });
-    expect(s1.typeEtoile).toBe(8);
-    expect(s1.nbPla).toBe(17);
-    expect(s1.planetes[0].batiments[0]).toEqual({ techCode: 'minei', count: 3 });
-
-    const s2 = res.systemesJoueur[1];
-    expect(s2.pos).toEqual({ x: 4, y: 5 });
-    expect(s2.typeEtoile).toBe(0);
-    expect(s2.nbPla).toBe(18); // lu via nbpla
-  });
-
-  it('extrait les systèmes détectés en lowercase et lit typeetoile correctement', () => {
-    const res = parseRapportXml(xml);
-    expect(res.systemesDetectes).toHaveLength(1);
-    const d1 = res.systemesDetectes[0];
-    expect(d1.nom).toBe('pyj');
-    expect(d1.pos).toEqual({ x: 6, y: 2 });
-    expect(d1.typeEtoile).toBe(3);
-    expect(d1.nbPla).toBe(18);
-    expect(d1.proprietaires).toEqual([14]);
-  });
-
-  it('extrait les flottes (joueur et détectées) avec les champs essentiels', () => {
-    const res = parseRapportXml(xml);
-
-    expect(res.flottesJoueur).toHaveLength(1);
-    expect(res.flottesJoueur[0]).toMatchObject({
-      type: 'joueur',
-      num: 0,
-      nom: 'flotte de départ',
-      pos: { x: 4, y: 6 },
-    });
-    expect(res.flottesJoueur[0].vaisseaux[0]).toMatchObject({
-      type: 'intercepteur standard',
-      plan: 'intercepteur standard',
-    });
-
-    expect(res.flottesDetectees).toHaveLength(1);
-    expect(res.flottesDetectees[0]).toMatchObject({
-      type: 'detecte',
-      num: 4,
-      nom: 'bimzor 2',
-      pos: { x: 7, y: 39 },
-      proprio: 3,
-      puiss: 'grande',
-    });
-  });
-});
-
-describe('parseRapportXml - conservation des systèmes détectés entre tours', () => {
-  it("conserve les systèmes détectés d'un tour précédent et remplace par position", () => {
-    const xmlTour3 = `
-      <rapport numtour="3" version="1.152">
-        <commandant capitale="0_1_1" grade="comte" nom="mab" numero="1" planetes="0" puissance="0" race="1" reputation="0" statut="neutre">
-          <detection>
-            <systeme nbpla="10" nom="Ancien" pos="0_6_2" typeetoile="1">
-              <proprio>9</proprio>
-            </systeme>
-          </detection>
-        </commandant>
-      </rapport>
+describe('parseRapportXml', () => {
+    const xml = `
+        <rapport>
+            <commandant>
+                <lieutenants>
+                    <l nom="Enilda" pos="1" att="5" race="0" />
+                </lieutenants>
+            </commandant>
+            <flottes>
+                <f num="1" nom="Flotte Alpha" pos="1_1_1" ordre="Attaque" direction="0">
+                    <vaisseau plan="Vaisseau Test" race="0" exp="5000" moral="100" nombre="10" num="101" />
+                    <vaisseau plan="Vaisseau Test" race="5" exp="25000" moral="100" nombre="5" num="102" />
+                </f>
+                <f num="2" nom="Flotte Beta" pos="2_2_2" ordre="Defense">
+                    <vaisseau plan="Vaisseau de transport" race="0" exp="1000" moral="100" nombre="20" num="201" />
+                </f>
+            </flottes>
+            <plans>
+                <p nom="Vaisseau Test">
+                    <t code="arme1" nombre="1"/>
+                </p>
+            </plans>
+        </rapport>
     `;
-    const res3 = parseRapportXml(xmlTour3);
-    expect(res3.systemesDetectes).toHaveLength(1);
-    expect(res3.systemesDetectes[0]).toMatchObject({ nom: 'Ancien', pos: { x: 6, y: 2 }, typeEtoile: 1, nbPla: 10, proprietaires: [9] });
+    const doc = new DOMParser().parseFromString(xml, 'text/xml');
+    const rapport = parseRapportXml(doc, mockGlobalData);
 
-    const xmlTour4 = `
-      <rapport numtour="4" version="1.152">
-        <commandant capitale="0_1_1" grade="comte" nom="mab" numero="1" planetes="0" puissance="0" race="1" reputation="0" statut="neutre">
-          <detection>
-            <systeme nbpla="12" nom="Mis à jour" pos="0_6_2" typeetoile="5">
-              <proprio>14</proprio>
-            </systeme>
-            <systeme nbpla="7" nom="Nouveau" pos="0_8_8" typeetoile="3">
-              <proprio>2</proprio>
-            </systeme>
-          </detection>
-        </commandant>
-      </rapport>
-    `;
-    const res4 = parseRapportXml(xmlTour4);
-    // Nous devons avoir 2 systèmes: l'ancien (remplacé) et le nouveau
-    expect(res4.systemesDetectes).toHaveLength(2);
+    it('should parse fleets correctly', () => {
+        expect(rapport.flottes).toHaveLength(2);
+        const flotteAlpha = rapport.flottes[0];
+        expect(flotteAlpha.nom).toBe('Flotte Alpha');
+        expect(flotteAlpha.num).toBe(1);
+    });
 
-    // Trouver par position
-    const byKey = (x: number, y: number) => res4.systemesDetectes.find(s => s.pos.x === x && s.pos.y === y)!;
-    const maj = byKey(6, 2);
-    expect(maj).toMatchObject({ nom: 'Mis à jour', typeEtoile: 5, nbPla: 12, proprietaires: [14] });
+    it('should parse equipage correctly', () => {
+        const flotteAlpha = rapport.flottes[0];
+        expect(flotteAlpha.equipage).toHaveLength(2);
+        expect(flotteAlpha.equipage[0]).toEqual({ nom: 'Fremens', couleur: '#CC00FF' });
+        expect(flotteAlpha.equipage[1]).toEqual({ nom: 'Cyborg', couleur: '#777777' });
+    });
 
-    const nouveau = byKey(8, 8);
-    expect(nouveau).toMatchObject({ nom: 'Nouveau', typeEtoile: 3, nbPla: 7, proprietaires: [2] });
-  });
+    it('should parse heros correctly', () => {
+        const flotteAlpha = rapport.flottes[0];
+        expect(flotteAlpha.heros).toBe('Enilda');
+        const flotteBeta = rapport.flottes[1];
+        expect(flotteBeta.heros).toBeUndefined();
+    });
+
+    it('should calculate CdT correctly', () => {
+        const flotteAlpha = rapport.flottes[0];
+        expect(flotteAlpha.cdt).toBeCloseTo(0.645);
+    });
+
+    it('should return undefined CdT for fleets with no armed ships', () => {
+        const flotteBeta = rapport.flottes[1];
+        expect(flotteBeta.cdt).toBeUndefined();
+    });
 });

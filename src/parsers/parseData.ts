@@ -8,7 +8,7 @@ import {
     Technologie,
     VaisseauTailleRule
 } from '../types';
-import {getAttr, getAttrNum, qAll, qOne} from './parseRapport';
+import {getAttr, getAttrNum, qAll, qOne} from '../utils/xml';
 
 export function parseDataXml(text: string): GlobalData {
     const doc = new DOMParser().parseFromString(text, 'text/xml');
@@ -39,13 +39,13 @@ export function parseDataXml(text: string): GlobalData {
         const specification = qOne(t, ['specification']);
 
         technologies.push({
+            techId: getAttr(t, ['code']),
             base: getAttr(t, ['base']),
-            code: getAttr(t, ['code']),
+            cat: getAttr(t, ['cat']),
+            valeur: getAttrNum(t, ['valeur']),
             niv: getAttrNum(t, ['niv']),
             nom: getAttr(t, ['nom']),
-            type: getAttrNum(t, ['type']) as any,
             recherche: getAttrNum(t, ['recherche']),
-            description: qOne(t, ['description'])?.textContent || undefined,
             parents,
             caracteristiques,
             marchandises,
@@ -92,9 +92,12 @@ export function parseDataXml(text: string): GlobalData {
         politiques[getAttrNum(p, ['code'])] = getAttr(p, ['nom']);
     });
 
-    const caracteristiquesBatiment: Record<number, string> = {};
+    const caracteristiquesBatiment: CaracteristiqueBatiment[] = [];
     qAll(doc, ['caracteristiques_batiment > c']).forEach((c) => {
-        caracteristiquesBatiment[getAttrNum(c, ['code'])] = getAttr(c, ['nom']);
+        caracteristiquesBatiment.push({
+            code: getAttrNum(c, ['code']),
+            nom: getAttr(c, ['nom']),
+        });
     });
 
     const caracteristiquesComposant: Record<number, string> = {};
@@ -104,24 +107,13 @@ export function parseDataXml(text: string): GlobalData {
 
     const plansPublic: PlanVaisseau[] = [];
     qAll(doc, ['planpublic > p']).forEach((p) => {
-        const composants = qAll(p, ['comp']).map((c) => ({
+        const tech = qAll(p, ['comp']).map((c) => ({
             code: getAttr(c, ['code']),
-            nb: getAttrNum(c, ['nb']),
+            nombre: getAttrNum(c, ['nb']),
         }));
         plansPublic.push({
             nom: getAttr(p, ['nom']),
-            concepteur: getAttrNum(p, ['concepteur']),
-            marque: getAttr(p, ['marque']),
-            tour: getAttrNum(p, ['tour']),
-            taille: getAttrNum(p, ['taille']),
-            vitesse: getAttrNum(p, ['vitesse']),
-            pc: getAttrNum(p, ['pc']),
-            minerai: getAttrNum(p, ['minerai']),
-            prix: getAttrNum(p, ['centaures', 'prix']),
-            ap: getAttrNum(p, ['ap']),
-            as: getAttrNum(p, ['as']),
-            royalties: getAttrNum(p, ['royalties']),
-            composants,
+            tech,
         });
     });
 
@@ -137,6 +129,9 @@ export function parseDataXml(text: string): GlobalData {
 
     const batiments: Batiment[] = [];
     qAll(doc, ['technologies > t']).forEach((t) => {
+        const typeAttr = getAttr(t, ['type']);
+        if (typeAttr === '1') return;
+
         const caracteristiques: { code: number; value: number }[] = [];
         qAll(t, ['caracteristique']).forEach((c) => {
             caracteristiques.push({
@@ -151,16 +146,8 @@ export function parseDataXml(text: string): GlobalData {
             code: getAttr(t, ['code']),
             nom: getAttr(t, ['nom']),
             arme: getAttr(specification, ['arme']),
-            structure: getAttrNum(specification, ['structure']),
+            structure: specification ? getAttrNum(specification, ['structure']) : 0,
             caracteristiques,
-        });
-    });
-
-    const caracteristiques: CaracteristiqueBatiment[] = [];
-    qAll(doc, ['caracteristiques_batiment > c']).forEach((c) => {
-        caracteristiques.push({
-            code: getAttrNum(c, ['code']),
-            nom: getAttr(c, ['nom']),
         });
     });
 
@@ -170,7 +157,7 @@ export function parseDataXml(text: string): GlobalData {
         races,
         marchandises,
         politiques,
-        caracteristiquesBatiment: caracteristiques,
+        caracteristiquesBatiment,
         caracteristiquesComposant,
         plansPublic,
         tailleVaisseaux,

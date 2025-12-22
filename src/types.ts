@@ -17,40 +17,33 @@ export type Commandant = { numero?: number; nom?: string; raceId?: number; }
 export type TechCaracteristique = { code: number; value: number };
 export type TechMarchandise = { code: number; nb: number };
 
-// Spécification d'une technologie (utile pour les composants de vaisseaux)
 export type TechSpecification = {
-    case?: number;   // emprise en cases dans le plan
-    min?: number;    // coût minerai unitaire
-    prix?: number;   // coût argent unitaire
-    type?: string;   // ex: 'arme'
+    case?: number;
+    min?: number;
+    prix?: number;
+    type?: string;
 };
 
 export type Technologie = {
-    base: string; code: string; niv: number; nom: string; type: 0 | 1; // 0 batiment, 1 composant
-    recherche: number; description?: string; parents: string[]; caracteristiques: TechCaracteristique[]; marchandises?: TechMarchandise[];
+    techId: string;
+    base: string;
+    cat?: string;
+    valeur: number;
+    niv: number;
+    nom: string;
+    recherche: number;
+    parents: string[];
+    caracteristiques: TechCaracteristique[];
+    marchandises?: TechMarchandise[];
     specification?: TechSpecification;
 };
 
-// Composants d'un plan de vaisseau
-export type PlanComposant = { code: string; nb: number };
-// Plan de vaisseau (public ou privé)
+export type PlanComposant = { code: string; nombre: number };
 export type PlanVaisseau = {
     nom: string;
-    concepteur?: number;
-    marque?: string;
-    tour?: number;
-    taille?: number;
-    vitesse?: number;
-    pc?: number;
-    minerai?: number;
-    prix?: number; // centaures/prix
-    ap?: number;
-    as?: number;
-    royalties?: number;
-    composants: PlanComposant[];
+    tech: PlanComposant[];
 };
 
-// Règle de taille des vaisseaux (détermination taille/vitesse via total des cases)
 export type VaisseauTailleRule = {
     minCase: number;
     maxCase: number;
@@ -61,7 +54,7 @@ export type VaisseauTailleRule = {
 export type Planete = {
     num: number;
     proprietaire?: number;
-    pdc: number; // points de construction
+    pdc: number;
     minerai?: number;
     revenumin: number;
     stockmin: number;
@@ -83,16 +76,11 @@ export type Planete = {
 
 export interface SystemBase {
     nom: string;
-    pos: XY;
+    pos: string;
     typeEtoile: number;
     nbPla: number;
-    proprietaires: number[]; // PROPRIO list
+    proprietaires: number[];
     politique?: number;
-    entretien?: number;
-    revenu?: number;
-    bcont?: number;
-    besp?: number;
-    btech?: number;
 }
 
 export type MarchandiseData = {
@@ -104,17 +92,7 @@ export type MarchandiseData = {
 export interface SystemeJoueur extends SystemBase {
     type: 'joueur';
     pdc: number;
-    revenumin: number;
-    stockmin: number;
-    popAct: number;
-    popMax: number;
-    popAug: number;
-    race: string;
-    racePop: { [key: number]: number };
-    racePopAug: { [key: number]: number };
     planetes: Planete[];
-    revenuEstime: number;
-    scan: number;
     marchandises: MarchandiseData[];
 }
 
@@ -122,63 +100,90 @@ export interface SystemeDetecte extends SystemBase {
     type: 'detecte';
 }
 
-export interface FlotteBase {
-    type: 'joueur' | 'detecte';
+export type Vaisseau = {
+    id: number;
+    plan: string;
+    nombre: number;
+    moral: number;
+    exp: number;
+    race: number;
+};
+
+export type EquipageMember = {
+    nom: string;
+    couleur: string;
+};
+
+export type Competence = {
+    comp: number;
+    val: number;
+};
+
+export type Lieutenant = {
+    nom: string;
+    pos: string;
+    att: number;
+    def: number;
+    ini: number;
+    obs: number;
+    dip: number;
+    race: string;
+    competences: Competence[];
+};
+
+export type Flotte = {
     num: number;
     nom: string;
-    pos: XY;
-    nbVso: number;
-    proprio: number;
+    pos: string;
+    ordre: string;
+    dir: string;
+    vaisseaux: Vaisseau[];
+    heros?: string;
+    equipage: EquipageMember[];
+    cdt?: number;
+};
+
+export interface FlotteRowData extends Flotte {
+    position: string;
+    direction?: number;
+    directive: string;
+    vitesse?: number;
+    AS: number;
+    AP: number;
+    DC: number;
+    DB: number;
+    cases: number;
+    dcParCase: number;
+    dbParCase: number;
+    exp: number;
+    moral: number;
 }
 
-export interface FlotteJoueur extends FlotteBase {
+export interface FlotteJoueur extends Flotte {
     type: 'joueur';
-    direction?: XY;
-    directive: string | number;
-    vitesse: number;
-    ap?: number;
-    as?: number;
-    scan: number;
-    nbVso: number;
-    vaisseaux: { type: string; plan: string; nb?: number; puissance?: string; exp: number; moral: number }[];
 }
 
-export interface FlotteDetectee extends FlotteBase {
+export interface FlotteDetectee {
     type: 'detecte';
-    puiss: 'faible' | 'moyenne' | 'grande' | string;
-}
-
-export interface Alliance {
-    createur: number;
-    dirigeant: number;
-    droits: number,
+    num: number;
     nom: string;
-    commandants: number[];
+    pos: string;
+    proprio: number;
+    puiss: string;
 }
 
 export type Rapport = {
-    tour: number;
-    joueur: {
-        numero: number;
-        nom: string;
-        raceId: number;
-        reputation: string;
-        statut: string;
-        puissance: number;
-        argent: number;
-        capitale: XY;
-        alliances: Alliance[]; // aliances
-        pna: number[]; // ids PNA
-    };
-    technologiesAtteignables: string[];
-    technologiesConnues: string[];
+    flottes: Flotte[];
+    lieutenants: Lieutenant[];
     systemesJoueur: SystemeJoueur[];
     systemesDetectes: SystemeDetecte[];
-    flottesJoueur: FlotteJoueur[];
-    flottesDetectees: FlotteDetectee[];
+    joueur: {
+        numero?: number;
+        capitale: string;
+    };
     plansVaisseaux: PlanVaisseau[];
-    budgetTechnologique: number;
 };
+
 export type GlobalData = {
     commandants: Commandant[];
     technologies: Technologie[];
