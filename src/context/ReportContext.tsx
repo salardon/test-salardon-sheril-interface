@@ -33,16 +33,18 @@ export function ReportProvider({children}: { children: React.ReactNode }) {
     }, []);
 
     const loadRapportFile = useCallback(async (file: File) => {
-        if (!global) return;
         const text = await file.text();
-        const r = parseRapportXml(text, global);
+        // Parse and apply the report
+        const r = parseRapportXml(text);
         setRapport(r);
         if (!center && r.joueur.capitale) setCenter(r.joueur.capitale);
+        // Persist the raw XML so it can be reloaded automatically later
         try {
             localStorage.setItem('rapportXml', text);
         } catch {
+            // Storage might be unavailable (private mode/quota). Ignore silently.
         }
-    }, [center, global]);
+    }, [center]);
 
     useEffect(() => {
         let alive = true;
@@ -69,19 +71,21 @@ export function ReportProvider({children}: { children: React.ReactNode }) {
         };
     }, []);
 
+    // Au chargement, si un rapport a déjà été chargé auparavant, le recharger automatiquement
     useEffect(() => {
-        if (global) {
-            try {
-                const stored = localStorage.getItem('rapportXml');
-                if (stored) {
-                    const r = parseRapportXml(stored, global);
-                    setRapport(r);
-                    if (!center && r.joueur.capitale) setCenter(r.joueur.capitale);
-                }
-            } catch {
+        try {
+            const stored = localStorage.getItem('rapportXml');
+            if (stored) {
+                const r = parseRapportXml(stored);
+                setRapport(r);
+                if (!center && r.joueur.capitale) setCenter(r.joueur.capitale);
             }
+        } catch {
+            // Si localStorage n'est pas accessible ou contenu invalide, ignorer
         }
-    }, [global, center]);
+        // we only want this to run once on mount
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     const value = useMemo<ReportContextType>(() => ({
         rapport,
