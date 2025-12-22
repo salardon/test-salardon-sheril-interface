@@ -35,7 +35,7 @@ export function ReportProvider({children}: { children: React.ReactNode }) {
     const loadRapportFile = useCallback(async (file: File) => {
         const text = await file.text();
         // Parse and apply the report
-        const r = parseRapportXml(text);
+        const r = parseRapportXml(text, global || null);
         setRapport(r);
         if (!center && r.joueur.capitale) setCenter(r.joueur.capitale);
         // Persist the raw XML so it can be reloaded automatically later
@@ -76,7 +76,7 @@ export function ReportProvider({children}: { children: React.ReactNode }) {
         try {
             const stored = localStorage.getItem('rapportXml');
             if (stored) {
-                const r = parseRapportXml(stored);
+                const r = parseRapportXml(stored, global || null);
                 setRapport(r);
                 if (!center && r.joueur.capitale) setCenter(r.joueur.capitale);
             }

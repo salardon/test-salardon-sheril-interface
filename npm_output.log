@@ -2,9 +2,9 @@
 > test-interface-sheril@0.1.0 start
 > react-scripts start
 
-(node:2656) [DEP_WEBPACK_DEV_SERVER_ON_AFTER_SETUP_MIDDLEWARE] DeprecationWarning: 'onAfterSetupMiddleware' option is deprecated. Please use the 'setupMiddlewares' option.
+(node:2942) [DEP_WEBPACK_DEV_SERVER_ON_AFTER_SETUP_MIDDLEWARE] DeprecationWarning: 'onAfterSetupMiddleware' option is deprecated. Please use the 'setupMiddlewares' option.
 (Use `node --trace-deprecation ...` to show where the warning was created)
-(node:2656) [DEP_WEBPACK_DEV_SERVER_ON_BEFORE_SETUP_MIDDLEWARE] DeprecationWarning: 'onBeforeSetupMiddleware' option is deprecated. Please use the 'setupMiddlewares' option.
+(node:2942) [DEP_WEBPACK_DEV_SERVER_ON_BEFORE_SETUP_MIDDLEWARE] DeprecationWarning: 'onBeforeSetupMiddleware' option is deprecated. Please use the 'setupMiddlewares' option.
 Starting the development server...
 
 Compiled successfully!
@@ -18,12 +18,461 @@ Note that the development build is not optimized.
 To create a production build, use npm run build.
 
 webpack compiled successfully
+ERROR in src/context/ReportContext.tsx:38:19
+TS2554: Expected 2 arguments, but got 1.
+    36 |         const text = await file.text();
+    37 |         // Parse and apply the report
+  > 38 |         const r = parseRapportXml(text);
+       |                   ^^^^^^^^^^^^^^^^^^^^^
+    39 |         setRapport(r);
+    40 |         if (!center && r.joueur.capitale) setCenter(r.joueur.capitale);
+    41 |         // Persist the raw XML so it can be reloaded automatically later
+
+ERROR in src/context/ReportContext.tsx:79:27
+TS2554: Expected 2 arguments, but got 1.
+    77 |             const stored = localStorage.getItem('rapportXml');
+    78 |             if (stored) {
+  > 79 |                 const r = parseRapportXml(stored);
+       |                           ^^^^^^^^^^^^^^^^^^^^^^^
+    80 |                 setRapport(r);
+    81 |                 if (!center && r.joueur.capitale) setCenter(r.joueur.capitale);
+    82 |             }
+
+ERROR in src/parsers/parseRapport.test.ts:42:17
+TS2554: Expected 2 arguments, but got 1.
+    40 |
+    41 |   it('extrait les systèmes du joueur avec typeetoile exact (sans +1), nom, pos et nombrepla', () => {
+  > 42 |     const res = parseRapportXml(xml);
+       |                 ^^^^^^^^^^^^^^^^^^^^
+    43 |     expect(res.systemesJoueur).toHaveLength(2);
+    44 |
+    45 |     const s1 = res.systemesJoueur[0];
+
+ERROR in src/parsers/parseRapport.test.ts:59:17
+TS2554: Expected 2 arguments, but got 1.
+    57 |
+    58 |   it('extrait les systèmes détectés en lowercase et lit typeetoile correctement', () => {
+  > 59 |     const res = parseRapportXml(xml);
+       |                 ^^^^^^^^^^^^^^^^^^^^
+    60 |     expect(res.systemesDetectes).toHaveLength(1);
+    61 |     const d1 = res.systemesDetectes[0];
+    62 |     expect(d1.nom).toBe('pyj');
+
+ERROR in src/parsers/parseRapport.test.ts:70:17
+TS2554: Expected 2 arguments, but got 1.
+    68 |
+    69 |   it('extrait les flottes (joueur et détectées) avec les champs essentiels', () => {
+  > 70 |     const res = parseRapportXml(xml);
+       |                 ^^^^^^^^^^^^^^^^^^^^
+    71 |
+    72 |     expect(res.flottesJoueur).toHaveLength(1);
+    73 |     expect(res.flottesJoueur[0]).toMatchObject({
+
+ERROR in src/parsers/parseRapport.test.ts:109:18
+TS2554: Expected 2 arguments, but got 1.
+    107 |       </rapport>
+    108 |     `;
+  > 109 |     const res3 = parseRapportXml(xmlTour3);
+        |                  ^^^^^^^^^^^^^^^^^^^^^^^^^
+    110 |     expect(res3.systemesDetectes).toHaveLength(1);
+    111 |     expect(res3.systemesDetectes[0]).toMatchObject({ nom: 'Ancien', pos: { x: 6, y: 2 }, typeEtoile: 1, nbPla: 10, proprietaires: [9] });
+    112 |
+
+ERROR in src/parsers/parseRapport.test.ts:127:18
+TS2554: Expected 2 arguments, but got 1.
+    125 |       </rapport>
+    126 |     `;
+  > 127 |     const res4 = parseRapportXml(xmlTour4);
+        |                  ^^^^^^^^^^^^^^^^^^^^^^^^^
+    128 |     // Nous devons avoir 2 systèmes: l'ancien (remplacé) et le nouveau
+    129 |     expect(res4.systemesDetectes).toHaveLength(2);
+    130 |
+
+Compiling...
+Compiled with warnings.
+
+[eslint]
+src/context/ReportContext.tsx
+  Line 47:8:  React Hook useCallback has a missing dependency: 'global'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+Search for the keywords to learn more about each warning.
+To ignore, add // eslint-disable-next-line to the line before.
+
+WARNING in [eslint]
+src/context/ReportContext.tsx
+  Line 47:8:  React Hook useCallback has a missing dependency: 'global'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+webpack compiled with 1 warning
+Files successfully emitted, waiting for typecheck results...
+Issues checking in progress...
+ERROR in src/context/ReportContext.tsx:79:27
+TS2554: Expected 2 arguments, but got 1.
+    77 |             const stored = localStorage.getItem('rapportXml');
+    78 |             if (stored) {
+  > 79 |                 const r = parseRapportXml(stored);
+       |                           ^^^^^^^^^^^^^^^^^^^^^^^
+    80 |                 setRapport(r);
+    81 |                 if (!center && r.joueur.capitale) setCenter(r.joueur.capitale);
+    82 |             }
+
+ERROR in src/parsers/parseRapport.test.ts:42:17
+TS2554: Expected 2 arguments, but got 1.
+    40 |
+    41 |   it('extrait les systèmes du joueur avec typeetoile exact (sans +1), nom, pos et nombrepla', () => {
+  > 42 |     const res = parseRapportXml(xml);
+       |                 ^^^^^^^^^^^^^^^^^^^^
+    43 |     expect(res.systemesJoueur).toHaveLength(2);
+    44 |
+    45 |     const s1 = res.systemesJoueur[0];
+
+ERROR in src/parsers/parseRapport.test.ts:59:17
+TS2554: Expected 2 arguments, but got 1.
+    57 |
+    58 |   it('extrait les systèmes détectés en lowercase et lit typeetoile correctement', () => {
+  > 59 |     const res = parseRapportXml(xml);
+       |                 ^^^^^^^^^^^^^^^^^^^^
+    60 |     expect(res.systemesDetectes).toHaveLength(1);
+    61 |     const d1 = res.systemesDetectes[0];
+    62 |     expect(d1.nom).toBe('pyj');
+
+ERROR in src/parsers/parseRapport.test.ts:70:17
+TS2554: Expected 2 arguments, but got 1.
+    68 |
+    69 |   it('extrait les flottes (joueur et détectées) avec les champs essentiels', () => {
+  > 70 |     const res = parseRapportXml(xml);
+       |                 ^^^^^^^^^^^^^^^^^^^^
+    71 |
+    72 |     expect(res.flottesJoueur).toHaveLength(1);
+    73 |     expect(res.flottesJoueur[0]).toMatchObject({
+
+ERROR in src/parsers/parseRapport.test.ts:109:18
+TS2554: Expected 2 arguments, but got 1.
+    107 |       </rapport>
+    108 |     `;
+  > 109 |     const res3 = parseRapportXml(xmlTour3);
+        |                  ^^^^^^^^^^^^^^^^^^^^^^^^^
+    110 |     expect(res3.systemesDetectes).toHaveLength(1);
+    111 |     expect(res3.systemesDetectes[0]).toMatchObject({ nom: 'Ancien', pos: { x: 6, y: 2 }, typeEtoile: 1, nbPla: 10, proprietaires: [9] });
+    112 |
+
+ERROR in src/parsers/parseRapport.test.ts:127:18
+TS2554: Expected 2 arguments, but got 1.
+    125 |       </rapport>
+    126 |     `;
+  > 127 |     const res4 = parseRapportXml(xmlTour4);
+        |                  ^^^^^^^^^^^^^^^^^^^^^^^^^
+    128 |     // Nous devons avoir 2 systèmes: l'ancien (remplacé) et le nouveau
+    129 |     expect(res4.systemesDetectes).toHaveLength(2);
+    130 |
+
+Compiling...
+Compiled with warnings.
+
+[eslint]
+src/context/ReportContext.tsx
+  Line 47:8:  React Hook useCallback has a missing dependency: 'global'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+Search for the keywords to learn more about each warning.
+To ignore, add // eslint-disable-next-line to the line before.
+
+WARNING in [eslint]
+src/context/ReportContext.tsx
+  Line 47:8:  React Hook useCallback has a missing dependency: 'global'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+webpack compiled with 1 warning
+ERROR in src/parsers/parseRapport.test.ts:42:17
+TS2554: Expected 2 arguments, but got 1.
+    40 |
+    41 |   it('extrait les systèmes du joueur avec typeetoile exact (sans +1), nom, pos et nombrepla', () => {
+  > 42 |     const res = parseRapportXml(xml);
+       |                 ^^^^^^^^^^^^^^^^^^^^
+    43 |     expect(res.systemesJoueur).toHaveLength(2);
+    44 |
+    45 |     const s1 = res.systemesJoueur[0];
+
+ERROR in src/parsers/parseRapport.test.ts:59:17
+TS2554: Expected 2 arguments, but got 1.
+    57 |
+    58 |   it('extrait les systèmes détectés en lowercase et lit typeetoile correctement', () => {
+  > 59 |     const res = parseRapportXml(xml);
+       |                 ^^^^^^^^^^^^^^^^^^^^
+    60 |     expect(res.systemesDetectes).toHaveLength(1);
+    61 |     const d1 = res.systemesDetectes[0];
+    62 |     expect(d1.nom).toBe('pyj');
+
+ERROR in src/parsers/parseRapport.test.ts:70:17
+TS2554: Expected 2 arguments, but got 1.
+    68 |
+    69 |   it('extrait les flottes (joueur et détectées) avec les champs essentiels', () => {
+  > 70 |     const res = parseRapportXml(xml);
+       |                 ^^^^^^^^^^^^^^^^^^^^
+    71 |
+    72 |     expect(res.flottesJoueur).toHaveLength(1);
+    73 |     expect(res.flottesJoueur[0]).toMatchObject({
+
+ERROR in src/parsers/parseRapport.test.ts:109:18
+TS2554: Expected 2 arguments, but got 1.
+    107 |       </rapport>
+    108 |     `;
+  > 109 |     const res3 = parseRapportXml(xmlTour3);
+        |                  ^^^^^^^^^^^^^^^^^^^^^^^^^
+    110 |     expect(res3.systemesDetectes).toHaveLength(1);
+    111 |     expect(res3.systemesDetectes[0]).toMatchObject({ nom: 'Ancien', pos: { x: 6, y: 2 }, typeEtoile: 1, nbPla: 10, proprietaires: [9] });
+    112 |
+
+ERROR in src/parsers/parseRapport.test.ts:127:18
+TS2554: Expected 2 arguments, but got 1.
+    125 |       </rapport>
+    126 |     `;
+  > 127 |     const res4 = parseRapportXml(xmlTour4);
+        |                  ^^^^^^^^^^^^^^^^^^^^^^^^^
+    128 |     // Nous devons avoir 2 systèmes: l'ancien (remplacé) et le nouveau
+    129 |     expect(res4.systemesDetectes).toHaveLength(2);
+    130 |
+
+Compiling...
+Compiled with warnings.
+
+[eslint]
+src/context/ReportContext.tsx
+  Line 47:8:  React Hook useCallback has a missing dependency: 'global'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+Search for the keywords to learn more about each warning.
+To ignore, add // eslint-disable-next-line to the line before.
+
+WARNING in [eslint]
+src/context/ReportContext.tsx
+  Line 47:8:  React Hook useCallback has a missing dependency: 'global'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+webpack compiled with 1 warning
+ERROR in src/parsers/parseRapport.test.ts:59:17
+TS2554: Expected 2 arguments, but got 1.
+    57 |
+    58 |   it('extrait les systèmes détectés en lowercase et lit typeetoile correctement', () => {
+  > 59 |     const res = parseRapportXml(xml);
+       |                 ^^^^^^^^^^^^^^^^^^^^
+    60 |     expect(res.systemesDetectes).toHaveLength(1);
+    61 |     const d1 = res.systemesDetectes[0];
+    62 |     expect(d1.nom).toBe('pyj');
+
+ERROR in src/parsers/parseRapport.test.ts:70:17
+TS2554: Expected 2 arguments, but got 1.
+    68 |
+    69 |   it('extrait les flottes (joueur et détectées) avec les champs essentiels', () => {
+  > 70 |     const res = parseRapportXml(xml);
+       |                 ^^^^^^^^^^^^^^^^^^^^
+    71 |
+    72 |     expect(res.flottesJoueur).toHaveLength(1);
+    73 |     expect(res.flottesJoueur[0]).toMatchObject({
+
+ERROR in src/parsers/parseRapport.test.ts:109:18
+TS2554: Expected 2 arguments, but got 1.
+    107 |       </rapport>
+    108 |     `;
+  > 109 |     const res3 = parseRapportXml(xmlTour3);
+        |                  ^^^^^^^^^^^^^^^^^^^^^^^^^
+    110 |     expect(res3.systemesDetectes).toHaveLength(1);
+    111 |     expect(res3.systemesDetectes[0]).toMatchObject({ nom: 'Ancien', pos: { x: 6, y: 2 }, typeEtoile: 1, nbPla: 10, proprietaires: [9] });
+    112 |
+
+ERROR in src/parsers/parseRapport.test.ts:127:18
+TS2554: Expected 2 arguments, but got 1.
+    125 |       </rapport>
+    126 |     `;
+  > 127 |     const res4 = parseRapportXml(xmlTour4);
+        |                  ^^^^^^^^^^^^^^^^^^^^^^^^^
+    128 |     // Nous devons avoir 2 systèmes: l'ancien (remplacé) et le nouveau
+    129 |     expect(res4.systemesDetectes).toHaveLength(2);
+    130 |
+
+Compiling...
+Compiled with warnings.
+
+[eslint]
+src/context/ReportContext.tsx
+  Line 47:8:  React Hook useCallback has a missing dependency: 'global'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+Search for the keywords to learn more about each warning.
+To ignore, add // eslint-disable-next-line to the line before.
+
+WARNING in [eslint]
+src/context/ReportContext.tsx
+  Line 47:8:  React Hook useCallback has a missing dependency: 'global'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+webpack compiled with 1 warning
+ERROR in src/parsers/parseRapport.test.ts:70:17
+TS2554: Expected 2 arguments, but got 1.
+    68 |
+    69 |   it('extrait les flottes (joueur et détectées) avec les champs essentiels', () => {
+  > 70 |     const res = parseRapportXml(xml);
+       |                 ^^^^^^^^^^^^^^^^^^^^
+    71 |
+    72 |     expect(res.flottesJoueur).toHaveLength(1);
+    73 |     expect(res.flottesJoueur[0]).toMatchObject({
+
+ERROR in src/parsers/parseRapport.test.ts:109:18
+TS2554: Expected 2 arguments, but got 1.
+    107 |       </rapport>
+    108 |     `;
+  > 109 |     const res3 = parseRapportXml(xmlTour3);
+        |                  ^^^^^^^^^^^^^^^^^^^^^^^^^
+    110 |     expect(res3.systemesDetectes).toHaveLength(1);
+    111 |     expect(res3.systemesDetectes[0]).toMatchObject({ nom: 'Ancien', pos: { x: 6, y: 2 }, typeEtoile: 1, nbPla: 10, proprietaires: [9] });
+    112 |
+
+ERROR in src/parsers/parseRapport.test.ts:127:18
+TS2554: Expected 2 arguments, but got 1.
+    125 |       </rapport>
+    126 |     `;
+  > 127 |     const res4 = parseRapportXml(xmlTour4);
+        |                  ^^^^^^^^^^^^^^^^^^^^^^^^^
+    128 |     // Nous devons avoir 2 systèmes: l'ancien (remplacé) et le nouveau
+    129 |     expect(res4.systemesDetectes).toHaveLength(2);
+    130 |
+
+Compiling...
+Compiled with warnings.
+
+[eslint]
+src/context/ReportContext.tsx
+  Line 47:8:  React Hook useCallback has a missing dependency: 'global'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+Search for the keywords to learn more about each warning.
+To ignore, add // eslint-disable-next-line to the line before.
+
+WARNING in [eslint]
+src/context/ReportContext.tsx
+  Line 47:8:  React Hook useCallback has a missing dependency: 'global'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+webpack compiled with 1 warning
+ERROR in src/parsers/parseRapport.test.ts:109:18
+TS2554: Expected 2 arguments, but got 1.
+    107 |       </rapport>
+    108 |     `;
+  > 109 |     const res3 = parseRapportXml(xmlTour3);
+        |                  ^^^^^^^^^^^^^^^^^^^^^^^^^
+    110 |     expect(res3.systemesDetectes).toHaveLength(1);
+    111 |     expect(res3.systemesDetectes[0]).toMatchObject({ nom: 'Ancien', pos: { x: 6, y: 2 }, typeEtoile: 1, nbPla: 10, proprietaires: [9] });
+    112 |
+
+ERROR in src/parsers/parseRapport.test.ts:127:18
+TS2554: Expected 2 arguments, but got 1.
+    125 |       </rapport>
+    126 |     `;
+  > 127 |     const res4 = parseRapportXml(xmlTour4);
+        |                  ^^^^^^^^^^^^^^^^^^^^^^^^^
+    128 |     // Nous devons avoir 2 systèmes: l'ancien (remplacé) et le nouveau
+    129 |     expect(res4.systemesDetectes).toHaveLength(2);
+    130 |
+
+Compiling...
+Compiled with warnings.
+
+[eslint]
+src/context/ReportContext.tsx
+  Line 47:8:  React Hook useCallback has a missing dependency: 'global'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+Search for the keywords to learn more about each warning.
+To ignore, add // eslint-disable-next-line to the line before.
+
+WARNING in [eslint]
+src/context/ReportContext.tsx
+  Line 47:8:  React Hook useCallback has a missing dependency: 'global'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+webpack compiled with 1 warning
+ERROR in src/parsers/parseRapport.test.ts:127:18
+TS2554: Expected 2 arguments, but got 1.
+    125 |       </rapport>
+    126 |     `;
+  > 127 |     const res4 = parseRapportXml(xmlTour4);
+        |                  ^^^^^^^^^^^^^^^^^^^^^^^^^
+    128 |     // Nous devons avoir 2 systèmes: l'ancien (remplacé) et le nouveau
+    129 |     expect(res4.systemesDetectes).toHaveLength(2);
+    130 |
+
+Compiling...
+Compiled with warnings.
+
+[eslint]
+src/context/ReportContext.tsx
+  Line 47:8:  React Hook useCallback has a missing dependency: 'global'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+Search for the keywords to learn more about each warning.
+To ignore, add // eslint-disable-next-line to the line before.
+
+WARNING in [eslint]
+src/context/ReportContext.tsx
+  Line 47:8:  React Hook useCallback has a missing dependency: 'global'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+webpack compiled with 1 warning
 No issues found.
 Compiling...
-Compiled successfully!
-webpack compiled successfully
+Compiled with warnings.
+
+[eslint]
+src/context/ReportContext.tsx
+  Line 47:8:  React Hook useCallback has a missing dependency: 'global'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+Search for the keywords to learn more about each warning.
+To ignore, add // eslint-disable-next-line to the line before.
+
+WARNING in [eslint]
+src/context/ReportContext.tsx
+  Line 47:8:  React Hook useCallback has a missing dependency: 'global'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+webpack compiled with 1 warning
 No issues found.
 Compiling...
-Compiled successfully!
-webpack compiled successfully
+Compiled with warnings.
+
+[eslint]
+src/context/ReportContext.tsx
+  Line 47:8:  React Hook useCallback has a missing dependency: 'global'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+src/utils/fleetCombat.ts
+  Line 5:6:  'ArmeData' is defined but never used  @typescript-eslint/no-unused-vars
+
+Search for the keywords to learn more about each warning.
+To ignore, add // eslint-disable-next-line to the line before.
+
+WARNING in [eslint]
+src/context/ReportContext.tsx
+  Line 47:8:  React Hook useCallback has a missing dependency: 'global'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+src/utils/fleetCombat.ts
+  Line 5:6:  'ArmeData' is defined but never used  @typescript-eslint/no-unused-vars
+
+webpack compiled with 1 warning
+No issues found.
+Compiling...
+Compiled with warnings.
+
+[eslint]
+src/context/ReportContext.tsx
+  Line 47:8:  React Hook useCallback has a missing dependency: 'global'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+Search for the keywords to learn more about each warning.
+To ignore, add // eslint-disable-next-line to the line before.
+
+WARNING in [eslint]
+src/context/ReportContext.tsx
+  Line 47:8:  React Hook useCallback has a missing dependency: 'global'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+webpack compiled with 1 warning
+No issues found.
+Compiling...
+Compiled with warnings.
+
+[eslint]
+src/context/ReportContext.tsx
+  Line 47:8:  React Hook useCallback has a missing dependency: 'global'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+Search for the keywords to learn more about each warning.
+To ignore, add // eslint-disable-next-line to the line before.
+
+WARNING in [eslint]
+src/context/ReportContext.tsx
+  Line 47:8:  React Hook useCallback has a missing dependency: 'global'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+webpack compiled with 1 warning
 No issues found.
