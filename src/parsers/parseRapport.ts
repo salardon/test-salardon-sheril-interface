@@ -1,7 +1,62 @@
-import {Alliance, FlotteDetectee, FlotteJoueur, Rapport, SystemeDetecte, SystemeJoueur, PlanVaisseau} from '../types';
+import {
+    Alliance,
+    FlotteDetectee,
+    FlotteJoueur,
+    Rapport,
+    SystemeDetecte,
+    SystemeJoueur,
+    PlanVaisseau,
+    GlobalData,
+    Technologie,
+    PlanComposant
+} from '../types';
 import {isPos, parsePosString} from '../utils/position';
 
-export function getAttr(el: Element | null | undefined, names: string[]): string  {
+function calculateCdT(
+    vaisseau: { exp: number; race: number },
+    plan: PlanVaisseau | undefined,
+    technologies: Technologie[],
+    lieutenant?: any
+): number {
+    if (!plan) return 0;
+
+    const techMap = new Map(technologies.map(t => [t.code, t]));
+
+    const componentsWithTech = plan.composants
+        .map(c => ({ ...c, tech: techMap.get(c.code) }))
+        .filter(c => c.tech) as (PlanComposant & { tech: Technologie })[];
+
+    const weaponComponents = componentsWithTech.filter(c => c.tech.specification?.type === 'arme');
+    if (weaponComponents.length === 0) return 0;
+
+    const avgChanceToucherArme = weaponComponents
+        .map(c => 0.01 * (50 + (c.tech.niv * 5)))
+        .reduce((sum, val) => sum + val, 0) / weaponComponents.length;
+
+    let experienceEquipage = 0;
+    if (vaisseau.exp >= 100000) experienceEquipage = 4;
+    else if (vaisseau.exp >= 40000) experienceEquipage = 3;
+    else if (vaisseau.exp >= 20000) experienceEquipage = 2;
+    else if (vaisseau.exp >= 4000) experienceEquipage = 1;
+
+    const attaqueHero = lieutenant ? lieutenant.att : 0;
+
+    let modifracial = 0;
+    if ([2, 3, 5].includes(vaisseau.race)) modifracial = 5;
+    else if ([4, 6].includes(vaisseau.race)) modifracial = 10;
+
+    let raceheros = 0;
+    if (lieutenant && lieutenant.race === vaisseau.race) {
+        raceheros += 1;
+    }
+    if (lieutenant) {
+        raceheros += lieutenant.competences.reduce((sum: number, c: any) => c.comp === 5 ? sum + c.val : sum, 0);
+    }
+
+    return avgChanceToucherArme + experienceEquipage + attaqueHero + modifracial + raceheros;
+}
+
+export function getAttr(el: Element | null | undefined, names: string[]): string {
     if (!el) return '';
     for (const n of names) {
         const v = el.getAttribute(n);
@@ -112,10 +167,9 @@ function saveDetectedToLS(map: Map<string, SystemeDetecte>): void {
 
 const keyOf = (sd: Pick<SystemeDetecte, 'pos'>) => `${sd.pos.x}_${sd.pos.y}`;
 
-export function parseRapportXml(text: string): Rapport {
+export function parseRapportXml(text: string, globalData: GlobalData): Rapport {
     const doc = new DOMParser().parseFromString(text, 'text/xml');
 
-    // Nœuds racines strictement en lowercase
     const rapportNode = qOne(doc, ['rapport']);
     const joueurNode = qOne(rapportNode, ['commandant']);
     const tour = getAttrNum(rapportNode, ['numTour', 'numtour']);
@@ -364,13 +418,54 @@ export function parseRapportXml(text: string): Rapport {
     // Sauvegarder dans le localStorage (si disponible)
     try { saveDetectedToLS(mergedMap); } catch { /* ignore */ }
 
-    // Flottes du joueur (lowercase only)
+    // Plans privés du commandant
+    const plansVaisseaux: PlanVaisseau[] = [];
+    qAll(joueurNode, ['plans > p']).forEach((p) => {
+        const nom = getAttr(p, ['nom']) || 'Plan';
+        const concepteur = getAttrNum(p, ['concepteur']) || 0;
+        const marque = getAttr(p, ['marque']) || undefined;
+        const tour = getAttrNum(p, ['tour']) || undefined;
+        const taille = getAttrNum(p, ['taille']) || undefined;
+        const vitesse = getAttrNum(p, ['vitesse']) || undefined;
+        const pc = getAttrNum(p, ['pc']) || undefined;
+        const minerai = getAttrNum(p, ['minerai']) || undefined;
+        const prix = getAttrNum(p, ['centaures', 'prix']) || undefined;
+        const ap = getAttrNum(p, ['ap']) || undefined;
+        const as = getAttrNum(p, ['as']) || undefined;
+        const royalties = getAttrNum(p, ['royalties']) || undefined;
+
+        const composants = qAll(p, ['comp']).map((c) => ({
+            code: getAttr(c, ['code']) || '',
+            nb: getAttrNum(c, ['nb']) || 0,
+        }));
+
+        plansVaisseaux.push({
+            nom, concepteur, marque, tour, taille, vitesse, pc, minerai, prix, ap, as, royalties, composants,
+        });
+    });
+
+    const lieutenants = qAll(joueurNode, ['lieutenants > l']).map(l => {
+        const competences = qAll(l, ['competence']).map(c => ({
+            comp: getAttrNum(c, ['comp']),
+            val: getAttrNum(c, ['val']),
+        }));
+        return {
+            pos: getAttr(l, ['pos']),
+            nom: getAttr(l, ['nom']),
+            att: getAttrNum(l, ['att']),
+            race: getAttrNum(l, ['race']),
+            competences,
+        };
+    });
+
     const flottesJoueur: FlotteJoueur[] = [];
     const fltNodes = qAll(joueurNode, ['flottes > f', 'flottes > flotte']);
     fltNodes.forEach((f) => {
-        const pos = parsePosString(getAttr(f, ['pos']) || '0_1_1');
-        const nom = getAttr(f, ['nom']) || 'Flotte';
         const num = getAttrNum(f, ['num']) ?? 0;
+        const nom = getAttr(f, ['nom']) || 'Flotte';
+        const pos = parsePosString(getAttr(f, ['pos']) || '0_1_1');
+        const direction = getAttr(f, ['direction']);
+
         const vaisseaux: FlotteJoueur['vaisseaux'] = [];
         qAll(f, ['vaisseau']).forEach((v) => {
             vaisseaux.push({
@@ -378,19 +473,45 @@ export function parseRapportXml(text: string): Rapport {
                 plan: getAttr(v, ['plan']) || '',
                 exp: getAttrNum(v, ['exp']),
                 moral: getAttrNum(v, ['moral']),
+                race: getAttrNum(v, ['race']),
             });
         });
-        const direction = getAttr(f, ['direction']);
+
+        const lieutenant = lieutenants.find(l => /^\d+$/.test(l.pos) && parseInt(l.pos, 10) === num);
+
+        const uniqueRaces = Array.from(new Set(vaisseaux.map(v => v.race)));
+        const equipage = uniqueRaces.map(raceId => {
+            const raceInfo = globalData.races.find(r => r.id === raceId);
+            return {
+                nom: raceInfo?.nom || `Race ${raceId}`,
+                couleur: raceInfo?.couleur && raceInfo.couleur.startsWith('#') ? raceInfo.couleur : '#FFFFFF'
+            };
+        });
+
+        const allPlans = [...plansVaisseaux, ...globalData.plansPublic];
+
+        const cdt = vaisseaux.length > 0 ? vaisseaux.map(v => {
+            const plan = allPlans.find(p => p.nom === v.plan);
+            return calculateCdT(v, plan, globalData.technologies, lieutenant);
+        }).reduce((sum, val) => sum + val, 0) / vaisseaux.length : 0;
+
         flottesJoueur.push({
-            type: 'joueur', proprio: joueur.numero,
-            num, nom, pos, vaisseaux,
+            type: 'joueur',
+            proprio: joueur.numero,
+            num,
+            nom,
+            pos,
+            vaisseaux,
             nbVso: vaisseaux.length,
             scan: getAttrNum(f, ['hscan']),
             as: getAttrNum(f, ['as']) ?? 0,
             ap: getAttrNum(f, ['ap']) ?? 0,
-            directive: getAttrNum(f, ['directive'])|| 0,
-            vitesse: getAttrNum(f, ['vitesse'])|| 0,
-            direction: isPos(direction) ? parsePosString(direction) : undefined
+            directive: getAttrNum(f, ['directive']) || 0,
+            vitesse: getAttrNum(f, ['vitesse']) || 0,
+            direction: isPos(direction) ? parsePosString(direction) : undefined,
+            equipage,
+            heros: lieutenant?.nom,
+            cdt,
         });
     });
 
@@ -423,32 +544,6 @@ export function parseRapportXml(text: string): Rapport {
     });
 
     joueur.alliances = alliances;
-
-    // Plans privés du commandant
-    const plansVaisseaux: PlanVaisseau[] = [];
-    qAll(joueurNode, ['plans > p']).forEach((p) => {
-        const nom = getAttr(p, ['nom']) || 'Plan';
-        const concepteur = getAttrNum(p, ['concepteur']) || 0;
-        const marque = getAttr(p, ['marque']) || undefined;
-        const tour = getAttrNum(p, ['tour']) || undefined;
-        const taille = getAttrNum(p, ['taille']) || undefined;
-        const vitesse = getAttrNum(p, ['vitesse']) || undefined;
-        const pc = getAttrNum(p, ['pc']) || undefined;
-        const minerai = getAttrNum(p, ['minerai']) || undefined;
-        const prix = getAttrNum(p, ['centaures', 'prix']) || undefined;
-        const ap = getAttrNum(p, ['ap']) || undefined;
-        const as = getAttrNum(p, ['as']) || undefined;
-        const royalties = getAttrNum(p, ['royalties']) || undefined;
-
-        const composants = qAll(p, ['comp']).map((c) => ({
-            code: getAttr(c, ['code']) || '',
-            nb: getAttrNum(c, ['nb']) || 0,
-        }));
-
-        plansVaisseaux.push({
-            nom, concepteur, marque, tour, taille, vitesse, pc, minerai, prix, ap, as, royalties, composants,
-        });
-    });
 
     // Budget technologique (valeur absolue)
     let budgetTechnologique = 0;
