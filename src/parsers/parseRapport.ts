@@ -1,14 +1,4 @@
-import {
-    Alliance,
-    FlotteDetectee,
-    FlotteJoueur,
-    Rapport,
-    SystemeDetecte,
-    SystemeJoueur,
-    PlanVaisseau,
-    Lieutenant,
-    GlobalData
-} from '../types';
+import {Alliance, FlotteDetectee, FlotteJoueur, Rapport, SystemeDetecte, SystemeJoueur, PlanVaisseau} from '../types';
 import {isPos, parsePosString} from '../utils/position';
 
 export function getAttr(el: Element | null | undefined, names: string[]): string  {
@@ -122,7 +112,7 @@ function saveDetectedToLS(map: Map<string, SystemeDetecte>): void {
 
 const keyOf = (sd: Pick<SystemeDetecte, 'pos'>) => `${sd.pos.x}_${sd.pos.y}`;
 
-export function parseRapportXml(text: string, globalData: GlobalData | null): Rapport {
+export function parseRapportXml(text: string): Rapport {
     const doc = new DOMParser().parseFromString(text, 'text/xml');
 
     // Nœuds racines strictement en lowercase
@@ -146,22 +136,6 @@ export function parseRapportXml(text: string, globalData: GlobalData | null): Ra
         pna: [],
     };
 
-    // Lieutenants
-    const lieutenants: Lieutenant[] = [];
-    qAll(joueurNode, ['lieutenants > l']).forEach((l) => {
-        const competences = qAll(l, ['competence']).map((c) => ({
-            comp: getAttrNum(c, ['comp']),
-            val: getAttrNum(c, ['val']),
-        }));
-        lieutenants.push({
-            nom: getAttr(l, ['nom']),
-            raceId: getAttrNum(l, ['race']),
-            att: getAttrNum(l, ['att']),
-            def: getAttrNum(l, ['def']),
-            pos: getAttr(l, ['pos']),
-            competences,
-        });
-    });
 
     // Technologies connues (lowercase)
     const technologiesConnues: string[] = [];
@@ -404,33 +378,15 @@ export function parseRapportXml(text: string, globalData: GlobalData | null): Ra
                 plan: getAttr(v, ['plan']) || '',
                 exp: getAttrNum(v, ['exp']),
                 moral: getAttrNum(v, ['moral']),
-                race: getAttrNum(v, ['race']),
             });
         });
         const direction = getAttr(f, ['direction']);
-
-        const lieutenant = lieutenants.find(l => !isNaN(Number(l.pos)) && Number(l.pos) === num);
-        const heros = lieutenant?.nom;
-
-        const equipageRaces = new Set<number>();
-        vaisseaux.forEach(v => equipageRaces.add(v.race));
-        const equipage = Array.from(equipageRaces).sort((a,b) => a-b).map(raceId => {
-            const race = globalData?.races.find(r => r.id === raceId);
-            return {
-                nom: race?.nom ?? String(raceId),
-                couleur: race?.couleur ?? 'grey'
-            };
-        });
-
         flottesJoueur.push({
             type: 'joueur', proprio: joueur.numero,
             num, nom, pos, vaisseaux,
             nbVso: vaisseaux.length,
             scan: getAttrNum(f, ['hscan']),
             as: getAttrNum(f, ['as']) ?? 0,
-            heros,
-            lieutenant,
-            equipage,
             ap: getAttrNum(f, ['ap']) ?? 0,
             directive: getAttrNum(f, ['directive'])|| 0,
             vitesse: getAttrNum(f, ['vitesse'])|| 0,
@@ -508,7 +464,6 @@ export function parseRapportXml(text: string, globalData: GlobalData | null): Ra
         technologiesAtteignables,
         technologiesConnues, joueur, systemesJoueur, systemesDetectes: mergedSystemesDetectes, flottesJoueur, flottesDetectees, plansVaisseaux,
         budgetTechnologique,
-        lieutenants,
     };
 
     return rapport;

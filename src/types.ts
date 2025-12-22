@@ -131,26 +131,6 @@ export interface FlotteBase {
     proprio: number;
 }
 
-export type Lieutenant = {
-    nom: string;
-    raceId: number;
-    att: number;
-    def: number;
-    pos: string;
-    competences: { comp: number; val: number }[];
-};
-
-export type FleetCombatStats = {
-    dc: number;
-    db: number;
-    cases: number;
-    dcPerCase: number;
-    dbPerCase: number;
-    exp: number;
-    moral: number;
-    cdt: number | 'N/A';
-};
-
 export interface FlotteJoueur extends FlotteBase {
     type: 'joueur';
     direction?: XY;
@@ -160,10 +140,7 @@ export interface FlotteJoueur extends FlotteBase {
     as?: number;
     scan: number;
     nbVso: number;
-    vaisseaux: { type: string; plan: string; nb?: number; puissance?: string; exp: number; moral: number, race: number }[];
-    equipage: { nom: string, couleur: string }[];
-    heros?: string;
-    lieutenant?: Lieutenant;
+    vaisseaux: { type: string; plan: string; nb?: number; puissance?: string; exp: number; moral: number }[];
 }
 
 export interface FlotteDetectee extends FlotteBase {
@@ -201,7 +178,6 @@ export type Rapport = {
     flottesDetectees: FlotteDetectee[];
     plansVaisseaux: PlanVaisseau[];
     budgetTechnologique: number;
-    lieutenants: Lieutenant[];
 };
 export type GlobalData = {
     commandants: Commandant[];
