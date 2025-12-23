@@ -181,9 +181,17 @@ export function parseRapportXml(text: string): Rapport {
 
     const lieutenants: Lieutenant[] = [];
     qAll(joueurNode, ['lieutenants > l']).forEach((l) => {
+        const competences = qAll(l, ['c']).map(c => ({
+            comp: getAttrNum(c, ['comp']),
+            val: getAttrNum(c, ['val']),
+        }));
+
         lieutenants.push({
             nom: getAttr(l, ['nom']),
             pos: getAttr(l, ['pos']),
+            att: getAttrNum(l, ['att']),
+            race: getAttrNum(l, ['race']),
+            competences,
         });
     });
 

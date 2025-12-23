@@ -158,9 +158,17 @@ export interface Alliance {
     commandants: number[];
 }
 
+export interface Competence {
+    comp: number;
+    val: number;
+}
+
 export interface Lieutenant {
     nom: string;
     pos: string;
+    att: number;
+    race: number;
+    competences: Competence[];
 }
 
 export type Rapport = {
