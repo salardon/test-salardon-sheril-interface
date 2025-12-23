@@ -1,4 +1,4 @@
-import { FlotteJoueur, PlanVaisseau, GlobalData } from '../types';
+import { FlotteJoueur, PlanVaisseau, GlobalData, Lieutenant } from '../types';
 
 type WeaponCategory = 'laser' | 'plasma' | 'torp' | 'miss' | 'bombe';
 
@@ -44,16 +44,43 @@ function getLevelAdjustedDCDB(baseDC: number, baseDB: number, level: number): { 
     };
 }
 
+function getExperienceEquipageLevel(exp: number): number {
+    if (exp < 4000) return 0;
+    if (exp < 20000) return 1;
+    if (exp < 40000) return 2;
+    if (exp < 100000) return 3;
+    return 4;
+}
+
+function getModifRacial(raceCode: number): number {
+    if (raceCode === 2 || raceCode === 3 || raceCode === 5) return 5;
+    if (raceCode === 4 || raceCode === 6) return 10;
+    // 0 or 1 or anything else
+    return 0;
+}
+
 export function calculateFleetCombatStats(
     fleet: FlotteJoueur,
     privatePlans: PlanVaisseau[],
-    globalData: GlobalData
+    globalData: GlobalData,
+    lieutenant: Lieutenant | null
 ) {
     let finalDC = 0;
     let finalDB = 0;
     let fleetCases = 0;
     let totalExp = 0;
     let totalMoral = 0;
+
+    const heroAttack = lieutenant ? (lieutenant.att ?? 0) : 0;
+    const heroRace = lieutenant ? lieutenant.race : null;
+    const heroCompBonus = lieutenant
+        ? (lieutenant.competences || [])
+            .filter(c => c.comp === 5)
+            .reduce((sum, c) => sum + (c.val ?? 0), 0)
+        : 0;
+
+    let fleetChanceToucherSum = 0;
+    let fleetChanceToucherCount = 0;
 
     const allPlans = [...privatePlans, ...globalData.plansPublic];
 
@@ -67,6 +94,15 @@ export function calculateFleetCombatStats(
         }
 
         fleetCases += (plan.pc ?? 0) * 2 + 1;
+
+        const vaisseauRace = vaisseau.race ?? 0;
+        const expEquipageLevel = getExperienceEquipageLevel(vaisseau.exp ?? 0);
+        const modifRacial = getModifRacial(vaisseauRace);
+        const sameRaceAsHero = heroRace !== null && heroRace === vaisseauRace;
+        const raceHeros = sameRaceAsHero ? 1 + heroCompBonus : 0;
+
+        let shipWeaponChanceSum = 0;
+        let shipWeaponCount = 0;
 
         plan.composants.forEach(comp => {
             const tech = globalData.technologies.find(t => t.code === comp.code);
@@ -85,11 +121,26 @@ export function calculateFleetCombatStats(
             const intermediateDC = adjustedDC * comp.nb;
             const intermediateDB = adjustedDB * comp.nb;
 
-            const chanceToucher = 50 + tech.niv * 5;
-            finalDC += intermediateDC * 0.01 * chanceToucher;
-            finalDB += intermediateDB * 0.01 * chanceToucher;
+            const chanceToucherArme = 50 + tech.niv * 5;
+            const rawChance = chanceToucherArme + expEquipageLevel + heroAttack + modifRacial + raceHeros;
+            const chanceToucher = 0.01 * rawChance;
+
+            finalDC += intermediateDC * chanceToucher;
+            finalDB += intermediateDB * chanceToucher;
+
+            shipWeaponChanceSum += chanceToucher;
+            shipWeaponCount += 1;
         });
+
+        if (shipWeaponCount > 0) {
+            const shipAvgChance = shipWeaponChanceSum / shipWeaponCount;
+            fleetChanceToucherSum += shipAvgChance;
+            fleetChanceToucherCount += 1;
+        }
     });
+
+    const fleetChanceToucher =
+        fleetChanceToucherCount > 0 ? fleetChanceToucherSum / fleetChanceToucherCount : 0;
 
     const numVaisseaux = fleet.vaisseaux.length;
     return {
@@ -100,5 +151,6 @@ export function calculateFleetCombatStats(
         dbPerCase: fleetCases > 0 ? finalDB / fleetCases : 0,
         exp: numVaisseaux > 0 ? totalExp / numVaisseaux : 0,
         moral: numVaisseaux > 0 ? totalMoral / numVaisseaux : 0,
+        cdt: fleetChanceToucher,
     };
 }

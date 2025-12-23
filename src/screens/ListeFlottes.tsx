@@ -6,7 +6,7 @@ import Position from "../components/utils/Position";
 import { calculateFleetCombatStats } from '../utils/fleetCombat';
 import { FlotteJoueur } from '../types';
 
-type SortKey = 'pos' | 'nom' | 'direction' | 'directive' | 'vitesse' | 'as' | 'ap' | 'nbv' | 'proprio' | 'dc' | 'db' | 'cases' | 'dcPerCase' | 'dbPerCase' | 'exp' | 'moral' | 'equipage' | 'heros';
+type SortKey = 'pos' | 'nom' | 'direction' | 'directive' | 'vitesse' | 'as' | 'ap' | 'nbv' | 'proprio' | 'dc' | 'db' | 'cases' | 'dcPerCase' | 'dbPerCase' | 'exp' | 'moral' | 'equipage' | 'heros' | 'cdt';
 type SortDir = 'asc' | 'desc';
 
 export default function ListeFlottes() {
@@ -32,7 +32,9 @@ export default function ListeFlottes() {
   const all = useMemo(() => {
     if (!rapport || !global) return [];
     const own = rapport.flottesJoueur.map(f => {
-      const stats = calculateFleetCombatStats(f as FlotteJoueur, rapport.plansVaisseaux, global);
+      const lieutenantForFleet =
+        rapport.lieutenants.find(l => /^\d+$/.test(l.pos) && Number(l.pos) === f.num) || null;
+      const stats = calculateFleetCombatStats(f as FlotteJoueur, rapport.plansVaisseaux, global, lieutenantForFleet);
       return {
         ...f,
         ...stats,
@@ -77,6 +79,7 @@ export default function ListeFlottes() {
         case 'cases': av = a.cases ?? 0; bv = b.cases ?? 0; break;
         case 'dcPerCase': av = a.dcPerCase ?? 0; bv = b.dcPerCase ?? 0; break;
         case 'dbPerCase': av = a.dbPerCase ?? 0; bv = b.dbPerCase ?? 0; break;
+        case 'cdt': av = a.cdt ?? 0; bv = b.cdt ?? 0; break;
         case 'exp': av = a.exp ?? 0; bv = b.exp ?? 0; break;
         case 'moral': av = a.moral ?? 0; bv = b.moral ?? 0; break;
         case 'equipage': av = a.equipage?.map((e: { nom: string; couleur: string }) => e.nom).join(', ') ?? ''; bv = b.equipage?.map((e: { nom: string; couleur: string }) => e.nom).join(', ') ?? ''; break;
@@ -170,6 +173,7 @@ export default function ListeFlottes() {
               {header('ap', 'AP')}
               {header('dc', 'D.C.')}
               {header('db', 'D.B.')}
+              {header('cdt', 'CdT')}
               {header('cases', 'Cases')}
               {header('dcPerCase', 'D.C./Case')}
               {header('dbPerCase', 'D.B./Case')}
@@ -193,6 +197,9 @@ export default function ListeFlottes() {
                 <td style={{ textAlign: 'right' }}>{f.ap ?? '—'}</td>
                 <td style={{ textAlign: 'right' }}>{f.dc?.toFixed(1) ?? '—'}</td>
                 <td style={{ textAlign: 'right' }}>{f.db?.toFixed(1) ?? '—'}</td>
+                <td style={{ textAlign: 'right' }}>
+                  {f.cdt > 0 ? Math.round(f.cdt * 100) : 'N/A'}
+                </td>
                 <td style={{ textAlign: 'right' }}>{f.cases ?? '—'}</td>
                 <td style={{ textAlign: 'right' }}>{f.dcPerCase?.toFixed(1) ?? '—'}</td>
                 <td style={{ textAlign: 'right' }}>{f.dbPerCase?.toFixed(1) ?? '—'}</td>
