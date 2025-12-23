@@ -2,12 +2,12 @@ import { FlotteJoueur, PlanVaisseau, GlobalData, Lieutenant } from '../types';
 
 type WeaponCategory = 'laser' | 'plasma' | 'torp' | 'miss' | 'bombe';
 
-const weaponCategoryMapping: { [key in WeaponCategory]: { baseDC: number; baseDB: number } } = {
-    laser: { baseDC: 1, baseDB: 2 },
-    plasma: { baseDC: 1, baseDB: 1 },
-    torp: { baseDC: 2, baseDB: 1 },
-    miss: { baseDC: 0, baseDB: 1 },
-    bombe: { baseDC: 0, baseDB: 0 },
+const weaponCategoryMapping: { [key in WeaponCategory]: { baseDC: number; baseDB: number; baseToucher3: number; baseToucher7: number } } = {
+    laser: { baseDC: 1, baseDB: 2, baseToucher3: 35, baseToucher7: 10 },
+    plasma: { baseDC: 1, baseDB: 1, baseToucher3: 40, baseToucher7: 35 },
+    torp: { baseDC: 2, baseDB: 1, baseToucher3: 3, baseToucher7: 30 },
+    miss: { baseDC: 0, baseDB: 1, baseToucher3: 40, baseToucher7: 40 },
+    bombe: { baseDC: 0, baseDB: 0, baseToucher3: 0, baseToucher7: 0 },
 };
 
 function getWeaponCategory(techBase: string): WeaponCategory | null {
@@ -70,6 +70,10 @@ export function calculateFleetCombatStats(
     let fleetCases = 0;
     let totalExp = 0;
     let totalMoral = 0;
+    let fleetCdT3Sum = 0;
+    let fleetCdT3Count = 0;
+    let fleetCdT7Sum = 0;
+    let fleetCdT7Count = 0;
 
     const heroAttack = lieutenant ? (lieutenant.att ?? 0) : 0;
     const heroRace = lieutenant ? lieutenant.race : null;
@@ -115,7 +119,7 @@ export function calculateFleetCombatStats(
                 return;
             }
 
-            const { baseDC, baseDB } = weaponCategoryMapping[category];
+            const { baseDC, baseDB, baseToucher3, baseToucher7 } = weaponCategoryMapping[category];
             const { adjustedDC, adjustedDB } = getLevelAdjustedDCDB(baseDC, baseDB, tech.niv);
 
             const intermediateDC = adjustedDC * comp.nb;
@@ -128,8 +132,23 @@ export function calculateFleetCombatStats(
             finalDC += intermediateDC * chanceToucher;
             finalDB += intermediateDB * chanceToucher;
 
-            shipWeaponChanceSum += chanceToucher;
-            shipWeaponCount += 1;
+            // Compute chanceToucherArme3 and CdT3
+            const chanceToucherArme3 = baseToucher3 + tech.niv * Math.max(baseToucher3 / 10, 1);
+            const rawChance3 = chanceToucherArme3 + expEquipageLevel + heroAttack + modifRacial + raceHeros;
+            const CdT3 = 0.01 * rawChance3;
+
+            // Compute chanceToucherArme7 and CdT7
+            const chanceToucherArme7 = baseToucher7 + tech.niv * Math.max(baseToucher7 / 10, 1);
+            const rawChance7 = chanceToucherArme7 + expEquipageLevel + heroAttack + modifRacial + raceHeros;
+            const CdT7 = 0.01 * rawChance7;
+
+            fleetCdT3Sum += CdT3 * comp.nb;
+            fleetCdT3Count += comp.nb;
+            fleetCdT7Sum += CdT7 * comp.nb;
+            fleetCdT7Count += comp.nb;
+
+            shipWeaponChanceSum += chanceToucher * comp.nb;
+            shipWeaponCount += comp.nb;
         });
 
         if (shipWeaponCount > 0) {
@@ -142,6 +161,9 @@ export function calculateFleetCombatStats(
     const fleetChanceToucher =
         fleetChanceToucherCount > 0 ? fleetChanceToucherSum / fleetChanceToucherCount : 0;
 
+    const fleetCdT3 = fleetCdT3Count > 0 ? fleetCdT3Sum / fleetCdT3Count : 0;
+    const fleetCdT7 = fleetCdT7Count > 0 ? fleetCdT7Sum / fleetCdT7Count : 0;
+
     const numVaisseaux = fleet.vaisseaux.length;
     return {
         dc: finalDC,
@@ -152,5 +174,7 @@ export function calculateFleetCombatStats(
         exp: numVaisseaux > 0 ? totalExp / numVaisseaux : 0,
         moral: numVaisseaux > 0 ? totalMoral / numVaisseaux : 0,
         cdt: fleetChanceToucher,
+        cdt3: fleetCdT3,
+        cdt7: fleetCdT7,
     };
 }
