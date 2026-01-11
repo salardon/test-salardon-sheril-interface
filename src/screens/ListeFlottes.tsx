@@ -14,6 +14,30 @@ type SortDir = 'asc' | 'desc';
 const ALL_COLUMNS: SortKey[] = ['pos', 'nom', 'direction', 'directive', 'vitesse', 'as', 'ap', 'nbv', 'proprio', 'dc', 'db', 'shield', 'cases', 'dcPerCase', 'dbPerCase', 'shieldPerCase', 'exp', 'moral', 'equipage', 'heros', 'cdt', 'cdt3', 'cdt7'];
 const COMBAT_COLUMNS = ['dc', 'db', 'shield', 'cdt', 'cdt3', 'cdt7', 'cases', 'dcPerCase', 'dbPerCase', 'shieldPerCase'];
 
+const DIRECTIVE_LABELS: Record<number, string> = {
+  0: "Neutre",
+  1: "Attaque Système",
+  2: "Attaque Préventive",
+  3: "Attaque Toutes Flottes",
+  4: "Pillage Système",
+  5: "Attaque Planète",
+  6: "Pillage Planète",
+  7: "Éradication Planète",
+  8: "Attaque Joueur",
+};
+
+const DIRECTIVE_COLORS: Record<number, string> = {
+  0: "#aaa",       // Grey for Neutral
+  1: "#ff4d4d",    // Red for Attacks
+  2: "#ff4d4d",
+  3: "#ff4d4d",
+  4: "#ffa500",    // Orange for Pillage
+  5: "#ff4d4d",
+  6: "#ffa500",
+  7: "#ff0000",    // Bright Red for Eradication
+  8: "#ff4d4d",
+};
+
 export default function ListeFlottes() {
   const { rapport, global} = useReport();
   const [page, setPage] = useState(1);
@@ -74,7 +98,7 @@ export default function ListeFlottes() {
         case 'pos': av = a.posKey; bv = b.posKey; break;
         case 'nom': av = a.nom.toLowerCase(); bv = b.nom.toLowerCase(); break;
         case 'direction': av = a.direction || ''; bv = b.direction || ''; break;
-        case 'directive': av = String(a.directive ?? ''); bv = String(b.directive ?? ''); break;
+        case 'directive': av = DIRECTIVE_LABELS[a.directive] ?? ''; bv = DIRECTIVE_LABELS[b.directive] ?? ''; break;
         case 'vitesse': av = a.vitesse ?? 0; bv = b.vitesse ?? 0; break;
         case 'as': av = a.as ?? 0; bv = b.as ?? 0; break;
         case 'ap': av = a.ap ?? 0; bv = b.ap ?? 0; break;
@@ -213,7 +237,17 @@ export default function ListeFlottes() {
                 {visibleColumns.includes('pos') && <td style={{ whiteSpace: 'nowrap' }}><Position pos={f.pos} /></td>}
                 {visibleColumns.includes('nom') && <td>{f.nom}</td>}
                 {visibleColumns.includes('direction') && <td><Position pos={f.direction} /></td>}
-                {visibleColumns.includes('directive') && <td>{f.directive ?? '—'}</td>}
+                {visibleColumns.includes('directive') && (
+                  <td style={{ fontWeight: 'bold' }}>
+                    {f.directive !== undefined && DIRECTIVE_LABELS[f.directive as number] ? (
+                      <span style={{ color: DIRECTIVE_COLORS[f.directive as number] || '#ccc' }}>
+                        {DIRECTIVE_LABELS[f.directive as number]}
+                      </span>
+                    ) : (
+                      '—'
+                    )}
+                  </td>
+                )}
                 {visibleColumns.includes('vitesse') && <td style={{ textAlign: 'right' }}>{f.vitesse ?? '—'}</td>}
                 {visibleColumns.includes('as') && <td style={{ textAlign: 'right' }}>{f.as ?? '—'}</td>}
                 {visibleColumns.includes('ap') && <td style={{ textAlign: 'right' }}>{f.ap ?? '—'}</td>}
