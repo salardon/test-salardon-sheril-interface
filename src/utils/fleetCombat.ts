@@ -67,6 +67,7 @@ export function calculateFleetCombatStats(
 ) {
     let finalDC = 0;
     let finalDB = 0;
+    let fleetShieldSum = 0; // FIXED: Must be initialized here
     let fleetCases = 0;
     let totalExp = 0;
     let totalMoral = 0;
@@ -110,7 +111,17 @@ export function calculateFleetCombatStats(
 
         plan.composants.forEach(comp => {
             const tech = globalData.technologies.find(t => t.code === comp.code);
-            if (!tech || tech.specification?.type !== 'arme') return;
+            if (!tech) return; // FIXED: Check tech existence before accessing tech.base
+            if (tech.base?.toLowerCase() === 'bouclier') {
+                            const shieldChar = tech.caracteristiques?.find(c => String(c.code) === '4');
+                            if (shieldChar) {
+                                // Multiply the shield value by the number of components (comp.nb)
+                                fleetShieldSum += (Number(shieldChar.value) || 0) * comp.nb;
+                            }
+                        }
+
+            
+            if (tech.specification?.type !== 'arme') return;
         
             const category = getWeaponCategory(tech.base);
             if (!category) return;
@@ -163,9 +174,11 @@ export function calculateFleetCombatStats(
     return {
         dc: finalDC,
         db: finalDB,
+        shield: fleetShieldSum, // 4. Return the new value
         cases: fleetCases,
         dcPerCase: fleetCases > 0 ? finalDC / fleetCases : 0,
         dbPerCase: fleetCases > 0 ? finalDB / fleetCases : 0,
+        shieldPerCase: fleetCases > 0 ? fleetShieldSum / fleetCases : 0,
         exp: numVaisseaux > 0 ? totalExp / numVaisseaux : 0,
         moral: numVaisseaux > 0 ? totalMoral / numVaisseaux : 0,
         cdt: fleetChanceToucher,
