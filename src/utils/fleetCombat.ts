@@ -105,58 +105,53 @@ export function calculateFleetCombatStats(
         const sameRaceAsHero = heroRace !== null && heroRace === vaisseauRace;
         const raceHeros = sameRaceAsHero ? 1 + heroCompBonus : 0;
 
-        let shipWeaponChanceSum = 0;
-        let shipWeaponCount = 0;
+        //let shipWeaponChanceSum = 0;
+        //let shipWeaponCount = 0;
 
         plan.composants.forEach(comp => {
             const tech = globalData.technologies.find(t => t.code === comp.code);
-            if (!tech || tech.specification?.type !== 'arme') {
-                return;
-            }
-
+            if (!tech || tech.specification?.type !== 'arme') return;
+        
             const category = getWeaponCategory(tech.base);
-            if (!category) {
-                return;
-            }
-
+            if (!category) return;
+        
             const { baseDC, baseDB, baseToucher3, baseToucher7 } = weaponCategoryMapping[category];
             const { adjustedDC, adjustedDB } = getLevelAdjustedDCDB(baseDC, baseDB, tech.niv);
-
+        
             const intermediateDC = adjustedDC * comp.nb;
             const intermediateDB = adjustedDB * comp.nb;
-
+        
+            // Standard CdT
             const chanceToucherArme = 50 + tech.niv * 5;
             const rawChance = chanceToucherArme + expEquipageLevel + heroAttack + modifRacial + raceHeros;
             const chanceToucher = 0.01 * rawChance;
-
+        
             finalDC += intermediateDC * chanceToucher;
             finalDB += intermediateDB * chanceToucher;
-
-            // Compute chanceToucherArme3 and CdT3
+        
+            // CdT3
             const chanceToucherArme3 = baseToucher3 + tech.niv * Math.max(baseToucher3 / 10, 1);
             const rawChance3 = chanceToucherArme3 + expEquipageLevel + heroAttack + modifRacial + raceHeros;
             const CdT3 = 0.01 * rawChance3;
-
-            // Compute chanceToucherArme7 and CdT7
+        
+            // CdT7
             const chanceToucherArme7 = baseToucher7 + tech.niv * Math.max(baseToucher7 / 10, 1);
             const rawChance7 = chanceToucherArme7 + expEquipageLevel + heroAttack + modifRacial + raceHeros;
             const CdT7 = 0.01 * rawChance7;
-
-            fleetCdT3Sum += CdT3 * comp.nb;
+        
+            // --- UPDATED FLEET TOTALS (ONLY ONCE PER WEAPON) ---
+            if (category !== 'bombe') {
+            fleetChanceToucherSum += (chanceToucher * comp.nb);
+            fleetChanceToucherCount += comp.nb;
+        
+            fleetCdT3Sum += (CdT3 * comp.nb);
             fleetCdT3Count += comp.nb;
-            fleetCdT7Sum += CdT7 * comp.nb;
+        
+            fleetCdT7Sum += (CdT7 * comp.nb);
             fleetCdT7Count += comp.nb;
-
-            shipWeaponChanceSum += chanceToucher * comp.nb;
-            shipWeaponCount += comp.nb;
+                }
+            });
         });
-
-        if (shipWeaponCount > 0) {
-            const shipAvgChance = shipWeaponChanceSum / shipWeaponCount;
-            fleetChanceToucherSum += shipAvgChance;
-            fleetChanceToucherCount += 1;
-        }
-    });
 
     const fleetChanceToucher =
         fleetChanceToucherCount > 0 ? fleetChanceToucherSum / fleetChanceToucherCount : 0;
