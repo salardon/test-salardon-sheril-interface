@@ -6,11 +6,13 @@ import Position from "../components/utils/Position";
 import { calculateFleetCombatStats } from '../utils/fleetCombat';
 import { FlotteJoueur } from '../types';
 
-type SortKey = 'pos' | 'nom' | 'direction' | 'directive' | 'vitesse' | 'as' | 'ap' | 'nbv' | 'proprio' | 'dc' | 'db' | 'cases' | 'dcPerCase' | 'dbPerCase' | 'exp' | 'moral' | 'equipage' | 'heros' | 'cdt' | 'cdt3' | 'cdt7';
+// 1. Added shield and shieldPerCase to SortKey
+type SortKey = 'pos' | 'nom' | 'direction' | 'directive' | 'vitesse' | 'as' | 'ap' | 'nbv' | 'proprio' | 'dc' | 'db' | 'shield' | 'cases' | 'dcPerCase' | 'dbPerCase' | 'shieldPerCase' | 'exp' | 'moral' | 'equipage' | 'heros' | 'cdt' | 'cdt3' | 'cdt7';
 type SortDir = 'asc' | 'desc';
 
-const ALL_COLUMNS: SortKey[] = ['pos', 'nom', 'direction', 'directive', 'vitesse', 'as', 'ap', 'nbv', 'proprio', 'dc', 'db', 'cases', 'dcPerCase', 'dbPerCase', 'exp', 'moral', 'equipage', 'heros', 'cdt', 'cdt3', 'cdt7'];
-const COMBAT_COLUMNS = ['dc', 'db', 'cdt', 'cdt3', 'cdt7', 'cases', 'dcPerCase', 'dbPerCase'];
+// 2. Added to Column lists
+const ALL_COLUMNS: SortKey[] = ['pos', 'nom', 'direction', 'directive', 'vitesse', 'as', 'ap', 'nbv', 'proprio', 'dc', 'db', 'shield', 'cases', 'dcPerCase', 'dbPerCase', 'shieldPerCase', 'exp', 'moral', 'equipage', 'heros', 'cdt', 'cdt3', 'cdt7'];
+const COMBAT_COLUMNS = ['dc', 'db', 'shield', 'cdt', 'cdt3', 'cdt7', 'cases', 'dcPerCase', 'dbPerCase', 'shieldPerCase'];
 
 export default function ListeFlottes() {
   const { rapport, global} = useReport();
@@ -80,9 +82,11 @@ export default function ListeFlottes() {
         case 'proprio': av = a.proprio ?? 0; bv = b.proprio ?? 0; break;
         case 'dc': av = a.dc ?? 0; bv = b.dc ?? 0; break;
         case 'db': av = a.db ?? 0; bv = b.db ?? 0; break;
+        case 'shield': av = a.shield ?? 0; bv = b.shield ?? 0; break; // 3. Sorting logic
         case 'cases': av = a.cases ?? 0; bv = b.cases ?? 0; break;
         case 'dcPerCase': av = a.dcPerCase ?? 0; bv = b.dcPerCase ?? 0; break;
         case 'dbPerCase': av = a.dbPerCase ?? 0; bv = b.dbPerCase ?? 0; break;
+        case 'shieldPerCase': av = a.shieldPerCase ?? 0; bv = b.shieldPerCase ?? 0; break; // 3. Sorting logic
         case 'cdt': av = a.cdt ?? 0; bv = b.cdt ?? 0; break;
         case 'cdt3': av = a.cdt3 ?? 0; bv = b.cdt3 ?? 0; break;
         case 'cdt7': av = a.cdt7 ?? 0; bv = b.cdt7 ?? 0; break;
@@ -187,10 +191,12 @@ export default function ListeFlottes() {
               {visibleColumns.includes('ap') && header('ap', 'AP')}
               {visibleColumns.includes('dc') && header('dc', 'D.C.')}
               {visibleColumns.includes('db') && header('db', 'D.B.')}
+              {visibleColumns.includes('shield') && header('shield', 'Bouclier')}
               {visibleColumns.includes('cdt') && header('cdt', 'CdT')}
               {visibleColumns.includes('cdt3') && header('cdt3', 'CdT3')}
               {visibleColumns.includes('cdt7') && header('cdt7', 'CdT7')}
               {visibleColumns.includes('cases') && header('cases', 'Cases')}
+              {visibleColumns.includes('shieldPerCase') && header('shieldPerCase', 'Boucl./Case')}
               {visibleColumns.includes('dcPerCase') && header('dcPerCase', 'D.C./Case')}
               {visibleColumns.includes('dbPerCase') && header('dbPerCase', 'D.B./Case')}
               {visibleColumns.includes('exp') && header('exp', 'Exp')}
@@ -213,6 +219,7 @@ export default function ListeFlottes() {
                 {visibleColumns.includes('ap') && <td style={{ textAlign: 'right' }}>{f.ap ?? '—'}</td>}
                 {visibleColumns.includes('dc') && <td style={{ textAlign: 'right' }}>{f.dc?.toFixed(1) ?? '—'}</td>}
                 {visibleColumns.includes('db') && <td style={{ textAlign: 'right' }}>{f.db?.toFixed(1) ?? '—'}</td>}
+                {visibleColumns.includes('shield') && <td style={{ textAlign: 'right' }}>{f.shield ?? '—'}</td>}
                 {visibleColumns.includes('cdt') && <td style={{ textAlign: 'right' }}>
                   {f.cdt > 0 ? Math.round(f.cdt * 100) : 'N/A'}
                 </td>}
@@ -223,6 +230,7 @@ export default function ListeFlottes() {
                   {f.cdt7 > 0 ? Math.round(f.cdt7 * 100) : 'N/A'}
                 </td>}
                 {visibleColumns.includes('cases') && <td style={{ textAlign: 'right' }}>{f.cases ?? '—'}</td>}
+                {visibleColumns.includes('shieldPerCase') && <td style={{ textAlign: 'right' }}>{f.shieldPerCase?.toFixed(1) ?? '—'}</td>}
                 {visibleColumns.includes('dcPerCase') && <td style={{ textAlign: 'right' }}>{f.dcPerCase?.toFixed(1) ?? '—'}</td>}
                 {visibleColumns.includes('dbPerCase') && <td style={{ textAlign: 'right' }}>{f.dbPerCase?.toFixed(1) ?? '—'}</td>}
                 {visibleColumns.includes('exp') && <td style={{ textAlign: 'right' }}>{f.exp?.toFixed(0) ?? '—'}</td>}
@@ -244,7 +252,7 @@ export default function ListeFlottes() {
             ))}
             {pageItems.length === 0 && (
               <tr>
-                <td colSpan={18} style={{ textAlign: 'center', padding: 12, color: '#aaa' }}>
+                <td colSpan={20} style={{ textAlign: 'center', padding: 12, color: '#aaa' }}>
                   Aucune flotte ne correspond aux filtres.
                 </td>
               </tr>
