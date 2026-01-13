@@ -33,6 +33,7 @@ function App() {
                             <Route path="/plans/creer" element={<CreatePlan/>}/>
                             <Route path="/recherche" element={<RechercheTechnologique/>}/>
                             <Route path="/player-system-detail/:key" element={<PlayerSystemDetail/>}/>
+                            <Route path="/combat/:logId" element={<CombatDashboard />} />
                         </Routes>
                     </main>
                 </div>
