@@ -12,7 +12,6 @@ import ListePlans from './screens/ListePlans';
 import CreatePlan from './screens/CreatePlan';
 import RechercheTechnologique from './screens/RechercheTechnologique';
 import PlayerSystemDetail from './screens/PlayerSystemDetail';
-import CombatHeatmapScreen from './screens/CombatHeatmapScreen';
 
 function App() {
     return (<ReportProvider>
@@ -34,7 +33,6 @@ function App() {
                             <Route path="/plans/creer" element={<CreatePlan/>}/>
                             <Route path="/recherche" element={<RechercheTechnologique/>}/>
                             <Route path="/player-system-detail/:key" element={<PlayerSystemDetail/>}/>
-                            <Route path="/combat/:id" element={<CombatHeatmapScreen />} />
                         </Routes>
                     </main>
                 </div>
