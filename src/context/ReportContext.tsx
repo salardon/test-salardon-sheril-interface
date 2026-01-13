@@ -2,11 +2,15 @@ import React, {createContext, useContext, useEffect, useMemo, useState, useCallb
 import {GlobalData, Rapport, XY} from '../types';
 import {parseRapportXml} from '../parsers/parseRapport';
 import {parseDataXml} from '../parsers/parseData';
+import { CombatLogData } from '../types/combat';
+import { parseCombatLog } from '../parsers/parseCombatLog';
 
 type ReportContextType = {
     rapport?: Rapport;
     global?: GlobalData;
     loadRapportFile: (file: File) => Promise<void>;
+    combatLogs: CombatLogData[];
+    loadCombatLog: (file: File) => Promise<void>;
     ready: boolean;
     cellSize: number;
     setCellSize: (n: number) => void;
@@ -22,6 +26,7 @@ const ReportContext = createContext<ReportContextType | undefined>(undefined);
 export function ReportProvider({children}: { children: React.ReactNode }) {
     const [rapport, setRapport] = useState<Rapport | undefined>(undefined);
     const [global, setGlobal] = useState<GlobalData | undefined>(undefined);
+    const [combatLogs, setCombatLogs] = useState<CombatLogData[]>([]);
     const [cellSize, setCellSize] = useState<number>(32);
     const [center, setCenter] = useState<XY | undefined>(undefined);
     const [viewportCols, setViewportCols] = useState<number>(0);
@@ -45,6 +50,12 @@ export function ReportProvider({children}: { children: React.ReactNode }) {
             // Storage might be unavailable (private mode/quota). Ignore silently.
         }
     }, [center]);
+
+    const loadCombatLog = useCallback(async (file: File) => {
+        const text = await file.text();
+        const parsed = parseCombatLog(file.name, text);
+        setCombatLogs(prev => [...prev, parsed]);
+    }, []);
 
     useEffect(() => {
         let alive = true;
@@ -91,6 +102,8 @@ export function ReportProvider({children}: { children: React.ReactNode }) {
         rapport,
         global,
         loadRapportFile,
+        combatLogs,
+        loadCombatLog,
         ready: Boolean(rapport && global),
         cellSize,
         setCellSize,
@@ -99,7 +112,7 @@ export function ReportProvider({children}: { children: React.ReactNode }) {
         viewportCols,
         viewportRows,
         setViewportDims,
-    }), [rapport, global, loadRapportFile, cellSize, center, viewportCols, viewportRows, setViewportDims]);
+    }), [rapport, global, loadRapportFile, combatLogs, loadCombatLog, cellSize, center, viewportCols, viewportRows, setViewportDims]);
 
     return <ReportContext.Provider value={value}>{children}</ReportContext.Provider>;
 }

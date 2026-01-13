@@ -4,8 +4,9 @@ import Commandant from "./utils/Commandant";
 import {NavLink} from "react-router-dom";
 
 export default function Header() {
-    const {rapport, loadRapportFile, setCenter} = useReport();
+    const {rapport, loadRapportFile, setCenter, combatLogs, loadCombatLog} = useReport();
     const rapportInput = useRef<HTMLInputElement>(null);
+    const combatLogInput = useRef<HTMLInputElement>(null);
 
     return (<header className="app-header">
         <div>
@@ -50,6 +51,11 @@ export default function Header() {
             </NavLink>
         </nav>
         <div className="header-spacer"/>
+        {combatLogs.map(log => (
+            <NavLink key={log.id} to={`/combat/${log.id}`} className={({isActive}) => (isActive ? 'active' : '')}>
+                {log.battleName}
+            </NavLink>
+        ))}
         <input
             ref={rapportInput}
             type="file"
@@ -64,6 +70,20 @@ export default function Header() {
                 if (inputEl) inputEl.value = '';
             }}
             title="Charger rapport.xml"
+        />
+        <input
+            ref={combatLogInput}
+            type="file"
+            accept=".log"
+            onChange={async (e) => {
+                const f = e.currentTarget?.files?.[0];
+                const inputEl = combatLogInput.current;
+                if (f) {
+                    await loadCombatLog(f);
+                }
+                if (inputEl) inputEl.value = '';
+            }}
+            title="Charger un log de combat"
         />
     </header>);
 }
