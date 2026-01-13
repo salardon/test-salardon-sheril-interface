@@ -1,0 +1,867 @@
+RESOLUTION COMBAT [F16_3 VS F77_0] 
+TOUR DE COMBAT 1
+[F16_3 VS F77_0]  C3 , tir vaisseau N°0/3 (Chasseur standard, race: 3) , attP: (x:11|y:1020|z:14) , cible: Intercepteur standard, deffP: (x:11|y:1020|z:19), distance: 5
+ - tir N0, arme: laserI => chance 27(5),  miss
+ - tir N0, arme: laserI => chance 27(5),  miss
+ - tir N0, arme: laserI => chance 27(5),  miss
+ - tir N0, arme: laserI => chance 27(5),  miss
+[F16_3 VS F77_0]  C3 , tir vaisseau N°0/3 (Chasseur standard, race: 3) , attP: (x:11|y:1020|z:19) , cible: Intercepteur standard, deffP: (x:11|y:1020|z:19), distance: 0
+ - tir N0, arme: laserI => chance 55(5),  hit, degat (1)
+ - tir N0, arme: laserI => chance 55(5),  miss
+ - tir N0, arme: laserI => chance 55(5),  hit, degat (1), cible detruire
+[F16_3 VS F77_0]  C3 , tir vaisseau N°0/0 (Intercepteur standard, race: 3) , attP: (x:11|y:1020|z:19) 
+[F16_3 VS F77_0]  C3 , tir vaisseau N°0/0 (Intercepteur standard, race: 3) , attP: (x:11|y:1020|z:19) 
+[F16_3 VS F77_0]  C3 , tir vaisseau N°0/3 (Chasseur standard, race: 3) , attP: (x:11|y:1020|z:19) 
+[F16_3 VS F77_0]  C3 , tir vaisseau N°0/0 (Intercepteur standard, race: 3) , attP: (x:11|y:1020|z:22) 
+[F16_3 VS F77_0]  C3 , tir vaisseau N°0/3 (Chasseur standard, race: 3) , attP: (x:11|y:1020|z:19) 
+[F16_3 VS F77_0]  C3 , tir vaisseau N°0/3 (Chasseur standard, race: 3) , attP: (x:10|y:7|z:0) pas de cible
+[F16_3 VS F77_0]  C3 , tir vaisseau N°0/3 (Chasseur standard, race: 3) , attP: (x:15|y:8|z:-4) pas de cible
+[F16_3 VS F77_0]  C0 , tir vaisseau N°0/0 (Intercepteur standard, race: 4) , attP: (x:11|y:1020|z:19) 
+[F16_3 VS F77_0]  C3 , tir vaisseau N°0/0 (Intercepteur standard, race: 3) , attP: (x:-1|y:27|z:6) 
+FIN DE TOUR: F1  0, F2 : 2
+RESOLUTION COMBAT [F4_3 VS F130_0] 
+TOUR DE COMBAT 1
+[F4_3 VS F130_0]  C3 , tir vaisseau N°0/3 (Chasseur standard, race: 3) , attP: (x:20|y:1020|z:56) , cible: Supercroiseur standard, deffP: (x:20|y:1020|z:56), distance: 0
+ - tir N0, arme: laserI => chance 23(8),  miss
+ - tir N0, arme: laserI => chance 23(8),  miss
+ - tir N0, arme: laserI => chance 23(8),  hit, shielded (2)
+ - tir N0, arme: laserI => chance 23(8),  miss
+[F4_3 VS F130_0]  C3 , tir vaisseau N°0/3 (Chasseur standard, race: 3) , attP: (x:20|y:1020|z:56) , cible: Supercroiseur standard, deffP: (x:20|y:1020|z:56), distance: 0
+ - tir N0, arme: laserI => chance 24(9),  hit, shielded (2)
+ - tir N0, arme: laserI => chance 24(9),  hit, shielded (2)
+ - tir N0, arme: laserI => chance 24(9),  miss
+ - tir N0, arme: laserI => chance 24(9),  miss
+[F4_3 VS F130_0]  C3 , tir vaisseau N°0/3 (Chasseur standard, race: 3) , attP: (x:88|y:1020|z:-33) , cible: Eclaireur standard, deffP: (x:88|y:1020|z:-33), distance: 0
+ - tir N0, arme: laserI => chance 53(8),  miss
+ - tir N0, arme: laserI => chance 53(8),  miss
+ - tir N0, arme: laserI => chance 53(8),  hit, degat (1)
+ - tir N0, arme: laserI => chance 53(8),  hit, degat (1)
+[F4_3 VS F130_0]  C3 , tir vaisseau N°0/3 (Chasseur standard, race: 3) , attP: (x:21|y:1020|z:2) , cible: Fregate standard, deffP: (x:21|y:1020|z:2), distance: 0
+ - tir N0, arme: laserI => chance 33(8),  miss
+ - tir N0, arme: laserI => chance 33(8),  hit, shielded (2)
+ - tir N0, arme: laserI => chance 33(8),  miss
+ - tir N0, arme: laserI => chance 33(8),  miss
+[F4_3 VS F130_0]  C3 , tir vaisseau N°0/3 (Chasseur standard, race: 3) , attP: (x:20|y:1020|z:56) , cible: Supercroiseur standard, deffP: (x:20|y:1020|z:56), distance: 0
+ - tir N0, arme: laserI => chance 23(8),  miss
+ - tir N0, arme: laserI => chance 23(8),  hit, shielded (2)
+ - tir N0, arme: laserI => chance 23(8),  hit, shielded (2)
+ - tir N0, arme: laserI => chance 23(8),  miss
+[F4_3 VS F130_0]  C3 , tir vaisseau N°0/25 (Destroyer standard, race: 3) , attP: (x:88|y:1020|z:5) , cible: Eclaireur standard, deffP: (x:88|y:1020|z:-33), distance: 38
+ - tir N0, arme: laserI - chance < 0 , exit
+ - tir N1, arme: laserI - chance < 0 , exit
+ - tir N2, arme: laserI - chance < 0 , exit
+ - tir N3, arme: laserI - chance < 0 , exit
+ - tir N4, arme: laserI - chance < 0 , exit
+ - tir N5, arme: laserI - chance < 0 , exit
+ - tir N6, arme: laserI - chance < 0 , exit
+ - tir N7, arme: laserI - chance < 0 , exit
+ - tir N8, arme: laserI - chance < 0 , exit
+ - tir N9, arme: laserI - chance < 0 , exit
+ - tir N10, arme: canon à plasmaI - chance < 0 , exit
+ - tir N11, arme: canon à plasmaI - chance < 0 , exit
+ - tir N12, arme: canon à plasmaI - chance < 0 , exit
+ - tir N13, arme: canon à plasmaI - chance < 0 , exit
+ - tir N14, arme: canon à plasmaI - chance < 0 , exit
+ - tir N15, arme: canon à plasmaI - chance < 0 , exit
+ - tir N16, arme: canon à plasmaI - chance < 0 , exit
+ - tir N17, arme: canon à plasmaI - chance < 0 , exit
+ - tir N18, arme: canon à plasmaI - chance < 0 , exit
+ - tir N19, arme: canon à plasmaI - chance < 0 , exit
+[F4_3 VS F130_0]  C3 , tir vaisseau N°0/3 (Chasseur standard, race: 3) , attP: (x:20|y:1020|z:56) , cible: Supercroiseur standard, deffP: (x:20|y:1020|z:56), distance: 0
+ - tir N0, arme: laserI => chance 23(8),  hit, shielded (2)
+ - tir N0, arme: laserI => chance 23(8),  hit, shielded (2)
+ - tir N0, arme: laserI => chance 23(8),  miss
+ - tir N0, arme: laserI => chance 23(8),  miss
+[F4_3 VS F130_0]  C3 , tir vaisseau N°0/25 (Destroyer standard, race: 3) , attP: (x:88|y:1020|z:-33) , cible: Eclaireur standard, deffP: (x:88|y:1020|z:-33), distance: 0
+ - tir N0, arme: laserI => chance 54(9),  miss
+ - tir N0, arme: laserI => chance 54(9),  miss
+ - tir N0, arme: laserI => chance 54(9),  hit, degat (1)
+ - tir N0, arme: laserI => chance 54(9),  miss
+ - tir N0, arme: laserI => chance 54(9),  miss
+ - tir N0, arme: laserI => chance 54(9),  miss
+ - tir N0, arme: laserI => chance 54(9),  hit, degat (1), cible detruire
+[F4_3 VS F130_0]  C3 , tir vaisseau N°0/25 (Destroyer standard, race: 3) , attP: (x:20|y:1020|z:56) , cible: Supercroiseur standard, deffP: (x:20|y:1020|z:56), distance: 0
+ - tir N0, arme: laserI => chance 24(9),  miss
+ - tir N0, arme: laserI => chance 24(9),  hit, shielded (2)
+ - tir N0, arme: laserI => chance 24(9),  miss
+ - tir N0, arme: laserI => chance 24(9),  hit, shielded (2)
+ - tir N0, arme: laserI => chance 24(9),  hit, shielded (2)
+ - tir N0, arme: laserI => chance 24(9),  miss
+ - tir N0, arme: laserI => chance 24(9),  miss
+ - tir N0, arme: laserI => chance 24(9),  miss
+ - tir N0, arme: laserI => chance 24(9),  miss
+ - tir N0, arme: laserI => chance 24(9),  miss
+ - tir N0, arme: canon à plasmaI => chance 54(9),  hit, degat (1)
+ - tir N0, arme: canon à plasmaI => chance 54(9),  hit, degat (1)
+ - tir N0, arme: canon à plasmaI => chance 54(9),  miss
+ - tir N0, arme: canon à plasmaI => chance 54(9),  miss
+ - tir N0, arme: canon à plasmaI => chance 54(9),  miss
+ - tir N0, arme: canon à plasmaI => chance 54(9),  miss
+ - tir N0, arme: canon à plasmaI => chance 54(9),  miss
+ - tir N0, arme: canon à plasmaI => chance 54(9),  hit, degat (1)
+ - tir N0, arme: canon à plasmaI => chance 54(9),  miss
+ - tir N0, arme: canon à plasmaI => chance 54(9),  hit, degat (1)
+[F4_3 VS F130_0]  C0 , tir vaisseau N°0/0 (Intercepteur standard, race: 5) , attP: (x:11|y:1020|z:29) , cible: Torpilleur standard, deffP: (x:20|y:1020|z:56), distance: 27
+ - tir N0, arme: laserI - chance < 0 , exit
+[F4_3 VS F130_0]  C3 , tir vaisseau N°0/25 (Destroyer standard, race: 3) , attP: (x:20|y:1020|z:56) , cible: Supercroiseur standard, deffP: (x:20|y:1020|z:56), distance: 0
+ - tir N0, arme: laserI => chance 24(9),  miss
+ - tir N0, arme: laserI => chance 24(9),  hit, degat (1)
+ - tir N0, arme: laserI => chance 24(9),  miss
+ - tir N0, arme: laserI => chance 24(9),  hit, degat (1)
+ - tir N0, arme: laserI => chance 24(9),  miss
+ - tir N0, arme: laserI => chance 24(9),  miss
+ - tir N0, arme: laserI => chance 24(9),  miss
+ - tir N0, arme: laserI => chance 24(9),  miss
+ - tir N0, arme: laserI => chance 24(9),  miss
+ - tir N0, arme: laserI => chance 24(9),  miss
+ - tir N0, arme: canon à plasmaI => chance 54(9),  hit, degat (1)
+ - tir N0, arme: canon à plasmaI => chance 54(9),  hit, degat (1)
+ - tir N0, arme: canon à plasmaI => chance 54(9),  miss
+ - tir N0, arme: canon à plasmaI => chance 54(9),  miss
+ - tir N0, arme: canon à plasmaI => chance 54(9),  hit, degat (1)
+ - tir N0, arme: canon à plasmaI => chance 54(9),  hit, degat (1)
+ - tir N0, arme: canon à plasmaI => chance 54(9),  hit, degat (1)
+ - tir N0, arme: canon à plasmaI => chance 54(9),  miss
+ - tir N0, arme: canon à plasmaI => chance 54(9),  hit, degat (1)
+ - tir N0, arme: canon à plasmaI => chance 54(9),  miss
+[F4_3 VS F130_0]  C3 , tir vaisseau N°0/0 (Intercepteur standard, race: 3) , attP: (x:20|y:1020|z:56) , cible: Supercroiseur standard, deffP: (x:20|y:1020|z:56), distance: 0
+ - tir N0, arme: laserI => chance 23(8),  miss
+[F4_3 VS F130_0]  C3 , tir vaisseau N°0/15 (Fregate standard, race: 3) , attP: (x:20|y:1020|z:56) , cible: Supercroiseur standard, deffP: (x:20|y:1020|z:56), distance: 0
+ - tir N0, arme: canon à plasmaI => chance 54(9),  hit, degat (1)
+ - tir N0, arme: canon à plasmaI => chance 54(9),  miss
+ - tir N0, arme: canon à plasmaI => chance 54(9),  miss
+ - tir N0, arme: canon à plasmaI => chance 54(9),  hit, degat (1)
+ - tir N0, arme: canon à plasmaI => chance 54(9),  hit, degat (1)
+ - tir N0, arme: canon à plasmaI => chance 54(9),  miss
+ - tir N0, arme: canon à plasmaI => chance 54(9),  hit, degat (1)
+ - tir N0, arme: canon à plasmaI => chance 54(9),  hit, degat (1)
+ - tir N0, arme: canon à plasmaI => chance 54(9),  hit, degat (1)
+ - tir N0, arme: canon à plasmaI => chance 54(9),  miss
+[F4_3 VS F130_0]  C3 , tir vaisseau N°0/3 (Torpilleur standard, race: 3) , attP: (x:20|y:1020|z:56) , cible: Supercroiseur standard, deffP: (x:20|y:1020|z:56), distance: 0
+ - tir N0, arme: lance-torpilleI => chance 28(8),  hit, degat (2)
+ - tir N0, arme: lance-torpilleI => chance 28(8),  miss
+ - tir N0, arme: lance-torpilleI => chance 28(8),  miss
+ - tir N0, arme: lance-torpilleI => chance 28(8),  hit, degat (2)
+[F4_3 VS F130_0]  C3 , tir vaisseau N°0/15 (Fregate standard, race: 3) , attP: (x:20|y:1020|z:56) , cible: Supercroiseur standard, deffP: (x:20|y:1020|z:56), distance: 0
+ - tir N0, arme: canon à plasmaI => chance 53(8),  hit, degat (1)
+ - tir N0, arme: canon à plasmaI => chance 53(8),  hit, degat (1)
+ - tir N0, arme: canon à plasmaI => chance 53(8),  hit, degat (1)
+ - tir N0, arme: canon à plasmaI => chance 53(8),  hit, degat (1)
+ - tir N0, arme: canon à plasmaI => chance 53(8),  hit, degat (1)
+ - tir N0, arme: canon à plasmaI => chance 53(8),  hit, degat (1)
+ - tir N0, arme: canon à plasmaI => chance 53(8),  hit, degat (1)
+ - tir N0, arme: canon à plasmaI => chance 53(8),  hit, degat (1)
+ - tir N0, arme: canon à plasmaI => chance 53(8),  miss
+ - tir N0, arme: canon à plasmaI => chance 53(8),  hit, degat (1)
+[F4_3 VS F130_0]  C3 , tir vaisseau N°0/25 (Destroyer standard, race: 3) , attP: (x:21|y:1020|z:2) , cible: Fregate standard, deffP: (x:21|y:1020|z:2), distance: 0
+ - tir N0, arme: laserI => chance 33(8),  hit, shielded (2)
+ - tir N0, arme: laserI => chance 33(8),  hit, shielded (2)
+ - tir N0, arme: laserI => chance 33(8),  hit, shielded (2)
+ - tir N0, arme: laserI => chance 33(8),  miss
+ - tir N0, arme: laserI => chance 33(8),  hit, shielded (2)
+ - tir N0, arme: laserI => chance 33(8),  hit, degat (1)
+ - tir N0, arme: laserI => chance 33(8),  hit, degat (1)
+ - tir N0, arme: laserI => chance 33(8),  miss
+ - tir N0, arme: laserI => chance 33(8),  miss
+ - tir N0, arme: laserI => chance 33(8),  miss
+ - tir N0, arme: canon à plasmaI => chance 53(8),  miss
+ - tir N0, arme: canon à plasmaI => chance 53(8),  hit, degat (1)
+ - tir N0, arme: canon à plasmaI => chance 53(8),  hit, degat (1)
+ - tir N0, arme: canon à plasmaI => chance 53(8),  miss
+ - tir N0, arme: canon à plasmaI => chance 53(8),  hit, degat (1)
+ - tir N0, arme: canon à plasmaI => chance 53(8),  miss
+ - tir N0, arme: canon à plasmaI => chance 53(8),  hit, degat (1)
+ - tir N0, arme: canon à plasmaI => chance 53(8),  hit, degat (1)
+ - tir N0, arme: canon à plasmaI => chance 53(8),  miss
+ - tir N0, arme: canon à plasmaI => chance 53(8),  miss
+[F4_3 VS F130_0]  C3 , tir vaisseau N°0/0 (Intercepteur standard, race: 3) , attP: (x:20|y:1020|z:56) , cible: Supercroiseur standard, deffP: (x:20|y:1020|z:56), distance: 0
+ - tir N0, arme: laserI => chance 23(8),  miss
+[F4_3 VS F130_0]  C3 , tir vaisseau N°0/0 (Intercepteur standard, race: 3) , attP: (x:20|y:1020|z:56) , cible: Supercroiseur standard, deffP: (x:20|y:1020|z:56), distance: 0
+ - tir N0, arme: laserI => chance 23(8),  miss
+[F4_3 VS F130_0]  C3 , tir vaisseau N°0/3 (Torpilleur standard, race: 3) , attP: (x:20|y:1020|z:56) , cible: Supercroiseur standard, deffP: (x:20|y:1020|z:56), distance: 0
+ - tir N0, arme: lance-torpilleI => chance 28(8),  miss
+ - tir N0, arme: lance-torpilleI => chance 28(8),  miss
+ - tir N0, arme: lance-torpilleI => chance 28(8),  miss
+ - tir N0, arme: lance-torpilleI => chance 28(8),  hit, degat (2)
+[F4_3 VS F130_0]  C3 , tir vaisseau N°0/15 (Fregate standard, race: 3) , attP: (x:11|y:1020|z:6) , cible: Intercepteur standard, deffP: (x:11|y:1020|z:6), distance: 0
+ - tir N0, arme: canon à plasmaI => chance 29(9),  miss
+ - tir N0, arme: canon à plasmaI => chance 29(9),  hit, degat (1)
+ - tir N0, arme: canon à plasmaI => chance 29(9),  miss
+ - tir N0, arme: canon à plasmaI => chance 29(9),  miss
+ - tir N0, arme: canon à plasmaI => chance 29(9),  miss
+ - tir N0, arme: canon à plasmaI => chance 29(9),  miss
+ - tir N0, arme: canon à plasmaI => chance 29(9),  hit, degat (1), cible detruire
+[F4_3 VS F130_0]  C3 , tir vaisseau N°0/3 (Torpilleur standard, race: 3) , attP: (x:21|y:1020|z:2) , cible: Fregate standard, deffP: (x:21|y:1020|z:2), distance: 0
+ - tir N0, arme: lance-torpilleI => chance 19(9),  miss
+ - tir N0, arme: lance-torpilleI => chance 19(9),  miss
+ - tir N0, arme: lance-torpilleI => chance 19(9),  miss
+ - tir N0, arme: lance-torpilleI => chance 19(9),  miss
+[F4_3 VS F130_0]  C3 , tir vaisseau N°0/25 (Destroyer standard, race: 3) , attP: (x:88|y:1020|z:4) 
+[F4_3 VS F130_0]  C0 , tir vaisseau N°0/0 (Intercepteur standard, race: 5) , attP: (x:11|y:1020|z:6) 
+[F4_3 VS F130_0]  C3 , tir vaisseau N°0/25 (Destroyer standard, race: 3) , attP: (x:20|y:1020|z:56) , cible: Supercroiseur standard, deffP: (x:20|y:1020|z:56), distance: 0
+ - tir N0, arme: laserI => chance 24(9),  hit, degat (1)
+ - tir N0, arme: laserI => chance 24(9),  miss
+ - tir N0, arme: laserI => chance 24(9),  hit, degat (1)
+ - tir N0, arme: laserI => chance 24(9),  miss
+ - tir N0, arme: laserI => chance 24(9),  miss
+ - tir N0, arme: laserI => chance 24(9),  miss
+ - tir N0, arme: laserI => chance 24(9),  hit, degat (1)
+ - tir N0, arme: laserI => chance 24(9),  miss
+ - tir N0, arme: laserI => chance 24(9),  miss
+ - tir N0, arme: laserI => chance 24(9),  miss
+ - tir N0, arme: canon à plasmaI => chance 54(9),  hit, degat (1)
+ - tir N0, arme: canon à plasmaI => chance 54(9),  hit, degat (1)
+ - tir N0, arme: canon à plasmaI => chance 54(9),  miss
+ - tir N0, arme: canon à plasmaI => chance 54(9),  hit, degat (1)
+ - tir N0, arme: canon à plasmaI => chance 54(9),  miss
+ - tir N0, arme: canon à plasmaI => chance 54(9),  miss
+ - tir N0, arme: canon à plasmaI => chance 54(9),  miss
+ - tir N0, arme: canon à plasmaI => chance 54(9),  hit, degat (1)
+ - tir N0, arme: canon à plasmaI => chance 54(9),  hit, degat (1)
+ - tir N0, arme: canon à plasmaI => chance 54(9),  miss
+[F4_3 VS F130_0]  C3 , tir vaisseau N°0/15 (Fregate standard, race: 3) , attP: (x:20|y:1020|z:56) , cible: Supercroiseur standard, deffP: (x:20|y:1020|z:56), distance: 0
+ - tir N0, arme: canon à plasmaI => chance 54(9),  miss
+ - tir N0, arme: canon à plasmaI => chance 54(9),  miss
+ - tir N0, arme: canon à plasmaI => chance 54(9),  hit, degat (1)
+ - tir N0, arme: canon à plasmaI => chance 54(9),  miss
+ - tir N0, arme: canon à plasmaI => chance 54(9),  miss
+ - tir N0, arme: canon à plasmaI => chance 54(9),  hit, degat (1)
+ - tir N0, arme: canon à plasmaI => chance 54(9),  hit, degat (1)
+ - tir N0, arme: canon à plasmaI => chance 54(9),  hit, degat (1)
+ - tir N0, arme: canon à plasmaI => chance 54(9),  miss
+ - tir N0, arme: canon à plasmaI => chance 54(9),  miss
+[F4_3 VS F130_0]  C3 , tir vaisseau N°0/3 (Torpilleur standard, race: 3) , attP: (x:20|y:1020|z:56) , cible: Supercroiseur standard, deffP: (x:20|y:1020|z:56), distance: 0
+ - tir N0, arme: lance-torpilleI => chance 29(9),  miss
+ - tir N0, arme: lance-torpilleI => chance 29(9),  miss
+ - tir N0, arme: lance-torpilleI => chance 29(9),  miss
+ - tir N0, arme: lance-torpilleI => chance 29(9),  miss
+[F4_3 VS F130_0]  C3 , tir vaisseau N°0/3 (Torpilleur standard, race: 3) , attP: (x:20|y:1020|z:56) , cible: Supercroiseur standard, deffP: (x:20|y:1020|z:56), distance: 0
+ - tir N0, arme: lance-torpilleI => chance 29(9),  miss
+ - tir N0, arme: lance-torpilleI => chance 29(9),  miss
+ - tir N0, arme: lance-torpilleI => chance 29(9),  miss
+ - tir N0, arme: lance-torpilleI => chance 29(9),  miss
+[F4_3 VS F130_0]  C3 , tir vaisseau N°0/15 (Fregate standard, race: 3) , attP: (x:20|y:1020|z:56) , cible: Supercroiseur standard, deffP: (x:20|y:1020|z:56), distance: 0
+ - tir N0, arme: canon à plasmaI => chance 53(8),  hit, degat (1)
+ - tir N0, arme: canon à plasmaI => chance 53(8),  miss
+ - tir N0, arme: canon à plasmaI => chance 53(8),  miss
+ - tir N0, arme: canon à plasmaI => chance 53(8),  hit, degat (1)
+ - tir N0, arme: canon à plasmaI => chance 53(8),  hit, degat (1)
+ - tir N0, arme: canon à plasmaI => chance 53(8),  hit, degat (1)
+ - tir N0, arme: canon à plasmaI => chance 53(8),  miss
+ - tir N0, arme: canon à plasmaI => chance 53(8),  hit, degat (1)
+ - tir N0, arme: canon à plasmaI => chance 53(8),  miss
+ - tir N0, arme: canon à plasmaI => chance 53(8),  hit, degat (1)
+[F4_3 VS F130_0]  C3 , tir vaisseau N°0/3 (Torpilleur standard, race: 3) , attP: (x:20|y:1020|z:56) , cible: Supercroiseur standard, deffP: (x:20|y:1020|z:56), distance: 0
+ - tir N0, arme: lance-torpilleI => chance 28(8),  miss
+ - tir N0, arme: lance-torpilleI => chance 28(8),  miss
+ - tir N0, arme: lance-torpilleI => chance 28(8),  hit, degat (2)
+ - tir N0, arme: lance-torpilleI => chance 28(8),  miss
+[F4_3 VS F130_0]  C3 , tir vaisseau N°0/3 (Torpilleur standard, race: 3) , attP: (x:20|y:1020|z:56) , cible: Supercroiseur standard, deffP: (x:20|y:1020|z:56), distance: 0
+ - tir N0, arme: lance-torpilleI => chance 28(8),  miss
+ - tir N0, arme: lance-torpilleI => chance 28(8),  miss
+ - tir N0, arme: lance-torpilleI => chance 28(8),  miss
+ - tir N0, arme: lance-torpilleI => chance 28(8),  miss
+[F4_3 VS F130_0]  C3 , tir vaisseau N°0/3 (Torpilleur standard, race: 3) , attP: (x:20|y:1020|z:56) , cible: Supercroiseur standard, deffP: (x:20|y:1020|z:56), distance: 0
+ - tir N0, arme: lance-torpilleI => chance 28(8),  hit, degat (2)
+ - tir N0, arme: lance-torpilleI => chance 28(8),  miss
+ - tir N0, arme: lance-torpilleI => chance 28(8),  miss
+ - tir N0, arme: lance-torpilleI => chance 28(8),  miss
+[F4_3 VS F130_0]  C0 , tir vaisseau N°0/15 (Fregate standard, race: 5) , attP: (x:21|y:1020|z:2) , cible: Croiseur standard, deffP: (x:20|y:1020|z:56), distance: 54
+ - tir N0, arme: canon à plasmaI - chance < 0 , exit
+ - tir N1, arme: canon à plasmaI - chance < 0 , exit
+ - tir N2, arme: canon à plasmaI - chance < 0 , exit
+ - tir N3, arme: canon à plasmaI - chance < 0 , exit
+ - tir N4, arme: canon à plasmaI - chance < 0 , exit
+ - tir N5, arme: canon à plasmaI - chance < 0 , exit
+ - tir N6, arme: canon à plasmaI - chance < 0 , exit
+[F4_3 VS F130_0]  C3 , tir vaisseau N°0/3 (Torpilleur standard, race: 3) , attP: (x:20|y:1020|z:56) , cible: Supercroiseur standard, deffP: (x:20|y:1020|z:56), distance: 0
+ - tir N0, arme: lance-torpilleI => chance 28(8),  miss
+ - tir N0, arme: lance-torpilleI => chance 28(8),  miss
+ - tir N0, arme: lance-torpilleI => chance 28(8),  hit, degat (2)
+ - tir N0, arme: lance-torpilleI => chance 28(8),  hit, degat (2)
+[F4_3 VS F130_0]  C3 , tir vaisseau N°0/3 (Torpilleur standard, race: 3) , attP: (x:20|y:1020|z:56) , cible: Supercroiseur standard, deffP: (x:20|y:1020|z:56), distance: 0
+ - tir N0, arme: lance-torpilleI => chance 29(9),  hit, degat (2)
+ - tir N0, arme: lance-torpilleI => chance 29(9),  hit, degat (2)
+ - tir N0, arme: lance-torpilleI => chance 29(9),  miss
+ - tir N0, arme: lance-torpilleI => chance 29(9),  miss
+[F4_3 VS F130_0]  C3 , tir vaisseau N°0/63 (Croiseur standard, race: 3) , attP: (x:20|y:1020|z:56) , cible: Supercroiseur standard, deffP: (x:20|y:1020|z:56), distance: 0
+ - tir N0, arme: canon à plasmaI => chance 53(8),  hit, degat (1)
+ - tir N0, arme: canon à plasmaI => chance 53(8),  hit, degat (1)
+ - tir N0, arme: canon à plasmaI => chance 53(8),  hit, degat (1)
+ - tir N0, arme: canon à plasmaI => chance 53(8),  miss
+ - tir N0, arme: canon à plasmaI => chance 53(8),  hit, degat (1)
+ - tir N0, arme: canon à plasmaI => chance 53(8),  hit, degat (1)
+ - tir N0, arme: canon à plasmaI => chance 53(8),  hit, degat (1)
+ - tir N0, arme: canon à plasmaI => chance 53(8),  hit, degat (1)
+ - tir N0, arme: canon à plasmaI => chance 53(8),  hit, degat (1)
+ - tir N0, arme: canon à plasmaI => chance 53(8),  hit, degat (1)
+ - tir N0, arme: missileI => chance 48(8),  miss
+ - tir N0, arme: missileI => chance 48(8),  miss
+ - tir N0, arme: missileI => chance 48(8),  miss
+ - tir N0, arme: missileI => chance 48(8),  miss
+ - tir N0, arme: missileI => chance 48(8),  miss
+ - tir N0, arme: missileI => chance 48(8),  hit, degat (1)
+ - tir N0, arme: missileI => chance 48(8),  hit, degat (1)
+ - tir N0, arme: missileI => chance 48(8),  miss
+ - tir N0, arme: missileI => chance 48(8),  miss
+ - tir N0, arme: missileI => chance 48(8),  hit, degat (1)
+ - tir N0, arme: lance-torpilleI => chance 28(8),  miss
+ - tir N0, arme: lance-torpilleI => chance 28(8),  miss
+ - tir N0, arme: lance-torpilleI => chance 28(8),  miss
+ - tir N0, arme: lance-torpilleI => chance 28(8),  hit, degat (2)
+ - tir N0, arme: lance-torpilleI => chance 28(8),  miss
+ - tir N0, arme: lance-torpilleI => chance 28(8),  miss
+ - tir N0, arme: lance-torpilleI => chance 28(8),  miss
+ - tir N0, arme: lance-torpilleI => chance 28(8),  miss
+ - tir N0, arme: lance-torpilleI => chance 28(8),  hit, degat (2)
+ - tir N0, arme: lance-torpilleI => chance 28(8),  miss
+[F4_3 VS F130_0]  C3 , tir vaisseau N°0/3 (Torpilleur standard, race: 3) , attP: (x:11|y:26|z:4) , cible: Fregate standard, deffP: (x:21|y:1020|z:2), distance: 994
+ - tir N0, arme: lance-torpilleI - chance < 0 , exit
+ - tir N1, arme: lance-torpilleI - chance < 0 , exit
+ - tir N2, arme: lance-torpilleI - chance < 0 , exit
+ - tir N3, arme: lance-torpilleI - chance < 0 , exit
+[F4_3 VS F130_0]  C3 , tir vaisseau N°0/63 (Croiseur standard, race: 3) , attP: (x:20|y:1020|z:56) , cible: Supercroiseur standard, deffP: (x:20|y:1020|z:56), distance: 0
+ - tir N0, arme: canon à plasmaI => chance 53(8),  hit, degat (1)
+ - tir N0, arme: canon à plasmaI => chance 53(8),  miss
+ - tir N0, arme: canon à plasmaI => chance 53(8),  miss
+ - tir N0, arme: canon à plasmaI => chance 53(8),  miss
+ - tir N0, arme: canon à plasmaI => chance 53(8),  hit, degat (1)
+ - tir N0, arme: canon à plasmaI => chance 53(8),  hit, degat (1)
+ - tir N0, arme: canon à plasmaI => chance 53(8),  miss
+ - tir N0, arme: canon à plasmaI => chance 53(8),  hit, degat (1)
+ - tir N0, arme: canon à plasmaI => chance 53(8),  miss
+ - tir N0, arme: canon à plasmaI => chance 53(8),  hit, degat (1)
+ - tir N0, arme: missileI => chance 48(8),  miss
+ - tir N0, arme: missileI => chance 48(8),  hit, degat (1)
+ - tir N0, arme: missileI => chance 48(8),  miss
+ - tir N0, arme: missileI => chance 48(8),  hit, degat (1)
+ - tir N0, arme: missileI => chance 48(8),  hit, degat (1)
+ - tir N0, arme: missileI => chance 48(8),  hit, degat (1)
+ - tir N0, arme: missileI => chance 48(8),  miss
+ - tir N0, arme: missileI => chance 48(8),  miss
+ - tir N0, arme: missileI => chance 48(8),  miss
+ - tir N0, arme: missileI => chance 48(8),  hit, degat (1)
+ - tir N0, arme: lance-torpilleI => chance 28(8),  miss
+ - tir N0, arme: lance-torpilleI => chance 28(8),  miss
+ - tir N0, arme: lance-torpilleI => chance 28(8),  miss
+ - tir N0, arme: lance-torpilleI => chance 28(8),  miss
+ - tir N0, arme: lance-torpilleI => chance 28(8),  miss
+ - tir N0, arme: lance-torpilleI => chance 28(8),  miss
+ - tir N0, arme: lance-torpilleI => chance 28(8),  miss
+ - tir N0, arme: lance-torpilleI => chance 28(8),  miss
+ - tir N0, arme: lance-torpilleI => chance 28(8),  hit, degat (2)
+ - tir N0, arme: lance-torpilleI => chance 28(8),  miss
+[F4_3 VS F130_0]  C3 , tir vaisseau N°0/3 (Torpilleur standard, race: 3) , attP: (x:20|y:1020|z:56) , cible: Supercroiseur standard, deffP: (x:20|y:1020|z:56), distance: 0
+ - tir N0, arme: lance-torpilleI => chance 28(8),  hit, degat (2)
+ - tir N0, arme: lance-torpilleI => chance 28(8),  miss
+ - tir N0, arme: lance-torpilleI => chance 28(8),  miss
+ - tir N0, arme: lance-torpilleI => chance 28(8),  hit, degat (2)
+[F4_3 VS F130_0]  C0 , tir vaisseau N°0/3 (Eclaireur standard, race: 5) , attP: (x:88|y:1020|z:-33) 
+[F4_3 VS F130_0]  C3 , tir vaisseau N°0/63 (Supercroiseur standard, race: 3) , attP: (x:20|y:1020|z:56) , cible: Supercroiseur standard, deffP: (x:20|y:1020|z:56), distance: 0
+ - tir N0, arme: laserI => chance 23(8),  miss
+ - tir N0, arme: laserI => chance 23(8),  miss
+ - tir N0, arme: laserI => chance 23(8),  miss
+ - tir N0, arme: laserI => chance 23(8),  miss
+ - tir N0, arme: laserI => chance 23(8),  hit, degat (1)
+ - tir N0, arme: laserI => chance 23(8),  miss
+ - tir N0, arme: laserI => chance 23(8),  miss
+ - tir N0, arme: laserI => chance 23(8),  miss
+ - tir N0, arme: laserI => chance 23(8),  miss
+ - tir N0, arme: laserI => chance 23(8),  miss
+ - tir N0, arme: laserI => chance 23(8),  miss
+ - tir N0, arme: laserI => chance 23(8),  miss
+ - tir N0, arme: laserI => chance 23(8),  miss
+ - tir N0, arme: laserI => chance 23(8),  miss
+ - tir N0, arme: laserI => chance 23(8),  miss
+ - tir N0, arme: laserI => chance 23(8),  miss
+ - tir N0, arme: laserI => chance 23(8),  miss
+ - tir N0, arme: laserI => chance 23(8),  miss
+ - tir N0, arme: laserI => chance 23(8),  miss
+ - tir N0, arme: laserI => chance 23(8),  miss
+ - tir N0, arme: canon à plasmaI => chance 53(8),  hit, degat (1)
+ - tir N0, arme: canon à plasmaI => chance 53(8),  hit, degat (1)
+ - tir N0, arme: canon à plasmaI => chance 53(8),  miss
+ - tir N0, arme: canon à plasmaI => chance 53(8),  hit, degat (1)
+ - tir N0, arme: canon à plasmaI => chance 53(8),  miss
+ - tir N0, arme: canon à plasmaI => chance 53(8),  hit, degat (1)
+ - tir N0, arme: canon à plasmaI => chance 53(8),  miss
+ - tir N0, arme: canon à plasmaI => chance 53(8),  hit, degat (1)
+ - tir N0, arme: canon à plasmaI => chance 53(8),  hit, degat (1)
+ - tir N0, arme: canon à plasmaI => chance 53(8),  miss
+ - tir N0, arme: canon à plasmaI => chance 53(8),  miss
+ - tir N0, arme: canon à plasmaI => chance 53(8),  hit, degat (1)
+ - tir N0, arme: canon à plasmaI => chance 53(8),  miss
+ - tir N0, arme: canon à plasmaI => chance 53(8),  miss
+ - tir N0, arme: canon à plasmaI => chance 53(8),  miss
+ - tir N0, arme: canon à plasmaI => chance 53(8),  hit, degat (1)
+ - tir N0, arme: canon à plasmaI => chance 53(8),  hit, degat (1)
+ - tir N0, arme: canon à plasmaI => chance 53(8),  hit, degat (1)
+ - tir N0, arme: canon à plasmaI => chance 53(8),  hit, degat (1)
+ - tir N0, arme: canon à plasmaI => chance 53(8),  hit, degat (1)
+ - tir N0, arme: lance-torpilleI => chance 28(8),  miss
+ - tir N0, arme: lance-torpilleI => chance 28(8),  miss
+ - tir N0, arme: lance-torpilleI => chance 28(8),  hit, degat (2)
+ - tir N0, arme: lance-torpilleI => chance 28(8),  hit, degat (2), cible detruire
+[F4_3 VS F130_0]  C0 , tir vaisseau N°0/63 (Supercroiseur standard, race: 5) , attP: (x:20|y:1020|z:56) 
+FIN DE TOUR: F1  0, F2 : 124
+TOUR DE COMBAT 2
+[F4_3 VS F130_0]  C3 , tir vaisseau N°0/3 (Chasseur standard, race: 3) , attP: (x:24|y:1020|z:23) , cible: Intercepteur standard, deffP: (x:24|y:1020|z:23), distance: 0
+ - tir N0, arme: laserI => chance 58(8),  hit, degat (1)
+ - tir N0, arme: laserI => chance 59(9),  hit, degat (1), cible detruire
+[F4_3 VS F130_0]  C3 , tir vaisseau N°0/3 (Chasseur standard, race: 3) , attP: (x:24|y:1020|z:23) 
+[F4_3 VS F130_0]  C3 , tir vaisseau N°0/3 (Chasseur standard, race: 3) , attP: (x:62|y:1020|z:23) 
+[F4_3 VS F130_0]  C3 , tir vaisseau N°0/3 (Chasseur standard, race: 3) , attP: (x:24|y:1020|z:23) 
+[F4_3 VS F130_0]  C3 , tir vaisseau N°0/25 (Destroyer standard, race: 3) , attP: (x:59|y:1020|z:2) , cible: Fregate standard, deffP: (x:21|y:1020|z:2), distance: 38
+ - tir N0, arme: laserI - chance < 0 , exit
+ - tir N1, arme: laserI - chance < 0 , exit
+ - tir N2, arme: laserI - chance < 0 , exit
+ - tir N3, arme: laserI - chance < 0 , exit
+ - tir N4, arme: laserI - chance < 0 , exit
+ - tir N5, arme: laserI - chance < 0 , exit
+ - tir N6, arme: laserI - chance < 0 , exit
+ - tir N7, arme: laserI - chance < 0 , exit
+ - tir N8, arme: laserI - chance < 0 , exit
+ - tir N9, arme: laserI - chance < 0 , exit
+ - tir N10, arme: canon à plasmaI - chance < 0 , exit
+ - tir N11, arme: canon à plasmaI - chance < 0 , exit
+ - tir N12, arme: canon à plasmaI - chance < 0 , exit
+ - tir N13, arme: canon à plasmaI - chance < 0 , exit
+ - tir N14, arme: canon à plasmaI - chance < 0 , exit
+ - tir N15, arme: canon à plasmaI - chance < 0 , exit
+ - tir N16, arme: canon à plasmaI - chance < 0 , exit
+ - tir N17, arme: canon à plasmaI - chance < 0 , exit
+ - tir N18, arme: canon à plasmaI - chance < 0 , exit
+ - tir N19, arme: canon à plasmaI - chance < 0 , exit
+[F4_3 VS F130_0]  C3 , tir vaisseau N°0/0 (Intercepteur standard, race: 3) , attP: (x:21|y:1020|z:2) , cible: Fregate standard, deffP: (x:21|y:1020|z:2), distance: 0
+ - tir N0, arme: laserI => chance 33(8),  hit, degat (1)
+[F4_3 VS F130_0]  C3 , tir vaisseau N°0/3 (Chasseur standard, race: 3) , attP: (x:24|y:1020|z:28) 
+[F4_3 VS F130_0]  C3 , tir vaisseau N°0/15 (Fregate standard, race: 3) , attP: (x:21|y:1020|z:28) , cible: Fregate standard, deffP: (x:21|y:1020|z:2), distance: 26
+ - tir N0, arme: canon à plasmaI - chance < 0 , exit
+ - tir N1, arme: canon à plasmaI - chance < 0 , exit
+ - tir N2, arme: canon à plasmaI - chance < 0 , exit
+ - tir N3, arme: canon à plasmaI - chance < 0 , exit
+ - tir N4, arme: canon à plasmaI - chance < 0 , exit
+ - tir N5, arme: canon à plasmaI - chance < 0 , exit
+ - tir N6, arme: canon à plasmaI - chance < 0 , exit
+ - tir N7, arme: canon à plasmaI - chance < 0 , exit
+ - tir N8, arme: canon à plasmaI - chance < 0 , exit
+ - tir N9, arme: canon à plasmaI - chance < 0 , exit
+[F4_3 VS F130_0]  C3 , tir vaisseau N°0/25 (Destroyer standard, race: 3) , attP: (x:21|y:1020|z:2) , cible: Fregate standard, deffP: (x:21|y:1020|z:2), distance: 0
+ - tir N0, arme: laserI => chance 33(8),  miss
+ - tir N0, arme: laserI => chance 33(8),  hit, degat (1)
+ - tir N0, arme: laserI => chance 33(8),  hit, degat (1)
+ - tir N0, arme: laserI => chance 33(8),  hit, degat (1)
+ - tir N0, arme: laserI => chance 33(8),  miss
+ - tir N0, arme: laserI => chance 33(8),  hit, degat (1)
+ - tir N0, arme: laserI => chance 33(8),  miss
+ - tir N0, arme: laserI => chance 33(8),  miss
+ - tir N0, arme: laserI => chance 33(8),  miss
+ - tir N0, arme: laserI => chance 33(8),  miss
+ - tir N0, arme: canon à plasmaI => chance 53(8),  hit, degat (1)
+ - tir N0, arme: canon à plasmaI => chance 53(8),  miss
+ - tir N0, arme: canon à plasmaI => chance 53(8),  hit, degat (1)
+ - tir N0, arme: canon à plasmaI => chance 53(8),  hit, degat (1)
+ - tir N0, arme: canon à plasmaI => chance 53(8),  miss
+ - tir N0, arme: canon à plasmaI => chance 53(8),  hit, degat (1)
+ - tir N0, arme: canon à plasmaI => chance 53(8),  miss
+ - tir N0, arme: canon à plasmaI => chance 53(8),  hit, degat (1)
+ - tir N0, arme: canon à plasmaI => chance 53(8),  hit, degat (1)
+ - tir N0, arme: canon à plasmaI => chance 53(8),  miss
+[F4_3 VS F130_0]  C3 , tir vaisseau N°0/0 (Intercepteur standard, race: 3) , attP: (x:24|y:1020|z:23) 
+[F4_3 VS F130_0]  C3 , tir vaisseau N°0/15 (Fregate standard, race: 3) , attP: (x:21|y:1020|z:28) , cible: Fregate standard, deffP: (x:21|y:1020|z:2), distance: 26
+ - tir N0, arme: canon à plasmaI - chance < 0 , exit
+ - tir N1, arme: canon à plasmaI - chance < 0 , exit
+ - tir N2, arme: canon à plasmaI - chance < 0 , exit
+ - tir N3, arme: canon à plasmaI - chance < 0 , exit
+ - tir N4, arme: canon à plasmaI - chance < 0 , exit
+ - tir N5, arme: canon à plasmaI - chance < 0 , exit
+ - tir N6, arme: canon à plasmaI - chance < 0 , exit
+ - tir N7, arme: canon à plasmaI - chance < 0 , exit
+ - tir N8, arme: canon à plasmaI - chance < 0 , exit
+ - tir N9, arme: canon à plasmaI - chance < 0 , exit
+[F4_3 VS F130_0]  C3 , tir vaisseau N°0/3 (Chasseur standard, race: 3) , attP: (x:21|y:1020|z:2) , cible: Fregate standard, deffP: (x:21|y:1020|z:2), distance: 0
+ - tir N0, arme: laserI => chance 33(8),  hit, degat (1)
+ - tir N0, arme: laserI => chance 33(8),  hit, degat (1)
+ - tir N0, arme: laserI => chance 33(8),  hit, degat (1)
+ - tir N0, arme: laserI => chance 33(8),  miss
+[F4_3 VS F130_0]  C3 , tir vaisseau N°0/25 (Destroyer standard, race: 3) , attP: (x:21|y:1020|z:27) , cible: Fregate standard, deffP: (x:21|y:1020|z:2), distance: 25
+ - tir N0, arme: laserI - chance < 0 , exit
+ - tir N1, arme: laserI - chance < 0 , exit
+ - tir N2, arme: laserI - chance < 0 , exit
+ - tir N3, arme: laserI - chance < 0 , exit
+ - tir N4, arme: laserI - chance < 0 , exit
+ - tir N5, arme: laserI - chance < 0 , exit
+ - tir N6, arme: laserI - chance < 0 , exit
+ - tir N7, arme: laserI - chance < 0 , exit
+ - tir N8, arme: laserI - chance < 0 , exit
+ - tir N9, arme: laserI - chance < 0 , exit
+ - tir N10, arme: canon à plasmaI - chance < 0 , exit
+ - tir N11, arme: canon à plasmaI - chance < 0 , exit
+ - tir N12, arme: canon à plasmaI - chance < 0 , exit
+ - tir N13, arme: canon à plasmaI - chance < 0 , exit
+ - tir N14, arme: canon à plasmaI - chance < 0 , exit
+ - tir N15, arme: canon à plasmaI - chance < 0 , exit
+ - tir N16, arme: canon à plasmaI - chance < 0 , exit
+ - tir N17, arme: canon à plasmaI - chance < 0 , exit
+ - tir N18, arme: canon à plasmaI - chance < 0 , exit
+ - tir N19, arme: canon à plasmaI - chance < 0 , exit
+[F4_3 VS F130_0]  C3 , tir vaisseau N°0/15 (Fregate standard, race: 3) , attP: (x:21|y:1020|z:2) , cible: Fregate standard, deffP: (x:21|y:1020|z:2), distance: 0
+ - tir N0, arme: canon à plasmaI => chance 54(9),  hit, degat (1)
+ - tir N0, arme: canon à plasmaI => chance 54(9),  hit, degat (1)
+ - tir N0, arme: canon à plasmaI => chance 54(9),  miss
+ - tir N0, arme: canon à plasmaI => chance 54(9),  hit, degat (1)
+ - tir N0, arme: canon à plasmaI => chance 54(9),  miss
+ - tir N0, arme: canon à plasmaI => chance 54(9),  hit, degat (1)
+ - tir N0, arme: canon à plasmaI => chance 54(9),  miss
+ - tir N0, arme: canon à plasmaI => chance 54(9),  hit, degat (1)
+ - tir N0, arme: canon à plasmaI => chance 54(9),  hit, degat (1)
+ - tir N0, arme: canon à plasmaI => chance 54(9),  hit, degat (1)
+[F4_3 VS F130_0]  C3 , tir vaisseau N°0/25 (Destroyer standard, race: 3) , attP: (x:21|y:1020|z:27) , cible: Fregate standard, deffP: (x:21|y:1020|z:2), distance: 25
+ - tir N0, arme: laserI - chance < 0 , exit
+ - tir N1, arme: laserI - chance < 0 , exit
+ - tir N2, arme: laserI - chance < 0 , exit
+ - tir N3, arme: laserI - chance < 0 , exit
+ - tir N4, arme: laserI - chance < 0 , exit
+ - tir N5, arme: laserI - chance < 0 , exit
+ - tir N6, arme: laserI - chance < 0 , exit
+ - tir N7, arme: laserI - chance < 0 , exit
+ - tir N8, arme: laserI - chance < 0 , exit
+ - tir N9, arme: laserI - chance < 0 , exit
+ - tir N10, arme: canon à plasmaI - chance < 0 , exit
+ - tir N11, arme: canon à plasmaI - chance < 0 , exit
+ - tir N12, arme: canon à plasmaI - chance < 0 , exit
+ - tir N13, arme: canon à plasmaI - chance < 0 , exit
+ - tir N14, arme: canon à plasmaI - chance < 0 , exit
+ - tir N15, arme: canon à plasmaI - chance < 0 , exit
+ - tir N16, arme: canon à plasmaI - chance < 0 , exit
+ - tir N17, arme: canon à plasmaI - chance < 0 , exit
+ - tir N18, arme: canon à plasmaI - chance < 0 , exit
+ - tir N19, arme: canon à plasmaI - chance < 0 , exit
+[F4_3 VS F130_0]  C3 , tir vaisseau N°0/25 (Destroyer standard, race: 3) , attP: (x:21|y:1020|z:27) , cible: Fregate standard, deffP: (x:21|y:1020|z:2), distance: 25
+ - tir N0, arme: laserI - chance < 0 , exit
+ - tir N1, arme: laserI - chance < 0 , exit
+ - tir N2, arme: laserI - chance < 0 , exit
+ - tir N3, arme: laserI - chance < 0 , exit
+ - tir N4, arme: laserI - chance < 0 , exit
+ - tir N5, arme: laserI - chance < 0 , exit
+ - tir N6, arme: laserI - chance < 0 , exit
+ - tir N7, arme: laserI - chance < 0 , exit
+ - tir N8, arme: laserI - chance < 0 , exit
+ - tir N9, arme: laserI - chance < 0 , exit
+ - tir N10, arme: canon à plasmaI - chance < 0 , exit
+ - tir N11, arme: canon à plasmaI - chance < 0 , exit
+ - tir N12, arme: canon à plasmaI - chance < 0 , exit
+ - tir N13, arme: canon à plasmaI - chance < 0 , exit
+ - tir N14, arme: canon à plasmaI - chance < 0 , exit
+ - tir N15, arme: canon à plasmaI - chance < 0 , exit
+ - tir N16, arme: canon à plasmaI - chance < 0 , exit
+ - tir N17, arme: canon à plasmaI - chance < 0 , exit
+ - tir N18, arme: canon à plasmaI - chance < 0 , exit
+ - tir N19, arme: canon à plasmaI - chance < 0 , exit
+[F4_3 VS F130_0]  C3 , tir vaisseau N°0/25 (Destroyer standard, race: 3) , attP: (x:59|y:1020|z:2) , cible: Fregate standard, deffP: (x:21|y:1020|z:2), distance: 38
+ - tir N0, arme: laserI - chance < 0 , exit
+ - tir N1, arme: laserI - chance < 0 , exit
+ - tir N2, arme: laserI - chance < 0 , exit
+ - tir N3, arme: laserI - chance < 0 , exit
+ - tir N4, arme: laserI - chance < 0 , exit
+ - tir N5, arme: laserI - chance < 0 , exit
+ - tir N6, arme: laserI - chance < 0 , exit
+ - tir N7, arme: laserI - chance < 0 , exit
+ - tir N8, arme: laserI - chance < 0 , exit
+ - tir N9, arme: canon à plasmaI - chance < 0 , exit
+ - tir N10, arme: canon à plasmaI - chance < 0 , exit
+ - tir N11, arme: canon à plasmaI - chance < 0 , exit
+ - tir N12, arme: canon à plasmaI - chance < 0 , exit
+ - tir N13, arme: canon à plasmaI - chance < 0 , exit
+ - tir N14, arme: canon à plasmaI - chance < 0 , exit
+ - tir N15, arme: canon à plasmaI - chance < 0 , exit
+ - tir N16, arme: canon à plasmaI - chance < 0 , exit
+ - tir N17, arme: canon à plasmaI - chance < 0 , exit
+[F4_3 VS F130_0]  C3 , tir vaisseau N°0/3 (Torpilleur standard, race: 3) , attP: (x:21|y:1020|z:2) , cible: Fregate standard, deffP: (x:21|y:1020|z:2), distance: 0
+ - tir N0, arme: lance-torpilleI => chance 19(9),  hit, degat (2)
+ - tir N0, arme: lance-torpilleI => chance 19(9),  miss
+ - tir N0, arme: lance-torpilleI => chance 19(9),  miss
+ - tir N0, arme: lance-torpilleI => chance 19(9),  miss
+[F4_3 VS F130_0]  C3 , tir vaisseau N°0/3 (Torpilleur standard, race: 3) , attP: (x:21|y:1020|z:2) , cible: Fregate standard, deffP: (x:21|y:1020|z:2), distance: 0
+ - tir N0, arme: lance-torpilleI => chance 18(8),  miss
+ - tir N0, arme: lance-torpilleI => chance 18(8),  miss
+ - tir N0, arme: lance-torpilleI => chance 18(8),  miss
+ - tir N0, arme: lance-torpilleI => chance 18(8),  miss
+[F4_3 VS F130_0]  C3 , tir vaisseau N°0/0 (Intercepteur standard, race: 3) , attP: (x:24|y:1020|z:23) 
+[F4_3 VS F130_0]  C3 , tir vaisseau N°0/3 (Torpilleur standard, race: 3) , attP: (x:21|y:1020|z:2) , cible: Fregate standard, deffP: (x:21|y:1020|z:2), distance: 0
+ - tir N0, arme: lance-torpilleI => chance 18(8),  miss
+ - tir N0, arme: lance-torpilleI => chance 18(8),  miss
+ - tir N0, arme: lance-torpilleI => chance 18(8),  miss
+ - tir N0, arme: lance-torpilleI => chance 18(8),  miss
+[F4_3 VS F130_0]  C0 , tir vaisseau N°0/0 (Intercepteur standard, race: 5) , attP: (x:24|y:1020|z:23) 
+[F4_3 VS F130_0]  C3 , tir vaisseau N°0/63 (Supercroiseur standard, race: 3) , attP: (x:21|y:1020|z:25) , cible: Fregate standard, deffP: (x:21|y:1020|z:2), distance: 23
+ - tir N0, arme: laserI - chance < 0 , exit
+ - tir N1, arme: laserI - chance < 0 , exit
+ - tir N2, arme: laserI - chance < 0 , exit
+ - tir N3, arme: laserI - chance < 0 , exit
+ - tir N4, arme: laserI - chance < 0 , exit
+ - tir N5, arme: laserI - chance < 0 , exit
+ - tir N6, arme: laserI - chance < 0 , exit
+ - tir N7, arme: laserI - chance < 0 , exit
+ - tir N8, arme: laserI - chance < 0 , exit
+ - tir N9, arme: laserI - chance < 0 , exit
+ - tir N10, arme: laserI - chance < 0 , exit
+ - tir N11, arme: laserI - chance < 0 , exit
+ - tir N12, arme: laserI - chance < 0 , exit
+ - tir N13, arme: laserI - chance < 0 , exit
+ - tir N14, arme: laserI - chance < 0 , exit
+ - tir N15, arme: laserI - chance < 0 , exit
+ - tir N16, arme: laserI - chance < 0 , exit
+ - tir N17, arme: laserI - chance < 0 , exit
+ - tir N18, arme: laserI - chance < 0 , exit
+ - tir N19, arme: laserI - chance < 0 , exit
+ - tir N20, arme: canon à plasmaI - chance < 0 , exit
+ - tir N21, arme: canon à plasmaI - chance < 0 , exit
+ - tir N22, arme: canon à plasmaI - chance < 0 , exit
+ - tir N23, arme: canon à plasmaI - chance < 0 , exit
+ - tir N24, arme: canon à plasmaI - chance < 0 , exit
+ - tir N25, arme: canon à plasmaI - chance < 0 , exit
+ - tir N26, arme: canon à plasmaI - chance < 0 , exit
+ - tir N27, arme: canon à plasmaI - chance < 0 , exit
+ - tir N28, arme: canon à plasmaI - chance < 0 , exit
+ - tir N29, arme: canon à plasmaI - chance < 0 , exit
+ - tir N30, arme: canon à plasmaI - chance < 0 , exit
+ - tir N31, arme: canon à plasmaI - chance < 0 , exit
+ - tir N32, arme: canon à plasmaI - chance < 0 , exit
+ - tir N33, arme: canon à plasmaI - chance < 0 , exit
+ - tir N34, arme: canon à plasmaI - chance < 0 , exit
+ - tir N35, arme: canon à plasmaI - chance < 0 , exit
+ - tir N36, arme: canon à plasmaI - chance < 0 , exit
+ - tir N37, arme: canon à plasmaI - chance < 0 , exit
+ - tir N38, arme: canon à plasmaI - chance < 0 , exit
+ - tir N39, arme: canon à plasmaI - chance < 0 , exit
+ - tir N40, arme: lance-torpilleI - chance < 0 , exit
+ - tir N41, arme: lance-torpilleI - chance < 0 , exit
+ - tir N42, arme: lance-torpilleI - chance < 0 , exit
+ - tir N43, arme: lance-torpilleI - chance < 0 , exit
+ - tir N44, arme: lance-torpilleI - chance < 0 , exit
+ - tir N45, arme: lance-torpilleI - chance < 0 , exit
+ - tir N46, arme: lance-torpilleI - chance < 0 , exit
+ - tir N47, arme: lance-torpilleI - chance < 0 , exit
+ - tir N48, arme: lance-torpilleI - chance < 0 , exit
+ - tir N49, arme: lance-torpilleI - chance < 0 , exit
+ - tir N50, arme: lance-torpilleI - chance < 0 , exit
+ - tir N51, arme: lance-torpilleI - chance < 0 , exit
+ - tir N52, arme: lance-torpilleI - chance < 0 , exit
+ - tir N53, arme: lance-torpilleI - chance < 0 , exit
+ - tir N54, arme: lance-torpilleI - chance < 0 , exit
+ - tir N55, arme: lance-torpilleI - chance < 0 , exit
+ - tir N56, arme: lance-torpilleI - chance < 0 , exit
+ - tir N57, arme: lance-torpilleI - chance < 0 , exit
+ - tir N58, arme: lance-torpilleI - chance < 0 , exit
+ - tir N59, arme: lance-torpilleI - chance < 0 , exit
+[F4_3 VS F130_0]  C3 , tir vaisseau N°0/15 (Fregate standard, race: 3) , attP: (x:21|y:1020|z:28) , cible: Fregate standard, deffP: (x:21|y:1020|z:2), distance: 26
+ - tir N0, arme: canon à plasmaI - chance < 0 , exit
+ - tir N1, arme: canon à plasmaI - chance < 0 , exit
+ - tir N2, arme: canon à plasmaI - chance < 0 , exit
+ - tir N3, arme: canon à plasmaI - chance < 0 , exit
+ - tir N4, arme: canon à plasmaI - chance < 0 , exit
+ - tir N5, arme: canon à plasmaI - chance < 0 , exit
+ - tir N6, arme: canon à plasmaI - chance < 0 , exit
+ - tir N7, arme: canon à plasmaI - chance < 0 , exit
+ - tir N8, arme: canon à plasmaI - chance < 0 , exit
+ - tir N9, arme: canon à plasmaI - chance < 0 , exit
+[F4_3 VS F130_0]  C3 , tir vaisseau N°0/25 (Destroyer standard, race: 3) , attP: (x:59|y:1020|z:33) 
+[F4_3 VS F130_0]  C3 , tir vaisseau N°0/3 (Torpilleur standard, race: 3) , attP: (x:21|y:1020|z:2) , cible: Fregate standard, deffP: (x:21|y:1020|z:2), distance: 0
+ - tir N0, arme: lance-torpilleI => chance 19(9),  hit, degat (2), cible detruire
+[F4_3 VS F130_0]  C3 , tir vaisseau N°0/3 (Torpilleur standard, race: 3) , attP: (x:11|y:1020|z:29) 
+[F4_3 VS F130_0]  C3 , tir vaisseau N°0/3 (Torpilleur standard, race: 3) , attP: (x:11|y:1020|z:29) 
+[F4_3 VS F130_0]  C3 , tir vaisseau N°0/3 (Torpilleur standard, race: 3) , attP: (x:11|y:1020|z:29) 
+[F4_3 VS F130_0]  C3 , tir vaisseau N°0/3 (Torpilleur standard, race: 3) , attP: (x:11|y:1020|z:29) 
+[F4_3 VS F130_0]  C3 , tir vaisseau N°0/15 (Fregate standard, race: 3) , attP: (x:21|y:1020|z:28) 
+[F4_3 VS F130_0]  C3 , tir vaisseau N°0/3 (Torpilleur standard, race: 3) , attP: (x:21|y:1020|z:2) 
+[F4_3 VS F130_0]  C3 , tir vaisseau N°0/3 (Torpilleur standard, race: 3) , attP: (x:11|y:1020|z:29) 
+[F4_3 VS F130_0]  C3 , tir vaisseau N°0/3 (Torpilleur standard, race: 3) , attP: (x:21|y:1020|z:2) 
+[F4_3 VS F130_0]  C3 , tir vaisseau N°0/63 (Croiseur standard, race: 3) , attP: (x:21|y:1020|z:25) 
+[F4_3 VS F130_0]  C3 , tir vaisseau N°0/3 (Torpilleur standard, race: 3) , attP: (x:21|y:1020|z:2) 
+[F4_3 VS F130_0]  C3 , tir vaisseau N°0/63 (Croiseur standard, race: 3) , attP: (x:21|y:1020|z:25) 
+[F4_3 VS F130_0]  C0 , tir vaisseau N°0/15 (Fregate standard, race: 5) , attP: (x:21|y:1020|z:2) 
+FIN DE TOUR: F1  0, F2 : 150
+RESOLUTION COMBAT [F4_4 VS F100_0] 
+TOUR DE COMBAT 1
+[F4_4 VS F100_0]  C4 , tir vaisseau N°0/15 (Fregate standard, race: 4) , attP: (x:5|y:16|z:1) , cible: Supercroiseur standard, deffP: (x:10|y:22|z:1), distance: 6
+ - tir N0, arme: canon à plasmaI => chance 38(14),  miss
+ - tir N0, arme: canon à plasmaI => chance 38(14),  miss
+ - tir N0, arme: canon à plasmaI => chance 38(14),  hit, shielded (1)
+ - tir N0, arme: canon à plasmaI => chance 38(14),  miss
+ - tir N0, arme: canon à plasmaI => chance 38(14),  miss
+ - tir N0, arme: canon à plasmaI => chance 38(14),  miss
+ - tir N0, arme: canon à plasmaI => chance 38(14),  miss
+ - tir N0, arme: canon à plasmaI => chance 38(14),  hit, shielded (1)
+ - tir N0, arme: canon à plasmaI => chance 38(14),  miss
+ - tir N0, arme: canon à plasmaI => chance 38(14),  miss
+[F4_4 VS F100_0]  C4 , tir vaisseau N°0/15 (Fregate standard, race: 4) , attP: (x:10|y:15|z:1) , cible: Supercroiseur standard, deffP: (x:10|y:22|z:1), distance: 7
+ - tir N0, arme: canon à plasmaI => chance 35(14),  hit, shielded (1)
+ - tir N0, arme: canon à plasmaI => chance 35(14),  miss
+ - tir N0, arme: canon à plasmaI => chance 35(14),  hit, shielded (1)
+ - tir N0, arme: canon à plasmaI => chance 35(14),  miss
+ - tir N0, arme: canon à plasmaI => chance 35(14),  miss
+ - tir N0, arme: canon à plasmaI => chance 35(14),  miss
+ - tir N0, arme: canon à plasmaI => chance 35(14),  hit, shielded (1)
+ - tir N0, arme: canon à plasmaI => chance 35(14),  miss
+ - tir N0, arme: canon à plasmaI => chance 35(14),  hit, shielded (1)
+ - tir N0, arme: canon à plasmaI => chance 35(14),  hit, shielded (1)
+[F4_4 VS F100_0]  C4 , tir vaisseau N°0/25 (Destroyer standard, race: 4) , attP: (x:10|y:31|z:1) , cible: Supercroiseur standard, deffP: (x:10|y:22|z:1), distance: 9
+ - tir N0, arme: laserI - chance < 0 , exit
+ - tir N1, arme: laserI - chance < 0 , exit
+ - tir N2, arme: laserI - chance < 0 , exit
+ - tir N3, arme: laserI - chance < 0 , exit
+ - tir N4, arme: laserI - chance < 0 , exit
+ - tir N5, arme: laserI - chance < 0 , exit
+ - tir N6, arme: laserI - chance < 0 , exit
+ - tir N7, arme: laserI - chance < 0 , exit
+ - tir N8, arme: laserI - chance < 0 , exit
+ - tir N9, arme: laserI - chance < 0 , exit
+ - tir N10, arme: canon à plasmaI => chance 28(14),  miss
+ - tir N10, arme: canon à plasmaI => chance 28(14),  miss
+ - tir N10, arme: canon à plasmaI => chance 28(14),  miss
+ - tir N10, arme: canon à plasmaI => chance 28(14),  miss
+ - tir N10, arme: canon à plasmaI => chance 28(14),  miss
+ - tir N10, arme: canon à plasmaI => chance 28(14),  miss
+ - tir N10, arme: canon à plasmaI => chance 28(14),  miss
+ - tir N10, arme: canon à plasmaI => chance 28(14),  miss
+ - tir N10, arme: canon à plasmaI => chance 28(14),  miss
+ - tir N10, arme: canon à plasmaI => chance 28(14),  miss
+[F4_4 VS F100_0]  C4 , tir vaisseau N°0/15 (Fregate standard, race: 4) , attP: (x:9|y:17|z:1) , cible: Supercroiseur standard, deffP: (x:10|y:22|z:1), distance: 5
+ - tir N0, arme: canon à plasmaI => chance 42(14),  hit, shielded (1)
+ - tir N0, arme: canon à plasmaI => chance 42(14),  hit, shielded (1)
+ - tir N0, arme: canon à plasmaI => chance 42(14),  miss
+ - tir N0, arme: canon à plasmaI => chance 42(14),  miss
+ - tir N0, arme: canon à plasmaI => chance 42(14),  hit, shielded (1)
+ - tir N0, arme: canon à plasmaI => chance 42(14),  hit, shielded (1)
+ - tir N0, arme: canon à plasmaI => chance 42(14),  miss
+ - tir N0, arme: canon à plasmaI => chance 42(14),  miss
+ - tir N0, arme: canon à plasmaI => chance 42(14),  hit, shielded (1)
+ - tir N0, arme: canon à plasmaI => chance 42(14),  miss
+[F4_4 VS F100_0]  C0 , tir vaisseau N°0/63 (Supercroiseur standard, race: 0) , attP: (x:10|y:22|z:1) , cible: Fregate standard, deffP: (x:9|y:17|z:1), distance: 5
+ - tir N0, arme: laserI => chance 8(-3),  miss
+ - tir N0, arme: laserI => chance 8(-3),  miss
+ - tir N0, arme: laserI => chance 8(-3),  hit, shielded (2)
+ - tir N0, arme: laserI => chance 8(-3),  miss
+ - tir N0, arme: laserI => chance 8(-3),  miss
+ - tir N0, arme: canon à plasmaI => chance 25(-3),  hit, shielded (1)
+ - tir N0, arme: canon à plasmaI => chance 25(-3),  hit, shielded (1)
+ - tir N0, arme: canon à plasmaI => chance 25(-3),  hit, shielded (1)
+ - tir N0, arme: canon à plasmaI => chance 25(-3),  hit, shielded (1)
+ - tir N0, arme: canon à plasmaI => chance 25(-3),  hit, shielded (1)
+ - tir N0, arme: canon à plasmaI => chance 25(-3),  miss
+ - tir N0, arme: canon à plasmaI => chance 25(-3),  miss
+ - tir N0, arme: canon à plasmaI => chance 25(-3),  miss
+ - tir N0, arme: lance-torpilleI => chance 4(-3),  miss
+ - tir N0, arme: lance-torpilleI => chance 4(-3),  miss
+ - tir N0, arme: lance-torpilleI => chance 4(-3),  miss
+ - tir N0, arme: lance-torpilleI => chance 4(-3),  miss
+ - tir N0, arme: lance-torpilleI => chance 4(-3),  miss
+[F4_4 VS F100_0]  C4 , tir vaisseau N°0/25 (Destroyer standard, race: 4) , attP: (x:26|y:5|z:-6) , cible: Supercroiseur standard, deffP: (x:10|y:22|z:1), distance: 17
+ - tir N0, arme: laserI - chance < 0 , exit
+ - tir N1, arme: laserI - chance < 0 , exit
+ - tir N2, arme: laserI - chance < 0 , exit
+ - tir N3, arme: laserI - chance < 0 , exit
+ - tir N4, arme: laserI - chance < 0 , exit
+ - tir N5, arme: laserI - chance < 0 , exit
+ - tir N6, arme: canon à plasmaI - chance < 0 , exit
+ - tir N7, arme: canon à plasmaI - chance < 0 , exit
+ - tir N8, arme: canon à plasmaI - chance < 0 , exit
+ - tir N9, arme: canon à plasmaI - chance < 0 , exit
+ - tir N10, arme: canon à plasmaI - chance < 0 , exit
+FIN DE TOUR: F1  0, F2 : 0
+TOUR DE COMBAT 2
+[F4_4 VS F100_0]  C4 , tir vaisseau N°0/25 (Destroyer standard, race: 4) , attP: (x:10|y:22|z:1) , cible: Supercroiseur standard, deffP: (x:10|y:22|z:1), distance: 0
+ - tir N0, arme: laserI => chance 29(14),  miss
+ - tir N0, arme: laserI => chance 29(14),  hit, shielded (2)
+ - tir N0, arme: laserI => chance 29(14),  miss
+ - tir N0, arme: laserI => chance 29(14),  miss
+ - tir N0, arme: laserI => chance 29(14),  miss
+ - tir N0, arme: laserI => chance 29(14),  miss
+ - tir N0, arme: laserI => chance 29(14),  hit, shielded (2)
+ - tir N0, arme: laserI => chance 29(14),  miss
+ - tir N0, arme: laserI => chance 29(14),  miss
+ - tir N0, arme: laserI => chance 29(14),  miss
+ - tir N0, arme: canon à plasmaI => chance 59(14),  miss
+ - tir N0, arme: canon à plasmaI => chance 59(14),  hit, degat (1)
+ - tir N0, arme: canon à plasmaI => chance 59(14),  miss
+ - tir N0, arme: canon à plasmaI => chance 59(14),  hit, degat (1)
+ - tir N0, arme: canon à plasmaI => chance 59(14),  hit, degat (1)
+ - tir N0, arme: canon à plasmaI => chance 59(14),  hit, degat (1)
+ - tir N0, arme: canon à plasmaI => chance 59(14),  hit, degat (1)
+ - tir N0, arme: canon à plasmaI => chance 59(14),  hit, degat (1)
+ - tir N0, arme: canon à plasmaI => chance 59(14),  hit, degat (1)
+ - tir N0, arme: canon à plasmaI => chance 59(14),  miss
+[F4_4 VS F100_0]  C4 , tir vaisseau N°0/15 (Fregate standard, race: 4) , attP: (x:10|y:22|z:1) , cible: Supercroiseur standard, deffP: (x:10|y:22|z:1), distance: 0
+ - tir N0, arme: canon à plasmaI => chance 59(14),  miss
+ - tir N0, arme: canon à plasmaI => chance 59(14),  hit, degat (1)
+ - tir N0, arme: canon à plasmaI => chance 59(14),  hit, degat (1)
+ - tir N0, arme: canon à plasmaI => chance 59(14),  miss
+ - tir N0, arme: canon à plasmaI => chance 59(14),  miss
+ - tir N0, arme: canon à plasmaI => chance 59(14),  hit, degat (1)
+ - tir N0, arme: canon à plasmaI => chance 59(14),  hit, degat (1)
+ - tir N0, arme: canon à plasmaI => chance 59(14),  hit, degat (1)
+ - tir N0, arme: canon à plasmaI => chance 59(14),  hit, degat (1)
+ - tir N0, arme: canon à plasmaI => chance 59(14),  hit, degat (1)
+[F4_4 VS F100_0]  C4 , tir vaisseau N°0/15 (Fregate standard, race: 4) , attP: (x:10|y:22|z:1) , cible: Supercroiseur standard, deffP: (x:10|y:22|z:1), distance: 0
+ - tir N0, arme: canon à plasmaI => chance 59(14),  miss
+ - tir N0, arme: canon à plasmaI => chance 59(14),  hit, degat (1)
+ - tir N0, arme: canon à plasmaI => chance 59(14),  miss
+ - tir N0, arme: canon à plasmaI => chance 59(14),  hit, degat (1)
+ - tir N0, arme: canon à plasmaI => chance 59(14),  hit, degat (1)
+ - tir N0, arme: canon à plasmaI => chance 59(14),  hit, degat (1)
+ - tir N0, arme: canon à plasmaI => chance 59(14),  hit, degat (1)
+ - tir N0, arme: canon à plasmaI => chance 59(14),  hit, degat (1)
+ - tir N0, arme: canon à plasmaI => chance 59(14),  miss
+ - tir N0, arme: canon à plasmaI => chance 59(14),  miss
+[F4_4 VS F100_0]  C4 , tir vaisseau N°0/15 (Fregate standard, race: 4) , attP: (x:10|y:22|z:1) , cible: Supercroiseur standard, deffP: (x:10|y:22|z:1), distance: 0
+ - tir N0, arme: canon à plasmaI => chance 59(14),  hit, degat (1)
+ - tir N0, arme: canon à plasmaI => chance 59(14),  hit, degat (1)
+ - tir N0, arme: canon à plasmaI => chance 59(14),  miss
+ - tir N0, arme: canon à plasmaI => chance 59(14),  hit, degat (1)
+ - tir N0, arme: canon à plasmaI => chance 59(14),  miss
+ - tir N0, arme: canon à plasmaI => chance 59(14),  hit, degat (1)
+ - tir N0, arme: canon à plasmaI => chance 59(14),  hit, degat (1)
+ - tir N0, arme: canon à plasmaI => chance 59(14),  hit, degat (1)
+ - tir N0, arme: canon à plasmaI => chance 59(14),  hit, degat (1)
+ - tir N0, arme: canon à plasmaI => chance 59(14),  hit, degat (1)
+[F4_4 VS F100_0]  C4 , tir vaisseau N°0/25 (Destroyer standard, race: 4) , attP: (x:26|y:5|z:-6) , cible: Supercroiseur standard, deffP: (x:10|y:22|z:1), distance: 17
+ - tir N0, arme: laserI - chance < 0 , exit
+ - tir N1, arme: laserI - chance < 0 , exit
+ - tir N2, arme: laserI - chance < 0 , exit
+ - tir N3, arme: laserI - chance < 0 , exit
+ - tir N4, arme: laserI - chance < 0 , exit
+ - tir N5, arme: laserI - chance < 0 , exit
+ - tir N6, arme: canon à plasmaI - chance < 0 , exit
+ - tir N7, arme: canon à plasmaI - chance < 0 , exit
+ - tir N8, arme: canon à plasmaI - chance < 0 , exit
+ - tir N9, arme: canon à plasmaI - chance < 0 , exit
+ - tir N10, arme: canon à plasmaI - chance < 0 , exit
+[F4_4 VS F100_0]  C0 , tir vaisseau N°0/63 (Supercroiseur standard, race: 0) , attP: (x:10|y:22|z:1) , cible: Fregate standard, deffP: (x:10|y:22|z:1), distance: 0
+ - tir N0, arme: laserI => chance 22(-3),  miss
+ - tir N0, arme: canon à plasmaI => chance 42(-3),  miss
+ - tir N0, arme: canon à plasmaI => chance 42(-3),  hit, shielded (1)
+ - tir N0, arme: canon à plasmaI => chance 42(-3),  hit, shielded (1)
+FIN DE TOUR: F1  0, F2 : 28
+TOUR DE COMBAT 3
+[F4_4 VS F100_0]  C4 , tir vaisseau N°0/25 (Destroyer standard, race: 4) , attP: (x:10|y:1020|z:1) , cible: Supercroiseur standard, deffP: (x:10|y:1020|z:1), distance: 0
+ - tir N0, arme: laserI => chance 29(14),  hit, degat (1)
+ - tir N0, arme: laserI => chance 29(14),  miss
+ - tir N0, arme: laserI => chance 29(14),  hit, degat (1)
+ - tir N0, arme: laserI => chance 29(14),  miss
+ - tir N0, arme: laserI => chance 29(14),  hit, degat (1)
+ - tir N0, arme: laserI => chance 29(14),  miss
+ - tir N0, arme: laserI => chance 29(14),  miss
+ - tir N0, arme: laserI => chance 29(14),  miss
+ - tir N0, arme: laserI => chance 29(14),  miss
+ - tir N0, arme: laserI => chance 29(14),  miss
+ - tir N0, arme: canon à plasmaI => chance 59(14),  hit, degat (1)
+ - tir N0, arme: canon à plasmaI => chance 59(14),  miss
+ - tir N0, arme: canon à plasmaI => chance 59(14),  hit, degat (1)
+ - tir N0, arme: canon à plasmaI => chance 59(14),  hit, degat (1)
+ - tir N0, arme: canon à plasmaI => chance 59(14),  hit, degat (1)
+ - tir N0, arme: canon à plasmaI => chance 59(14),  hit, degat (1)
+ - tir N0, arme: canon à plasmaI => chance 59(14),  miss
+ - tir N0, arme: canon à plasmaI => chance 59(14),  hit, degat (1)
+ - tir N0, arme: canon à plasmaI => chance 59(14),  miss
+ - tir N0, arme: canon à plasmaI => chanc
