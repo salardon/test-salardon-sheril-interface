@@ -2,6 +2,8 @@ import React, {createContext, useContext, useEffect, useMemo, useState, useCallb
 import {GlobalData, Rapport, XY} from '../types';
 import {parseRapportXml} from '../parsers/parseRapport';
 import {parseDataXml} from '../parsers/parseData';
+import { CombatLogData } from '../types/combat';
+import { parseCombatLog } from '../parsers/parseCombatLog';
 
 type ReportContextType = {
     rapport?: Rapport;
@@ -15,6 +17,8 @@ type ReportContextType = {
     viewportCols: number;
     viewportRows: number;
     setViewportDims: (cols: number, rows: number) => void;
+    combatLogs: CombatLogData[];
+    loadCombatLog: (file: File) => Promise<void>;
 };
 
 const ReportContext = createContext<ReportContextType | undefined>(undefined);
@@ -45,6 +49,14 @@ export function ReportProvider({children}: { children: React.ReactNode }) {
             // Storage might be unavailable (private mode/quota). Ignore silently.
         }
     }, [center]);
+
+    const [combatLogs, setCombatLogs] = useState<CombatLogData[]>([]);
+
+    const loadCombatLog = useCallback(async (file: File) => {
+        const text = await file.text();
+        const parsed = parseCombatLog(file.name, text);
+        setCombatLogs(prev => [...prev, parsed]);
+    }, []);
 
     useEffect(() => {
         let alive = true;
@@ -99,7 +111,9 @@ export function ReportProvider({children}: { children: React.ReactNode }) {
         viewportCols,
         viewportRows,
         setViewportDims,
-    }), [rapport, global, loadRapportFile, cellSize, center, viewportCols, viewportRows, setViewportDims]);
+        combatLogs,
+        loadCombatLog,
+    }), [rapport, global, loadRapportFile, cellSize, center, viewportCols, viewportRows, setViewportDims,combatLogs, loadCombatLog]);
 
     return <ReportContext.Provider value={value}>{children}</ReportContext.Provider>;
 }
