@@ -20,15 +20,14 @@ export interface CombatTableRow {
     shotKill: number;
 }
 
-export function parseCombatLog(fileName: string, rawText: string) {
+export function parseCombatLog(fileName: string, rawText: string): CombatLogData {
     const cleanText = rawText.replace(/\r/g, '');
     const battleMatch = cleanText.match(/RESOLUTION COMBAT\s+(\[.*?\])/);
     const battleName = battleMatch ? battleMatch[1] : fileName;
+    
     const tableRows: CombatTableRow[] = [];
     const turns: TurnState[] = [];
     const shipTypes = new Set<string>();
-    
-    // Matrix for Heatmap
     const matrixData: Record<string, { dealt: number; received: number; kills: number }> = {};
 
     const combatBlocks = cleanText.split(/RESOLUTION COMBAT /).filter(b => b.trim());
@@ -54,7 +53,7 @@ export function parseCombatLog(fileName: string, rawText: string) {
                 const match = section.match(shipRegex);
                 if (!match) return;
 
-                const [_, cmd, sShortId, seq, sType, race, ax, ay, az, targetName, tx, ty, tz, dist] = match;
+                const [__, cmd, sShortId, seq, sType, race, ax, ay, az, targetName, tx, ty, tz, dist] = match;
                 const fleetName = (cmd === f1Owner) ? `F${f1Name}` : `F${f2Name}`;
                 const fullShipId = `${fleetName}_${cmd}_${sShortId}`;
                 
@@ -67,7 +66,7 @@ export function parseCombatLog(fileName: string, rawText: string) {
                 weaponLines.forEach(wLine => {
                     const wMatch = wLine.match(/arme:\s+(.*?)\s+=>\s+chance\s+(.*?),.*?(hit|miss|shielded)(?:,\s+degat\s+\((\d+)\))?(?:,\s+(cible detruire))?/);
                     if (wMatch) {
-                        const [__, wName, wPercent, wResult, wDmg, wKill] = wMatch;
+                        const [___, wName, wPercent, wResult, wDmg, wKill] = wMatch;
                         const damage = parseInt(wDmg || "0", 10);
                         const isFatal = !!wKill;
 
@@ -87,7 +86,6 @@ export function parseCombatLog(fileName: string, rawText: string) {
                             isFatal
                         });
 
-                        // UPDATE HEATMAP MATRIX
                         if (targetName) {
                             const matrixKey = `${sType}|${targetName}`;
                             const reverseKey = `${targetName}|${sType}`;
@@ -101,7 +99,6 @@ export function parseCombatLog(fileName: string, rawText: string) {
                     }
                 });
 
-                // Add to Table Rows
                 Object.entries(weaponGroups).forEach(([wName, data]) => {
                     tableRows.push({
                         combat: fullHeader, turn: turnNumber, commandant: `C${cmd}`, fleet: fleetName,
@@ -115,7 +112,6 @@ export function parseCombatLog(fileName: string, rawText: string) {
                     });
                 });
 
-                // Add to Turn State
                 exchanges.push({
                     attacker: { id: sShortId, type: sType, race: parseInt(race), cmd: `C${cmd}`, pos: { x: parseInt(ax), y: parseInt(ay), z: parseInt(az) } },
                     target: { 
@@ -133,13 +129,13 @@ export function parseCombatLog(fileName: string, rawText: string) {
     });
 
     return {
-    id: fileName,
-    battleName, // Make sure this variable is defined or use fileName
-    turns: turns.sort((a, b) => a.turnNumber - b.turnNumber),
-    tableData: tableRows, // MUST ADD THIS
-    globalMatrix: { 
-        allShipTypes: Array.from(shipTypes).sort(), 
-        data: matrixData 
-    }
-};
+        id: fileName,
+        battleName,
+        turns: turns.sort((a, b) => a.turnNumber - b.turnNumber),
+        tableData: tableRows, // This must be handled in types/combat.ts
+        globalMatrix: { 
+            allShipTypes: Array.from(shipTypes).sort(), 
+            data: matrixData 
+        }
+    } as CombatLogData;
 }
