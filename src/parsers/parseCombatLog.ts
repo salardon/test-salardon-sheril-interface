@@ -12,6 +12,7 @@ export function parseCombatLog(fileName: string, rawText: string): CombatLogData
     if (!battleMatch) return { id: fileName, battleName: fileName, turns: [], globalMatrix: { allShipTypes: [], data: {} } };
     
     const battleId = battleMatch[1].trim();
+    const battleName = battleId; 
     const turnParts = cleanText.split(/TOUR DE COMBAT (\d+)/);
 
     for (let i = 1; i < turnParts.length; i += 2) {
