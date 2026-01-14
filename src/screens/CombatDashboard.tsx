@@ -1,10 +1,12 @@
+
 import React, { useState, useEffect, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import { useReport } from '../context/ReportContext';
 import CombatHeatmap from '../components/CombatHeatmap';
 import TacticalGrid from '../components/TacticalGrid';
-import CombatTable from '../components/CombatTable'; // Import the new component
-import { CombatTableRow } from '../parsers/parseCombatlog'; // Import the type
+import CombatTable from '../components/CombatTable'; 
+// FIXED: Case-sensitive import to match the file system (Log vs log)
+import { CombatTableRow } from '../parsers/parseCombatLog'; 
 
 export default function CombatDashboard() {
     const { logId } = useParams<{ logId: string }>(); 
@@ -17,12 +19,12 @@ export default function CombatDashboard() {
 
     const log = combatLogs.find(l => l.id === logId);
 
-    // 1. Prepare Table Data based on turn selection
     const tableData = useMemo(() => {
-        if (!log || !('tableData' in log)) return [];
-        
+        // FIXED: Safe property access with 'as any' fallback if type is not updated yet
+        if (!log) return [];
         const data = (log as any).tableData as CombatTableRow[];
-        // If turn is 0 (Global), show all. Otherwise, filter by specific turn.
+        if (!data) return [];
+        
         return currentTurn === 0 ? data : data.filter(d => d.turn === currentTurn);
     }, [log, currentTurn]);
 
@@ -86,9 +88,7 @@ export default function CombatDashboard() {
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                     <div>
                         <h2 style={{ margin: 0, fontSize: '1.2rem', color: '#8bff8b' }}>{log.battleName}</h2>
-                        <div style={{ marginTop: '5px', fontSize: '0.8rem', color: '#666' }}>
-                            Interactive Combat Log Analysis
-                        </div>
+                        <div style={{ marginTop: '5px', fontSize: '0.8rem', color: '#666' }}>Interactive Combat Log Analysis</div>
                     </div>
                     <div style={{ textAlign: 'right' }}>
                         <span style={{ fontSize: '1.5rem', fontWeight: 'bold', color: isGlobalView ? '#4fc3f7' : '#8bff8b' }}>
@@ -110,16 +110,8 @@ export default function CombatDashboard() {
             </header>
 
             <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
-                
-                {/* LEFT: Analysis Area */}
-                <section style={{ 
-                    flex: 1, 
-                    padding: '20px', 
-                    overflowY: 'auto', 
-                    borderRight: isGlobalView ? 'none' : '1px solid #222'
-                }}>
+                <section style={{ flex: 1, padding: '20px', overflowY: 'auto', borderRight: isGlobalView ? 'none' : '1px solid #222' }}>
                     
-                    {/* 1. Fleet Stats Cards */}
                     <div style={{ display: 'flex', gap: '20px', marginBottom: '25px' }}>
                         {battleSummary.commandants.map((cmd, idx) => {
                             const stats = battleSummary.fleetStats[cmd];
@@ -130,30 +122,21 @@ export default function CombatDashboard() {
                                     borderLeft: `4px solid ${idx === 0 ? '#4fc3f7' : '#ff5252'}`
                                 }}>
                                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '15px' }}>
-                                        <h4 style={{ margin: 0, color: idx === 0 ? '#4fc3f7' : '#ff5252', fontSize: '1rem' }}>
-                                            COMMANDANT {cmd}
-                                        </h4>
+                                        <h4 style={{ margin: 0, color: idx === 0 ? '#4fc3f7' : '#ff5252', fontSize: '1rem' }}>COMMANDANT {cmd}</h4>
                                         <div style={{ textAlign: 'right', fontSize: '0.75rem' }}>
-                                            <div style={{ color: '#8bff8b' }}>Total Damage: <strong>{stats.dealt.toLocaleString()}</strong></div>
+                                            <div style={{ color: '#8bff8b' }}>Damage: <strong>{stats.dealt.toLocaleString()}</strong></div>
                                             <div style={{ color: '#ff5252' }}>Kills: <strong>{stats.kills}</strong></div>
                                         </div>
                                     </div>
-
                                     <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                                         {Array.from(stats.initialShips.entries()).map(([type, ids]) => {
                                             const total = ids.size;
                                             const deadCount = Array.from(stats.deadShips).filter(deadId => deadId.startsWith(type)).length;
                                             const remaining = total - deadCount;
                                             return (
-                                                <div key={type} style={{ 
-                                                    display: 'flex', justifyContent: 'space-between', 
-                                                    fontSize: '0.8rem', color: '#aaa', background: '#1a1a1a', 
-                                                    padding: '4px 10px', borderRadius: '4px' 
-                                                }}>
+                                                <div key={type} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', color: '#aaa', background: '#1a1a1a', padding: '4px 10px', borderRadius: '4px' }}>
                                                     <span>{type}:</span>
-                                                    <span style={{ color: remaining === 0 ? '#ff5252' : (remaining < total ? '#ffb74d' : '#eee'), fontWeight: 'bold' }}>
-                                                        {remaining} / {total}
-                                                    </span>
+                                                    <span style={{ color: remaining === 0 ? '#ff5252' : '#eee', fontWeight: 'bold' }}>{remaining} / {total}</span>
                                                 </div>
                                             );
                                         })}
@@ -163,58 +146,24 @@ export default function CombatDashboard() {
                         })}
                     </div>
 
-                    {/* 2. New Detailed Table View (Primary) */}
                     <div style={{ marginBottom: '30px' }}>
                         <div style={{ marginBottom: '15px' }}>
-                            <span style={{ fontSize: '0.9rem', color: '#888', textTransform: 'uppercase', letterSpacing: '1px' }}>
-                                {isGlobalView ? "Full Combat Log Record" : `Shot Log - Turn ${currentTurn}`}
-                            </span>
+                            <span style={{ fontSize: '0.9rem', color: '#888', textTransform: 'uppercase' }}>Log Record</span>
                         </div>
                         <CombatTable data={tableData} />
                     </div>
 
-                    {/* 3. Heatmap Analysis (Secondary) */}
                     <div style={{ borderTop: '1px solid #222', paddingTop: '30px' }}>
-                        <div style={{ marginBottom: '20px' }}>
-                            <span style={{ fontSize: '0.9rem', color: '#888', textTransform: 'uppercase', letterSpacing: '1px' }}>
-                                Spatial Damage Distribution
-                            </span>
-                        </div>
                         <CombatHeatmap log={log} turnFilter={currentTurn} />
                     </div>
                 </section>
                 
-                {/* RIGHT: Tactical Mini-Grid */}
                 {!isGlobalView && (
-                    <aside style={{ 
-                        width: '400px', background: '#050505', display: 'flex', flexDirection: 'column', 
-                        alignItems: 'center', padding: '20px', animation: 'slideIn 0.3s ease-out'
-                    }}>
-                         <div style={{ 
-                            width: '100%', marginBottom: '15px', fontSize: '0.8rem', color: '#666', 
-                            textAlign: 'center', borderBottom: '1px solid #222', paddingBottom: '10px' 
-                        }}>
-                            TACTICAL POSITIONS (X/Z)
-                        </div>
-                        
+                    <aside style={{ width: '400px', background: '#050505', display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '20px' }}>
                         <TacticalGrid turn={log.turns[currentTurn - 1]} />
-                        
-                        <div style={{ marginTop: 'auto', padding: '15px', background: '#111', borderRadius: '8px', width: '100%', fontSize: '0.8rem' }}>
-                            <p style={{ margin: '0 0 5px 0', color: '#8bff8b', fontWeight: 'bold' }}>Turn Insight:</p>
-                            <p style={{ margin: 0, color: '#aaa' }}>
-                                Processing {log.turns[currentTurn - 1].exchanges.length} unique ship exchanges.
-                            </p>
-                        </div>
                     </aside>
                 )}
             </div>
-
-            <style>{`
-                @keyframes slideIn {
-                    from { transform: translateX(100%); opacity: 0; }
-                    to { transform: translateX(0); opacity: 1; }
-                }
-            `}</style>
         </div>
     );
 }
