@@ -1,88 +1,82 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import { CombatLogData } from '../types/combat';
-import './CombatHeatmap.css';
 
 interface Props {
     log: CombatLogData;
-    turnFilter: number; // 0 = Global, 1+ = Specific Turn
+    turnFilter: number;
 }
 
 export default function CombatHeatmap({ log, turnFilter }: Props) {
-    const { allShipTypes } = log.globalMatrix;
+    const { allShipTypes, data } = log.globalMatrix;
 
-    const displayData = useMemo(() => {
-        // Case 0: Use the pre-calculated global data
-        if (turnFilter === 0) return log.globalMatrix.data;
-
-        // Case > 0: Calculate matrix for the specific turn
-        const turn = log.turns.find(t => t.turnNumber === turnFilter);
-        const turnMatrix: Record<string, { dealt: number; received: number; kills: number }> = {};
-
-        turn?.exchanges.forEach(ex => {
-            const key = `${ex.attacker.type}|${ex.target.type}`;
-            const revKey = `${ex.target.type}|${ex.attacker.type}`;
-            
-            if (!turnMatrix[key]) turnMatrix[key] = { dealt: 0, received: 0, kills: 0 };
-            if (!turnMatrix[revKey]) turnMatrix[revKey] = { dealt: 0, received: 0, kills: 0 };
-
-            ex.shots.forEach(shot => {
-                turnMatrix[key].dealt += shot.damage;
-                turnMatrix[revKey].received += shot.damage;
-                if (shot.isFatal) turnMatrix[key].kills += 1;
-            });
+    // Determine value to show based on turn
+    const getValue = (attacker: string, target: string) => {
+        if (turnFilter === 0) return data[`${attacker}|${target}`]?.dealt || 0;
+        
+        // Filter specific turn data
+        const turn = log.turns[turnFilter - 1];
+        let total = 0;
+        turn.exchanges.forEach(ex => {
+            if (ex.attacker.type === attacker && ex.target.type === target) {
+                total += ex.shots.reduce((sum, s) => sum + s.damage, 0);
+            }
         });
+        return total;
+    };
 
-        return turnMatrix;
-    }, [log, turnFilter]);
+    // Color intensity logic
+    const getBgColor = (val: number) => {
+        if (val === 0) return 'transparent';
+        const opacity = Math.min(val / 50, 1); // Scale this divisor based on typical damage
+        return `rgba(79, 195, 247, ${0.1 + opacity * 0.9})`;
+    };
 
     return (
-        <div className="combat-heatmap-container">
-            <div className="matrix-wrapper">
-                <table className="heatmap-table">
-                    <thead>
-                        <tr>
-                            <th className="corner-label">Attacker \ Target</th>
-                            {allShipTypes.map(type => (
-                                <th key={type} className="v-header">
-                                    <div className="v-text">{type}</div>
-                                </th>
-                            ))}
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {allShipTypes.map(attType => (
-                            <tr key={attType}>
-                                <td className="row-label">{attType}</td>
-                                {allShipTypes.map(defType => {
-                                    const stats = displayData[`${attType}|${defType}`];
-                                    if (!stats || (stats.dealt === 0 && stats.received === 0)) {
-                                        return <td key={defType} className="cell-empty">-</td>;
-                                    }
-
-                                    const intensityDealt = Math.min(stats.dealt / 500, 1);
-                                    const intensityRec = Math.min(stats.received / 500, 1);
-
-                                    return (
-                                        <td key={defType} className="cell-heatmap">
-                                            <div className="diagonal-split" style={{
-                                                background: `linear-gradient(to top left, 
-                                                    rgba(220, 53, 69, ${intensityRec}) 50%, 
-                                                    rgba(40, 167, 69, ${intensityDealt}) 50%)`
-                                            }}>
-                                                <div className="cell-content">
-                                                    <span className="dealt">+{stats.dealt}</span>
-                                                    <span className="received">-{stats.received}</span>
-                                                    {stats.kills > 0 && <span className="kills">💀{stats.kills}</span>}
-                                                </div>
-                                            </div>
-                                        </td>
-                                    );
-                                })}
-                            </tr>
+        <div style={{ overflowX: 'auto' }}>
+            <table style={{ borderCollapse: 'separate', borderSpacing: '4px', width: '100%' }}>
+                <thead>
+                    <tr>
+                        <th style={{ background: 'transparent' }}></th>
+                        {allShipTypes.map(type => (
+                            <th key={type} style={{ fontSize: '10px', padding: '8px', color: '#888', transform: 'rotate(-45deg)', height: '80px', textAlign: 'left' }}>
+                                {type}
+                            </th>
                         ))}
-                    </tbody>
-                </table>
-            </div>
+                    </tr>
+                </thead>
+                <tbody>
+                    {allShipTypes.map(attackerType => (
+                        <tr key={attackerType}>
+                            <td style={{ fontSize: '11px', fontWeight: 'bold', color: '#aaa', whiteSpace: 'nowrap', padding: '5px 15px' }}>
+                                {attackerType}
+                            </td>
+                            {allShipTypes.map(targetType => {
+                                const val = getValue(attackerType, targetType);
+                                return (
+                                    <td 
+                                        key={targetType}
+                                        title={`${attackerType} → ${targetType}: ${val} damage`}
+                                        style={{
+                                            width: '40px',
+                                            height: '40px',
+                                            background: getBgColor(val),
+                                            border: val > 0 ? '1px solid #4fc3f7' : '1px solid #222',
+                                            borderRadius: '4px',
+                                            textAlign: 'center',
+                                            fontSize: '10px',
+                                            color: val > 10 ? '#000' : '#fff',
+                                            fontWeight: 'bold',
+                                            transition: 'all 0.2s'
+                                        }}
+                                    >
+                                        {val > 0 ? val : ''}
+                                    </td>
+                                );
+                            })}
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
         </div>
     );
 }
