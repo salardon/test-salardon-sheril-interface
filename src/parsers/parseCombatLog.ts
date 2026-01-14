@@ -1,113 +1,130 @@
 import { CombatLogData, TurnState, FleetExchange, WeaponShot } from '../types/combat';
 
-export function parseCombatLog(fileName: string, rawText: string): CombatLogData {
-    // FIX 1: Clean Windows line endings immediately to prevent hidden character bugs
+// Add this interface to support the new table view
+export interface CombatTableRow {
+    combat: string;
+    turn: number;
+    commandant: string;
+    fleet: string;
+    shipType: string;
+    crewRace: string;
+    shipId: string;
+    shipX: string; shipY: string; shipZ: string;
+    targetType: string;
+    targetSequence: string;
+    targetX: string; targetY: string; targetZ: string;
+    targetDist: number;
+    shotWeapon: string;
+    shotPercent: string;
+    shotShield: number;
+    shotDamage: number;
+    shotKill: number;
+}
+
+export function parseCombatLog(fileName: string, rawText: string) {
     const cleanText = rawText.replace(/\r/g, '');
-    
+    const tableRows: CombatTableRow[] = [];
     const turns: TurnState[] = [];
-    const matrixData: Record<string, { dealt: number; received: number; kills: number }> = {};
     const shipTypes = new Set<string>();
 
-    const battleMatch = cleanText.match(/RESOLUTION COMBAT \[(.*?)\]/);
-    if (!battleMatch) return { id: fileName, battleName: fileName, turns: [], globalMatrix: { allShipTypes: [], data: {} } };
-    
-    const battleId = battleMatch[1].trim();
-    const battleName = battleId; 
-    const turnParts = cleanText.split(/TOUR DE COMBAT (\d+)/);
+    // Split file by "RESOLUTION COMBAT" to handle multiple battles in one file
+    const combatBlocks = cleanText.split(/RESOLUTION COMBAT /).filter(b => b.trim());
 
-    for (let i = 1; i < turnParts.length; i += 2) {
-        const turnNumber = parseInt(turnParts[i], 10);
-        const turnContent = turnParts[i + 1];
-        if (!turnContent) continue;
+    combatBlocks.forEach(block => {
+        const headerMatch = block.match(/\[((F(\d+))_(\d+)\s+VS\s+(F(\d+))_(\d+))\]/);
+        if (!headerMatch) return;
 
-        const exchanges: FleetExchange[] = [];
-        const lines = turnContent.split('\n');
-        let currentExchange: FleetExchange | null = null;
+        const [_, fullHeader, f1Full, f1Name, f1Owner, f2Full, f2Name, f2Owner] = headerMatch;
+        const turnParts = block.split(/TOUR DE COMBAT (\d+)/);
 
-        for (const line of lines) {
-            const trimmed = line.trim();
-            if (!trimmed || trimmed.includes('FIN DE TOUR')) continue;
+        for (let i = 1; i < turnParts.length; i += 2) {
+            const turnNumber = parseInt(turnParts[i], 10);
+            const turnContent = turnParts[i + 1];
+            if (!turnContent) continue;
 
-            // 3. Robust Ship/Exchange Detection
-            const exMatch = trimmed.match(/\[.*?\]\s+C(\d+)\s*,\s*tir vaisseau N°(\d+\/\d+)\s*\((.*?)\s*,\s*race:\s*(\d+)\)\s*,\s*attP:\s*\(x:(.*?)\|y:(.*?)\|z:(.*?)\)(?:,\s*cible:\s*(.*?),\s*deffP:\s*\(x:(.*?)\|y:(.*?)\|z:(.*?)\)\s*,\s*distance:\s*(\d+)|.*)/);
-            
-            if (exMatch && trimmed.startsWith('[')) {
-                const [, cmdId, id, attTypeRaw, race, attX, attY, attZ, targetTypeRaw] = exMatch;
-                const defX = exMatch[9], defY = exMatch[10], defZ = exMatch[11], dist = exMatch[12];
+            const exchanges: FleetExchange[] = [];
+            // Regex for the ship firing line
+            const shipRegex = /\[.*?\]\s+C(\d+)\s+,\s+tir vaisseau\s+(\d+)\s+N°(\d+\/\d+)\s+\((.*?),\s+race:\s+(\d+)\)\s+,\s+attP:\s+\(x:(-?\d+)\|y:(-?\d+)\|z:(-?\d+)\)(?:,\s+cible:\s+(.*?),\s+deffP:\s+\(x:(-?\d+)\|y:(-?\d+)\|z:(-?\d+)\),\s+distance:\s+([\d\s]+))?/;
+
+            // Group lines by ship exchange sections
+            const firingSections = turnContent.split(new RegExp(`\\[${fullHeader.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\]`)).filter(s => s.includes('tir vaisseau'));
+
+            firingSections.forEach(section => {
+                const match = section.match(shipRegex);
+                if (!match) return;
+
+                const [_, cmd, sShortId, seq, sType, race, ax, ay, az, targetName, tx, ty, tz, dist] = match;
+                const fleetName = (cmd === f1Owner) ? `F${f1Name}` : `F${f2Name}`;
+                const fullShipId = `${fleetName}_${cmd}_${sShortId}`;
                 
-                const cmd = `C${cmdId}`;
-                const attType = attTypeRaw.trim();
-                shipTypes.add(attType);
+                shipTypes.add(sType);
+                if (targetName) shipTypes.add(targetName);
 
-                const hasTarget = !!targetTypeRaw;
-                const targetType = hasTarget ? targetTypeRaw.trim() : 'None';
+                // Group shots by weapon for the table
+                const weaponGroups: Record<string, { count: number, damage: number, kill: number, percent: string, shots: WeaponShot[] }> = {};
+                const weaponLines = section.split('\n').filter(l => l.includes('arme:'));
 
-                currentExchange = {
-                    attacker: { 
-                        id, type: attType, race: parseInt(race, 10), cmd,
-                        pos: { x: parseInt(attX, 10), y: parseInt(attY, 10), z: parseInt(attZ, 10) } 
-                    },
-                    target: { 
-                        instanceId: hasTarget ? `${targetType}_${defX}_${defY}_${defZ}` : 'none', 
-                        type: targetType, 
-                        pos: { x: defX ? parseInt(defX, 10) : 0, y: defY ? parseInt(defY, 10) : 0, z: defZ ? parseInt(defZ, 10) : 0 } 
-                    },
-                    distance: dist ? parseInt(dist, 10) : 0,
-                    shots: []
-                };
+                weaponLines.forEach(wLine => {
+                    const wMatch = wLine.match(/arme:\s+(.*?)\s+=>\s+chance\s+(.*?),.*?(hit|miss|shielded)(?:,\s+degat\s+\((\d+)\))?(?:,\s+(cible detruire))?/);
+                    if (wMatch) {
+                        const [__, wName, wPercent, wResult, wDmg, wKill] = wMatch;
+                        const damage = parseInt(wDmg || "0", 10);
+                        const isFatal = !!wKill;
 
-                if (hasTarget) shipTypes.add(targetType);
-                exchanges.push(currentExchange);
-                continue;
-            }
-
-            // 4. FIX: Flexible Shot Detection
-            // This captures "hit", "miss", etc., and looks specifically for "degat (X)"
-            if (trimmed.startsWith('- tir') && currentExchange) {
-                const weaponMatch = trimmed.match(/arme:\s+(.*?)\s+=>/);
-                const dmgMatch = trimmed.match(/degat\s*\((\d+)\)/);
-                const isFatal = trimmed.toLowerCase().includes('detruire');
-                
-                const damage = dmgMatch ? parseInt(dmgMatch[1], 10) : 0;
-                const outcome = trimmed.includes('hit') ? 'hit' : 
-                                trimmed.includes('miss') ? 'miss' : 
-                                trimmed.includes('shielded') ? 'shielded' : 'exit';
-
-                currentExchange.shots.push({
-                    weaponName: weaponMatch ? weaponMatch[1].trim() : 'Unknown',
-                    outcome: outcome as WeaponShot['outcome'],
-                    damage,
-                    targetPart: trimmed.includes('shielded') ? 'shield' : (damage > 0 ? 'hull' : 'none'),
-                    isFatal
+                        if (!weaponGroups[wName]) {
+                            weaponGroups[wName] = { count: 0, damage: 0, kill: 0, percent: wPercent, shots: [] };
+                        }
+                        
+                        weaponGroups[wName].count++;
+                        weaponGroups[wName].damage += damage;
+                        if (isFatal) weaponGroups[wName].kill = 1;
+                        
+                        weaponGroups[wName].shots.push({
+                            weaponName: wName,
+                            outcome: (wResult === 'shielded' ? 'shielded' : (damage > 0 ? 'hit' : 'miss')) as any,
+                            damage,
+                            targetPart: wResult === 'shielded' ? 'shield' : 'hull',
+                            isFatal
+                        });
+                    }
                 });
 
-                // Update Heatmap Aggregation (Only if there's a real target)
-                if (currentExchange.target.type !== 'None') {
-                    const matrixKey = `${currentExchange.attacker.type}|${currentExchange.target.type}`;
-                    const reverseKey = `${currentExchange.target.type}|${currentExchange.attacker.type}`;
-                    
-                    if (!matrixData[matrixKey]) matrixData[matrixKey] = { dealt: 0, received: 0, kills: 0 };
-                    if (!matrixData[reverseKey]) matrixData[reverseKey] = { dealt: 0, received: 0, kills: 0 };
+                // 1. Add to Table Rows
+                Object.entries(weaponGroups).forEach(([wName, data]) => {
+                    tableRows.push({
+                        combat: fullHeader, turn: turnNumber, commandant: `C${cmd}`, fleet: fleetName,
+                        shipType: sType, crewRace: race, shipId: fullShipId,
+                        shipX: ax, shipY: ay, shipZ: az,
+                        targetType: targetName || "", targetSequence: seq,
+                        targetX: tx || "", targetY: ty || "", targetZ: tz || "",
+                        targetDist: dist ? parseInt(dist.replace(/\s/g, '')) : 0,
+                        shotWeapon: `${data.count} ${wName}`, shotPercent: data.percent,
+                        shotShield: 0, shotDamage: data.damage, shotKill: data.kill
+                    });
+                });
 
-                    matrixData[matrixKey].dealt += damage;
-                    matrixData[reverseKey].received += damage;
-                    if (isFatal) matrixData[matrixKey].kills += 1;
-                }
-            }
-        }
+                // 2. Add to Turn State (For Heatmap/Grid)
+                exchanges.push({
+                    attacker: { id: sShortId, type: sType, race: parseInt(race), cmd: `C${cmd}`, pos: { x: parseInt(ax), y: parseInt(ay), z: parseInt(az) } },
+                    target: { 
+                        instanceId: targetName ? `${targetName}_${tx}_${ty}_${tz}` : 'none', 
+                        type: targetName || 'None', 
+                        pos: { x: parseInt(tx || '0'), y: parseInt(ty || '0'), z: parseInt(tz || '0') } 
+                    },
+                    distance: dist ? parseInt(dist.replace(/\s/g, '')) : 0,
+                    shots: Object.values(weaponGroups).flatMap(g => g.shots)
+                });
+            });
 
-        if (exchanges.length > 0) {
             turns.push({ turnNumber, exchanges });
         }
-    }
+    });
 
     return {
         id: fileName,
-        battleName,
+        battleName: fileName,
         turns: turns.sort((a, b) => a.turnNumber - b.turnNumber),
-        globalMatrix: { 
-            allShipTypes: Array.from(shipTypes).sort(), 
-            data: matrixData 
-        }
+        tableData: tableRows, // NEW: Flat data for the table
+        globalMatrix: { allShipTypes: Array.from(shipTypes).sort(), data: {} } // Placeholder for heatmap
     };
 }
