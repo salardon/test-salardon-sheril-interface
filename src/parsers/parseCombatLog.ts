@@ -13,7 +13,6 @@ export interface CombatTableRow {
 export function parseCombatLog(fileName: string, rawText: string): CombatLogData {
     // 1. Pre-processing: Clean weird characters and hidden [source] tags
     const cleanText = rawText.replace(/\/g, '').replace(/\r/g, '');
-    
     // 2. Split into major combat blocks
     const combatBlocks = cleanText.split(/RESOLUTION COMBAT\s+/).filter(b => b.trim().length > 0);
     
