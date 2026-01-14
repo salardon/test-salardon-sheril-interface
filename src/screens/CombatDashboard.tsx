@@ -3,6 +3,8 @@ import { useParams } from 'react-router-dom';
 import { useReport } from '../context/ReportContext';
 import CombatHeatmap from '../components/CombatHeatmap';
 import TacticalGrid from '../components/TacticalGrid';
+import CombatTable from '../components/CombatTable'; // Import the new component
+import { CombatTableRow } from '../parsers/parseCombatlog'; // Import the type
 
 export default function CombatDashboard() {
     const { logId } = useParams<{ logId: string }>(); 
@@ -15,62 +17,51 @@ export default function CombatDashboard() {
 
     const log = combatLogs.find(l => l.id === logId);
 
+    // 1. Prepare Table Data based on turn selection
+    const tableData = useMemo(() => {
+        if (!log || !('tableData' in log)) return [];
+        
+        const data = (log as any).tableData as CombatTableRow[];
+        // If turn is 0 (Global), show all. Otherwise, filter by specific turn.
+        return currentTurn === 0 ? data : data.filter(d => d.turn === currentTurn);
+    }, [log, currentTurn]);
+
     const battleSummary = useMemo(() => {
         if (!log) return null;
 
-        // Structure to track per-fleet statistics
         const fleetStats: Record<string, { 
             dealt: number; 
             kills: number; 
-            initialShips: Map<string, Set<string>>; // Map<ShipType, Set<ShipID>>
-            deadShips: Set<string>; // Set of unique ship Instance IDs
+            initialShips: Map<string, Set<string>>;
+            deadShips: Set<string>;
         }> = {};
 
-        // Identify the two commandants from the battle header
         const fleetMatches = log.battleName.match(/F\d+_(\d+)\s+VS\s+F\d+_(\d+)/);
         const cmdIds = fleetMatches ? [`C${fleetMatches[1]}`, `C${fleetMatches[2]}`] : [];
 
-        // Pre-initialize stats for both sides
         cmdIds.forEach(id => {
             fleetStats[id] = { dealt: 0, kills: 0, initialShips: new Map(), deadShips: new Set() };
         });
 
-        // Scan all turns to build the comprehensive battle state
         log.turns.forEach(turn => {
             turn.exchanges.forEach(ex => {
-                // FIX: Provide a fallback string so attackerCmd is never undefined
-                    const attackerCmd = ex.attacker.cmd || 'Unknown'; 
-                    const attackerId = ex.attacker.id;
-                    const attackerType = ex.attacker.type;
-                // Now TypeScript knows attackerCmd is a string and safe to use as a key
-                    if (!fleetStats[attackerCmd]) {
-                        fleetStats[attackerCmd] = { 
-                            dealt: 0, 
-                            kills: 0, 
-                            initialShips: new Map(), 
-                            deadShips: new Set() 
-                        };
-                    }
+                const attackerCmd = ex.attacker.cmd || 'Unknown'; 
+                const attackerId = ex.attacker.id;
+                const attackerType = ex.attacker.type;
 
-                // Ensure the commandant exists in our tracker
                 if (!fleetStats[attackerCmd]) {
                     fleetStats[attackerCmd] = { dealt: 0, kills: 0, initialShips: new Map(), deadShips: new Set() };
                 }
 
-                // Track initial ship IDs to get "Total" counts
                 if (!fleetStats[attackerCmd].initialShips.has(attackerType)) {
                     fleetStats[attackerCmd].initialShips.set(attackerType, new Set());
                 }
                 fleetStats[attackerCmd].initialShips.get(attackerType)?.add(attackerId);
 
-                // Process shots for damage and kills
                 ex.shots.forEach(s => {
                     fleetStats[attackerCmd].dealt += s.damage;
                     if (s.isFatal) {
                         fleetStats[attackerCmd].kills += 1;
-                        
-                        // Mark the target as destroyed
-                        // We identify the victim's commandant (the one NOT firing)
                         const victimCmd = cmdIds.find(id => id !== attackerCmd) || (attackerCmd === 'C3' ? 'C0' : 'C3');
                         if (fleetStats[victimCmd]) {
                             fleetStats[victimCmd].deadShips.add(ex.target.instanceId);
@@ -91,7 +82,6 @@ export default function CombatDashboard() {
 
     return (
         <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', background: '#0a0a0a', color: '#e0e0e0' }}>
-            {/* Header Control Panel */}
             <header style={{ padding: '15px 25px', background: '#111', borderBottom: '1px solid #333' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                     <div>
@@ -119,7 +109,6 @@ export default function CombatDashboard() {
                 </div>
             </header>
 
-            {/* Main Content Area */}
             <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
                 
                 {/* LEFT: Analysis Area */}
@@ -130,7 +119,7 @@ export default function CombatDashboard() {
                     borderRight: isGlobalView ? 'none' : '1px solid #222'
                 }}>
                     
-                    {/* Fleet Stats & Composition Cards */}
+                    {/* 1. Fleet Stats Cards */}
                     <div style={{ display: 'flex', gap: '20px', marginBottom: '25px' }}>
                         {battleSummary.commandants.map((cmd, idx) => {
                             const stats = battleSummary.fleetStats[cmd];
@@ -153,10 +142,8 @@ export default function CombatDashboard() {
                                     <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                                         {Array.from(stats.initialShips.entries()).map(([type, ids]) => {
                                             const total = ids.size;
-                                            // Calculate dead ships of this specific type
                                             const deadCount = Array.from(stats.deadShips).filter(deadId => deadId.startsWith(type)).length;
                                             const remaining = total - deadCount;
-
                                             return (
                                                 <div key={type} style={{ 
                                                     display: 'flex', justifyContent: 'space-between', 
@@ -176,13 +163,25 @@ export default function CombatDashboard() {
                         })}
                     </div>
 
-                    <div style={{ marginBottom: '20px' }}>
-                        <span style={{ fontSize: '0.9rem', color: '#888', textTransform: 'uppercase', letterSpacing: '1px' }}>
-                            {isGlobalView ? "Accumulated Damage Matrix" : `Damage Analysis - Turn ${currentTurn}`}
-                        </span>
+                    {/* 2. New Detailed Table View (Primary) */}
+                    <div style={{ marginBottom: '30px' }}>
+                        <div style={{ marginBottom: '15px' }}>
+                            <span style={{ fontSize: '0.9rem', color: '#888', textTransform: 'uppercase', letterSpacing: '1px' }}>
+                                {isGlobalView ? "Full Combat Log Record" : `Shot Log - Turn ${currentTurn}`}
+                            </span>
+                        </div>
+                        <CombatTable data={tableData} />
                     </div>
 
-                    <CombatHeatmap log={log} turnFilter={currentTurn} />
+                    {/* 3. Heatmap Analysis (Secondary) */}
+                    <div style={{ borderTop: '1px solid #222', paddingTop: '30px' }}>
+                        <div style={{ marginBottom: '20px' }}>
+                            <span style={{ fontSize: '0.9rem', color: '#888', textTransform: 'uppercase', letterSpacing: '1px' }}>
+                                Spatial Damage Distribution
+                            </span>
+                        </div>
+                        <CombatHeatmap log={log} turnFilter={currentTurn} />
+                    </div>
                 </section>
                 
                 {/* RIGHT: Tactical Mini-Grid */}
