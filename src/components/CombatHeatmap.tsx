@@ -7,33 +7,43 @@ interface Props {
 }
 
 export default function CombatHeatmap({ log, turnFilter }: Props) {
-    // 1. Separate ship types by Commandant to create distinct Axis
     const { attackers, defenders } = useMemo(() => {
-        const sideA = new Set<string>(); // Ships belonging to the first C found (usually the attacker)
-        const sideB = new Set<string>(); // Ships belonging to any other C
+    // 1. Extract the two fleets from the battle name (e.g., F16_3 VS F77_0)
+    // We'll use the commandant IDs (the number after the underscore)
+    const fleetMatches = log.battleName.match(/F\d+_(\d+)\s+VS\s+F\d+_(\d+)/);
+    const cmdA = fleetMatches ? `C${fleetMatches[1]}` : 'C3'; // Fallback to C3
+    const cmdB = fleetMatches ? `C${fleetMatches[2]}` : 'C0'; // Fallback to C0
 
-        // We determine ownership by scanning the exchanges
-        log.turns.forEach(turn => {
-            turn.exchanges.forEach(ex => {
-                const cmd = ex.attacker.cmd;
-                const type = ex.attacker.type;
-                
-                // Assuming the first Commandant in the log is "Side A"
-                const firstCmd = log.turns[0]?.exchanges[0]?.attacker.cmd;
-                
-                if (cmd === firstCmd) {
-                    sideA.add(type);
-                } else {
-                    sideB.add(type);
-                }
-            });
+    const sideA = new Set<string>();
+    const sideB = new Set<string>();
+
+    log.turns.forEach(turn => {
+        turn.exchanges.forEach(ex => {
+            const cmd = ex.attacker.cmd;
+            const type = ex.attacker.type;
+            
+            // Assign ship types to the correct axis based on their Commandant
+            if (cmd === cmdA) {
+                sideA.add(type);
+            } else if (cmd === cmdB) {
+                sideB.add(type);
+            }
+
+            // Also check the target's type to ensure defenders appear 
+            // even if they never fired back
+            if (ex.target && ex.target.type !== 'None') {
+                // If C3 is attacking, the target must belong to C0
+                if (cmd === cmdA) sideB.add(ex.target.type);
+                else sideA.add(ex.target.type);
+            }
         });
+    });
 
-        return {
-            attackers: Array.from(sideA).sort(),
-            defenders: Array.from(sideB).sort()
-        };
-    }, [log]);
+    return {
+        attackers: Array.from(sideA).sort(),
+        defenders: Array.from(sideB).sort()
+    };
+}, [log]);
 
     const getStats = (attackerType: string, targetType: string) => {
         if (turnFilter === 0) {
