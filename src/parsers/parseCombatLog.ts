@@ -1,29 +1,20 @@
 import { CombatLogData, TurnState, FleetExchange, WeaponShot } from '../types/combat';
 
 export interface CombatTableRow {
-    combat: string;
-    turn: number;
-    commandant: string;
-    fleet: string;
-    shipType: string;
-    crewRace: string;
-    shipId: string;
+    combat: string; turn: number; commandant: string; fleet: string;
+    shipType: string; crewRace: string; shipId: string;
     shipX: string; shipY: string; shipZ: string;
-    targetType: string;
-    targetSequence: string;
+    targetType: string; targetSequence: string;
     targetX: string; targetY: string; targetZ: string;
-    targetDist: number;
-    shotWeapon: string;
-    shotPercent: string;
-    shotShield: number;
-    shotDamage: number;
-    shotKill: number;
+    targetDist: number; shotWeapon: string; shotPercent: string;
+    shotShield: number; shotDamage: number; shotKill: number;
 }
 
 export function parseCombatLog(fileName: string, rawText: string): CombatLogData {
-    const cleanText = rawText.replace(/\r/g, '');
+    // 1. CLEANING: Remove the tags that are breaking the split and regex
+    const cleanText = rawText.replace(/\/g, '').replace(/\r/g, '');
     
-    // Split by RESOLUTION COMBAT to handle multiple skirmishes in one file
+    // 2. SPLITTING: Find all combat blocks regardless of what text precedes them
     const combatBlocks = cleanText.split(/RESOLUTION COMBAT\s+/).filter(b => b.trim() && b.includes('['));
     
     const tableRows: CombatTableRow[] = [];
@@ -32,14 +23,14 @@ export function parseCombatLog(fileName: string, rawText: string): CombatLogData
     const matrixData: Record<string, { dealt: number; received: number; kills: number }> = {};
 
     combatBlocks.forEach(block => {
-        const headerMatch = block.match(/\[((F(\d+))_(\d+)\s+VS\s+(F(\d+))_(\d+))\]/);
+        const headerMatch = block.match(/\[(F\d+_\d+\s+VS\s+F\d+_\d+)\]/);
         if (!headerMatch) return;
 
         const fullHeader = headerMatch[1];
-        // FIXED: Removed f2Owner and unused placeholders to satisfy ESLint
         const fleetParts = fullHeader.match(/F(\d+)_(\d+)\s+VS\s+F(\d+)_(\d+)/);
         if (!fleetParts) return;
-        const [,, f1Owner,,] = fleetParts; // Only keep what we use
+        
+        const [,, f1Owner,,] = fleetParts; 
         const [,, f1Name,, f2Name] = fleetParts;
 
         const turnParts = block.split(/TOUR DE COMBAT (\d+)/);
@@ -51,8 +42,8 @@ export function parseCombatLog(fileName: string, rawText: string): CombatLogData
 
             const exchanges: FleetExchange[] = [];
             
-            // Regex handles inactive ships (everything after attP is optional)
-            const shipRegex = /\[.*?\]\s+C(\d+)\s+,\s+tir vaisseau\s+(\d+)\s+N°(\d+\/\d+)\s+\((.*?),\s+race:\s+(\d+)\)\s+,\s+attP:\s+\(x:(-?\d+)\|y:(-?\d+)\|z:(-?\d+)\)(?:,\s+cible:\s+(.*?),\s+deffP:\s+\(x:(-?\d+)\|y:(-?\d+)\|z:(-?\d+)\),\s+distance:\s+([\d\s]+))?/;
+            // SHIP REGEX: Adjusted to be more flexible with whitespace and optional target data
+            const shipRegex = /\[.*?\]\s+C(\d+)\s+,\s+tir vaisseau\s+(\d+)\s+N°(\d+\/\d+)\s+\((.*?),\s+race:\s+(\d+)\)\s+,\s+attP:\s+\(x:(-?\d+)\|y:(-?\d+)\|z:(-?\d+)\)(?:,\s+cible:\s+(.*?),\s+deffP:\s+\(x:(-?\d+)\|y:(-?\d+)\|z:(-?\d+)\),\s+distance:\s+([\d\s\u202F]+))?/;
 
             const firingSections = turnContent.split(`[${fullHeader}]`).filter(s => s.includes('tir vaisseau'));
 
@@ -71,8 +62,8 @@ export function parseCombatLog(fileName: string, rawText: string): CombatLogData
                 const weaponLines = section.split('\n').filter(l => l.includes('arme:'));
 
                 weaponLines.forEach(wLine => {
-                    // Added 'exit' outcome found in your combat.txt
-                    const wMatch = wLine.match(/arme:\s+(.*?)\s+=>\s+chance\s+(.*?)\((.*?)\),\s+(hit|miss|shielded|exit)(?:,\s+degat\s+\((\d+)\))?/);
+                    // WEAPON REGEX: Handles "exit" and "chance < 0" cases found in your log
+                    const wMatch = wLine.match(/arme:\s+(.*?)\s+[-\s=>]+\s+chance\s+(.*?)\((.*?)\)?,\s+(hit|miss|shielded|exit)(?:,\s+degat\s+\((\d+)\))?/);
                     if (wMatch) {
                         const [, wName, wPercent, , wResult, wDmg] = wMatch;
                         const damage = parseInt(wDmg || "0", 10);
@@ -93,59 +84,33 @@ export function parseCombatLog(fileName: string, rawText: string): CombatLogData
                             targetPart: wResult === 'shielded' ? 'shield' : 'hull',
                             isFatal
                         });
-
-                        if (targetName) {
-                            const matrixKey = `${sType}|${targetName}`;
-                            if (!matrixData[matrixKey]) matrixData[matrixKey] = { dealt: 0, received: 0, kills: 0 };
-                            matrixData[matrixKey].dealt += damage;
-                            
-                            const targetKey = `${targetName}|${sType}`;
-                            if (!matrixData[targetKey]) matrixData[targetKey] = { dealt: 0, received: 0, kills: 0 };
-                            matrixData[targetKey].received += damage;
-                            
-                            if (isFatal) matrixData[matrixKey].kills += 1;
-                        }
                     }
                 });
 
-                const weaponEntries = Object.entries(weaponGroups);
+                // Helper to clean numeric strings with non-standard spaces
+                const cleanNum = (val: string | undefined) => val ? parseInt(val.replace(/[^\d-]/g, ''), 10) : 0;
+
                 const baseData = {
                     combat: fullHeader, turn: turnNumber, commandant: `C${cmd}`, fleet: fleetName,
                     shipType: sType, crewRace: race, shipId: fullShipId,
                     shipX: ax, shipY: ay, shipZ: az,
                     targetType: targetName || "None", targetSequence: seq,
                     targetX: tx || "0", targetY: ty || "0", targetZ: tz || "0",
-                    targetDist: dist ? parseInt(dist.replace(/[^\d]/g, '')) : 0
+                    targetDist: cleanNum(dist)
                 };
 
-                if (weaponEntries.length === 0) {
-                    // This ship participated but didn't fire (Inactive)
-                    tableRows.push({
-                        ...baseData,
-                        shotWeapon: "None (Inactive)", shotPercent: "0",
-                        shotShield: 0, shotDamage: 0, shotKill: 0
-                    });
+                if (Object.keys(weaponGroups).length === 0) {
+                    tableRows.push({ ...baseData, shotWeapon: "None (Inactive)", shotPercent: "0", shotShield: 0, shotDamage: 0, shotKill: 0 });
                 } else {
-                    weaponEntries.forEach(([wName, data]) => {
-                        tableRows.push({
-                            ...baseData,
-                            shotWeapon: `${data.count} ${wName}`, shotPercent: data.percent,
-                            shotShield: 0, shotDamage: data.damage, shotKill: data.kill
-                        });
+                    Object.entries(weaponGroups).forEach(([wName, data]) => {
+                        tableRows.push({ ...baseData, shotWeapon: `${data.count} ${wName}`, shotPercent: data.percent, shotShield: 0, shotDamage: data.damage, shotKill: data.kill });
                     });
                 }
 
                 exchanges.push({
-                    attacker: { 
-                        id: sShortId, type: sType, race: parseInt(race), cmd: `C${cmd}`, 
-                        pos: { x: parseInt(ax), y: parseInt(ay), z: parseInt(az) } 
-                    },
-                    target: { 
-                        instanceId: targetName ? `${targetName}_${tx}_${ty}_${tz}` : 'none', 
-                        type: targetName || 'None', 
-                        pos: { x: parseInt(tx || '0'), y: parseInt(ty || '0'), z: parseInt(tz || '0') } 
-                    },
-                    distance: dist ? parseInt(dist.replace(/[^\d]/g, '')) : 0,
+                    attacker: { id: sShortId, type: sType, race: parseInt(race), cmd: `C${cmd}`, pos: { x: parseInt(ax), y: parseInt(ay), z: parseInt(az) } },
+                    target: { instanceId: targetName ? `${targetName}_${tx}_${ty}_${tz}` : 'none', type: targetName || 'None', pos: { x: parseInt(tx || '0'), y: parseInt(ty || '0'), z: parseInt(tz || '0') } },
+                    distance: cleanNum(dist),
                     shots: Object.values(weaponGroups).flatMap(g => g.shots)
                 });
             });
@@ -159,9 +124,6 @@ export function parseCombatLog(fileName: string, rawText: string): CombatLogData
         battleName: tableRows.length > 0 ? tableRows[0].combat : fileName,
         turns: turns.sort((a, b) => a.turnNumber - b.turnNumber),
         tableData: tableRows, 
-        globalMatrix: { 
-            allShipTypes: Array.from(shipTypes).sort(), 
-            data: matrixData 
-        }
+        globalMatrix: { allShipTypes: Array.from(shipTypes).sort(), data: matrixData }
     } as CombatLogData;
 }
