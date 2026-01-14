@@ -13,13 +13,14 @@ export interface WeaponShot {
 
 export interface FleetExchange {
     attacker: {
-        id: string; // The "N°0/3" identifier from the log
-        type: string; // e.g., "Chasseur standard"
+        id: string;
+        type: string;
         race: number;
+        cmd?: string; // Add this line. The '?' makes it optional if some logs don't have it.
         pos: { x: number; y: number; z: number };
     };
     target: {
-        instanceId: string; // A unique key we generate: "Type_X_Y_Z"
+        instanceId: string;
         type: string;
         pos: { x: number; y: number; z: number };
     };
