@@ -22,6 +22,8 @@ export interface CombatTableRow {
 
 export function parseCombatLog(fileName: string, rawText: string) {
     const cleanText = rawText.replace(/\r/g, '');
+    const battleMatch = cleanText.match(/RESOLUTION COMBAT\s+(\[.*?\])/);
+    const battleName = battleMatch ? battleMatch[1] : fileName;
     const tableRows: CombatTableRow[] = [];
     const turns: TurnState[] = [];
     const shipTypes = new Set<string>();
@@ -131,4 +133,13 @@ export function parseCombatLog(fileName: string, rawText: string) {
     });
 
     return {
-        id: fileName,
+    id: fileName,
+    battleName, // Make sure this variable is defined or use fileName
+    turns: turns.sort((a, b) => a.turnNumber - b.turnNumber),
+    tableData: tableRows, // MUST ADD THIS
+    globalMatrix: { 
+        allShipTypes: Array.from(shipTypes).sort(), 
+        data: matrixData 
+    }
+};
+}
