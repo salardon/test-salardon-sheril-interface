@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { CombatTableRow } from '../parsers/parseCombatlog';
+import { CombatTableRow } from '../parsers/parseCombatLog';
 
 export default function CombatTable({ data }: { data: CombatTableRow[] }) {
     const [filter, setFilter] = useState('');
