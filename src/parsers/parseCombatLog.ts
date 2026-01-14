@@ -1,6 +1,5 @@
 import { CombatLogData, TurnState, FleetExchange, WeaponShot } from '../types/combat';
 
-// Add this interface to support the new table view
 export interface CombatTableRow {
     combat: string;
     turn: number;
@@ -26,8 +25,10 @@ export function parseCombatLog(fileName: string, rawText: string) {
     const tableRows: CombatTableRow[] = [];
     const turns: TurnState[] = [];
     const shipTypes = new Set<string>();
+    
+    // Matrix for Heatmap
+    const matrixData: Record<string, { dealt: number; received: number; kills: number }> = {};
 
-    // Split file by "RESOLUTION COMBAT" to handle multiple battles in one file
     const combatBlocks = cleanText.split(/RESOLUTION COMBAT /).filter(b => b.trim());
 
     combatBlocks.forEach(block => {
@@ -43,10 +44,8 @@ export function parseCombatLog(fileName: string, rawText: string) {
             if (!turnContent) continue;
 
             const exchanges: FleetExchange[] = [];
-            // Regex for the ship firing line
             const shipRegex = /\[.*?\]\s+C(\d+)\s+,\s+tir vaisseau\s+(\d+)\s+N°(\d+\/\d+)\s+\((.*?),\s+race:\s+(\d+)\)\s+,\s+attP:\s+\(x:(-?\d+)\|y:(-?\d+)\|z:(-?\d+)\)(?:,\s+cible:\s+(.*?),\s+deffP:\s+\(x:(-?\d+)\|y:(-?\d+)\|z:(-?\d+)\),\s+distance:\s+([\d\s]+))?/;
 
-            // Group lines by ship exchange sections
             const firingSections = turnContent.split(new RegExp(`\\[${fullHeader.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\]`)).filter(s => s.includes('tir vaisseau'));
 
             firingSections.forEach(section => {
@@ -60,7 +59,6 @@ export function parseCombatLog(fileName: string, rawText: string) {
                 shipTypes.add(sType);
                 if (targetName) shipTypes.add(targetName);
 
-                // Group shots by weapon for the table
                 const weaponGroups: Record<string, { count: number, damage: number, kill: number, percent: string, shots: WeaponShot[] }> = {};
                 const weaponLines = section.split('\n').filter(l => l.includes('arme:'));
 
@@ -86,10 +84,22 @@ export function parseCombatLog(fileName: string, rawText: string) {
                             targetPart: wResult === 'shielded' ? 'shield' : 'hull',
                             isFatal
                         });
+
+                        // UPDATE HEATMAP MATRIX
+                        if (targetName) {
+                            const matrixKey = `${sType}|${targetName}`;
+                            const reverseKey = `${targetName}|${sType}`;
+                            if (!matrixData[matrixKey]) matrixData[matrixKey] = { dealt: 0, received: 0, kills: 0 };
+                            if (!matrixData[reverseKey]) matrixData[reverseKey] = { dealt: 0, received: 0, kills: 0 };
+                            
+                            matrixData[matrixKey].dealt += damage;
+                            matrixData[reverseKey].received += damage;
+                            if (isFatal) matrixData[matrixKey].kills += 1;
+                        }
                     }
                 });
 
-                // 1. Add to Table Rows
+                // Add to Table Rows
                 Object.entries(weaponGroups).forEach(([wName, data]) => {
                     tableRows.push({
                         combat: fullHeader, turn: turnNumber, commandant: `C${cmd}`, fleet: fleetName,
@@ -103,7 +113,7 @@ export function parseCombatLog(fileName: string, rawText: string) {
                     });
                 });
 
-                // 2. Add to Turn State (For Heatmap/Grid)
+                // Add to Turn State
                 exchanges.push({
                     attacker: { id: sShortId, type: sType, race: parseInt(race), cmd: `C${cmd}`, pos: { x: parseInt(ax), y: parseInt(ay), z: parseInt(az) } },
                     target: { 
@@ -122,9 +132,3 @@ export function parseCombatLog(fileName: string, rawText: string) {
 
     return {
         id: fileName,
-        battleName: fileName,
-        turns: turns.sort((a, b) => a.turnNumber - b.turnNumber),
-        tableData: tableRows, // NEW: Flat data for the table
-        globalMatrix: { allShipTypes: Array.from(shipTypes).sort(), data: {} } // Placeholder for heatmap
-    };
-}
