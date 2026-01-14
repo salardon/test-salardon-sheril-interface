@@ -3,7 +3,7 @@ import { CombatTableRow } from '../parsers/parseCombatLog';
 
 export default function CombatTable({ data }: { data: CombatTableRow[] }) {
     const [filter, setFilter] = useState('');
-    const [sort, setSort] = useState<{ key: keyof CombatTableRow, dir: 'asc' | 'desc' } | null>(null);
+    const [sort] = useState<{ key: keyof CombatTableRow, dir: 'asc' | 'desc' } | null>(null);
 
     const processedData = useMemo(() => {
         let filtered = data.filter(r => Object.values(r).some(v => v.toString().toLowerCase().includes(filter.toLowerCase())));
