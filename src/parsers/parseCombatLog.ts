@@ -11,11 +11,11 @@ export interface CombatTableRow {
 }
 
 export function parseCombatLog(fileName: string, rawText: string): CombatLogData {
-    // 1. CLEANING: Remove the tags that are breaking the split and regex
+    // 1. Pre-processing: Clean weird characters and hidden [source] tags
     const cleanText = rawText.replace(/\/g, '').replace(/\r/g, '');
     
-    // 2. SPLITTING: Find all combat blocks regardless of what text precedes them
-    const combatBlocks = cleanText.split(/RESOLUTION COMBAT\s+/).filter(b => b.trim() && b.includes('['));
+    // 2. Split into major combat blocks
+    const combatBlocks = cleanText.split(/RESOLUTION COMBAT\s+/).filter(b => b.trim().length > 0);
     
     const tableRows: CombatTableRow[] = [];
     const turns: TurnState[] = [];
@@ -23,15 +23,14 @@ export function parseCombatLog(fileName: string, rawText: string): CombatLogData
     const matrixData: Record<string, { dealt: number; received: number; kills: number }> = {};
 
     combatBlocks.forEach(block => {
-        const headerMatch = block.match(/\[(F\d+_\d+\s+VS\s+F\d+_\d+)\]/);
+        // Match header like [F19_4 VS F38_2]
+        const headerMatch = block.match(/\[(F(\d+)_(\d+)\s+VS\s+F(\d+)_(\d+))\]/);
         if (!headerMatch) return;
 
         const fullHeader = headerMatch[1];
-        const fleetParts = fullHeader.match(/F(\d+)_(\d+)\s+VS\s+F(\d+)_(\d+)/);
-        if (!fleetParts) return;
-        
-        const [,, f1Owner,,] = fleetParts; 
-        const [,, f1Name,, f2Name] = fleetParts;
+        const f1Name = headerMatch[2];
+        const f1Owner = headerMatch[3];
+        const f2Name = headerMatch[4];
 
         const turnParts = block.split(/TOUR DE COMBAT (\d+)/);
 
@@ -42,7 +41,7 @@ export function parseCombatLog(fileName: string, rawText: string): CombatLogData
 
             const exchanges: FleetExchange[] = [];
             
-            // SHIP REGEX: Adjusted to be more flexible with whitespace and optional target data
+            // SHIP REGEX: Handles coords and optional target info
             const shipRegex = /\[.*?\]\s+C(\d+)\s+,\s+tir vaisseau\s+(\d+)\s+N°(\d+\/\d+)\s+\((.*?),\s+race:\s+(\d+)\)\s+,\s+attP:\s+\(x:(-?\d+)\|y:(-?\d+)\|z:(-?\d+)\)(?:,\s+cible:\s+(.*?),\s+deffP:\s+\(x:(-?\d+)\|y:(-?\d+)\|z:(-?\d+)\),\s+distance:\s+([\d\s\u202F]+))?/;
 
             const firingSections = turnContent.split(`[${fullHeader}]`).filter(s => s.includes('tir vaisseau'));
@@ -59,20 +58,20 @@ export function parseCombatLog(fileName: string, rawText: string): CombatLogData
                 if (targetName) shipTypes.add(targetName);
 
                 const weaponGroups: Record<string, { count: number, damage: number, kill: number, percent: string, shots: WeaponShot[] }> = {};
-                const weaponLines = section.split('\n').filter(l => l.includes('arme:'));
+                const lines = section.split('\n');
 
-                weaponLines.forEach(wLine => {
-                    // WEAPON REGEX: Handles "exit" and "chance < 0" cases found in your log
-                    const wMatch = wLine.match(/arme:\s+(.*?)\s+[-\s=>]+\s+chance\s+(.*?)\((.*?)\)?,\s+(hit|miss|shielded|exit)(?:,\s+degat\s+\((\d+)\))?/);
+                lines.forEach(l => {
+                    if (!l.includes('arme:')) return;
+                    // Support both => and - chance formats
+                    const wMatch = l.match(/arme:\s+(.*?)\s+[-\s=>]+\s+chance\s+(.*?)\((.*?)\)?,\s+(hit|miss|shielded|exit)(?:,\s+degat\s+\((\d+)\))?/);
                     if (wMatch) {
                         const [, wName, wPercent, , wResult, wDmg] = wMatch;
                         const damage = parseInt(wDmg || "0", 10);
-                        const isFatal = wLine.includes('cible detruire');
+                        const isFatal = l.includes('cible detruire');
 
                         if (!weaponGroups[wName]) {
                             weaponGroups[wName] = { count: 0, damage: 0, kill: 0, percent: wPercent, shots: [] };
                         }
-                        
                         weaponGroups[wName].count++;
                         weaponGroups[wName].damage += damage;
                         if (isFatal) weaponGroups[wName].kill = 1;
@@ -87,10 +86,9 @@ export function parseCombatLog(fileName: string, rawText: string): CombatLogData
                     }
                 });
 
-                // Helper to clean numeric strings with non-standard spaces
-                const cleanNum = (val: string | undefined) => val ? parseInt(val.replace(/[^\d-]/g, ''), 10) : 0;
+                const cleanNum = (v: string | undefined) => v ? parseInt(v.replace(/[^\d-]/g, ''), 10) : 0;
 
-                const baseData = {
+                const rowTemplate = {
                     combat: fullHeader, turn: turnNumber, commandant: `C${cmd}`, fleet: fleetName,
                     shipType: sType, crewRace: race, shipId: fullShipId,
                     shipX: ax, shipY: ay, shipZ: az,
@@ -99,11 +97,12 @@ export function parseCombatLog(fileName: string, rawText: string): CombatLogData
                     targetDist: cleanNum(dist)
                 };
 
-                if (Object.keys(weaponGroups).length === 0) {
-                    tableRows.push({ ...baseData, shotWeapon: "None (Inactive)", shotPercent: "0", shotShield: 0, shotDamage: 0, shotKill: 0 });
+                const wEntries = Object.entries(weaponGroups);
+                if (wEntries.length === 0) {
+                    tableRows.push({ ...rowTemplate, shotWeapon: "None (Inactive)", shotPercent: "0", shotShield: 0, shotDamage: 0, shotKill: 0 });
                 } else {
-                    Object.entries(weaponGroups).forEach(([wName, data]) => {
-                        tableRows.push({ ...baseData, shotWeapon: `${data.count} ${wName}`, shotPercent: data.percent, shotShield: 0, shotDamage: data.damage, shotKill: data.kill });
+                    wEntries.forEach(([wName, data]) => {
+                        tableRows.push({ ...rowTemplate, shotWeapon: `${data.count} ${wName}`, shotPercent: data.percent, shotShield: 0, shotDamage: data.damage, shotKill: data.kill });
                     });
                 }
 
