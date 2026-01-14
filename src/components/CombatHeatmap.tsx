@@ -1,75 +1,71 @@
 import React from 'react';
 import { CombatLogData } from '../types/combat';
 
-interface Props {
-    log: CombatLogData;
-    turnFilter: number;
-}
+export default function CombatHeatmap({ log, turnFilter }: { log: CombatLogData, turnFilter: number }) {
+    const { data } = log.globalMatrix;
+    
+    // In a real scenario, we'd identify the two main Commandants
+    // For this UI, we'll assume the first C found is "Side A" and others are "Side B"
+    const allShipTypes = log.globalMatrix.allShipTypes;
 
-export default function CombatHeatmap({ log, turnFilter }: Props) {
-    const { allShipTypes, data } = log.globalMatrix;
-
-    // Determine value to show based on turn
-    const getValue = (attacker: string, target: string) => {
-        if (turnFilter === 0) return data[`${attacker}|${target}`]?.dealt || 0;
-        
-        // Filter specific turn data
-        const turn = log.turns[turnFilter - 1];
-        let total = 0;
-        turn.exchanges.forEach(ex => {
-            if (ex.attacker.type === attacker && ex.target.type === target) {
-                total += ex.shots.reduce((sum, s) => sum + s.damage, 0);
-            }
-        });
-        return total;
-    };
-
-    // Color intensity logic
-    const getBgColor = (val: number) => {
-        if (val === 0) return 'transparent';
-        const opacity = Math.min(val / 50, 1); // Scale this divisor based on typical damage
-        return `rgba(79, 195, 247, ${0.1 + opacity * 0.9})`;
+    const getStats = (attacker: string, target: string) => {
+        const key = `${attacker}|${target}`;
+        const revKey = `${target}|${attacker}`;
+        return {
+            dealt: data[key]?.dealt || 0,
+            received: data[revKey]?.dealt || 0, // Damage I took from them
+            kills: data[key]?.kills || 0
+        };
     };
 
     return (
-        <div style={{ overflowX: 'auto' }}>
-            <table style={{ borderCollapse: 'separate', borderSpacing: '4px', width: '100%' }}>
+        <div style={{ background: '#111', padding: '20px', borderRadius: '8px', border: '1px solid #333' }}>
+            <table style={{ borderCollapse: 'collapse', width: '100%' }}>
                 <thead>
                     <tr>
-                        <th style={{ background: 'transparent' }}></th>
+                        <th style={{ color: '#666', fontSize: '0.7rem', textAlign: 'left' }}>ATTACKER →</th>
                         {allShipTypes.map(type => (
-                            <th key={type} style={{ fontSize: '10px', padding: '8px', color: '#888', transform: 'rotate(-45deg)', height: '80px', textAlign: 'left' }}>
+                            <th key={type} style={{ padding: '10px', fontSize: '0.7rem', color: '#888', writingMode: 'vertical-lr', transform: 'rotate(180deg)' }}>
                                 {type}
                             </th>
                         ))}
                     </tr>
                 </thead>
                 <tbody>
-                    {allShipTypes.map(attackerType => (
-                        <tr key={attackerType}>
-                            <td style={{ fontSize: '11px', fontWeight: 'bold', color: '#aaa', whiteSpace: 'nowrap', padding: '5px 15px' }}>
-                                {attackerType}
-                            </td>
-                            {allShipTypes.map(targetType => {
-                                const val = getValue(attackerType, targetType);
+                    {allShipTypes.map(rowType => (
+                        <tr key={rowType} style={{ borderBottom: '1px solid #222' }}>
+                            <td style={{ padding: '10px', fontSize: '0.8rem', fontWeight: 'bold', color: '#aaa' }}>{rowType}</td>
+                            {allShipTypes.map(colType => {
+                                const stats = getStats(rowType, colType);
+                                if (stats.dealt === 0 && stats.received === 0) return <td key={colType} style={{ background: '#0a0a0a' }}></td>;
+
                                 return (
-                                    <td 
-                                        key={targetType}
-                                        title={`${attackerType} → ${targetType}: ${val} damage`}
-                                        style={{
-                                            width: '40px',
-                                            height: '40px',
-                                            background: getBgColor(val),
-                                            border: val > 0 ? '1px solid #4fc3f7' : '1px solid #222',
-                                            borderRadius: '4px',
-                                            textAlign: 'center',
-                                            fontSize: '10px',
-                                            color: val > 10 ? '#000' : '#fff',
-                                            fontWeight: 'bold',
-                                            transition: 'all 0.2s'
-                                        }}
-                                    >
-                                        {val > 0 ? val : ''}
+                                    <td key={colType} style={{ padding: '2px', minWidth: '60px' }}>
+                                        <div style={{ 
+                                            background: '#1a1a1a', 
+                                            borderRadius: '4px', 
+                                            padding: '4px', 
+                                            fontSize: '0.7rem',
+                                            display: 'flex',
+                                            flexDirection: 'column',
+                                            gap: '2px',
+                                            border: stats.kills > 0 ? '1px solid #ff5252' : '1px solid #333'
+                                        }}>
+                                            {/* Dealt */}
+                                            <div style={{ color: '#8bff8b', display: 'flex', justifyContent: 'space-between' }}>
+                                                <span>▲</span> <span>{stats.dealt}</span>
+                                            </div>
+                                            {/* Received */}
+                                            <div style={{ color: '#ff5252', display: 'flex', justifyContent: 'space-between' }}>
+                                                <span>▼</span> <span>{stats.received}</span>
+                                            </div>
+                                            {/* Kills Marker */}
+                                            {stats.kills > 0 && (
+                                                <div style={{ textAlign: 'center', fontSize: '0.9rem', marginTop: '2px' }}>
+                                                    💀 <span style={{ color: '#fff', fontSize: '0.7rem' }}>x{stats.kills}</span>
+                                                </div>
+                                            )}
+                                        </div>
                                     </td>
                                 );
                             })}
@@ -77,6 +73,12 @@ export default function CombatHeatmap({ log, turnFilter }: Props) {
                     ))}
                 </tbody>
             </table>
+            
+            <div style={{ marginTop: '15px', display: 'flex', gap: '20px', fontSize: '0.75rem', color: '#666' }}>
+                <span><strong style={{color: '#8bff8b'}}>▲</strong> Damage Dealt</span>
+                <span><strong style={{color: '#ff5252'}}>▼</strong> Damage Received</span>
+                <span><strong style={{color: '#fff'}}>💀</strong> Fatal Kills</span>
+            </div>
         </div>
     );
 }
