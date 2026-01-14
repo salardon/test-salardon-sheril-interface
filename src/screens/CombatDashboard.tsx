@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import { useReport } from '../context/ReportContext';
 import CombatHeatmap from '../components/CombatHeatmap';
@@ -14,20 +14,42 @@ export default function CombatDashboard() {
     }, [logId]);
 
     const log = combatLogs.find(l => l.id === logId);
+
+    // Calculate Global Totals for the summary header
+    const totals = useMemo(() => {
+        if (!log) return { damage: 0, kills: 0 };
+        return Object.values(log.globalMatrix.data).reduce((acc, curr) => ({
+            damage: acc.damage + curr.dealt,
+            kills: acc.kills + curr.kills
+        }), { damage: 0, kills: 0 });
+    }, [log]);
     
     if (!log) {
         return <div style={{ color: 'white', padding: 40 }}>Log not found.</div>;
     }
 
-    // Determine if we should show the tactical side panel
     const isGlobalView = currentTurn === 0;
 
     return (
         <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', background: '#0a0a0a', color: '#e0e0e0' }}>
             {/* Header Control Panel */}
             <header style={{ padding: '15px 25px', background: '#111', borderBottom: '1px solid #333' }}>
-                <h2 style={{ margin: 0, fontSize: '1.2rem', color: '#8bff8b' }}>{log.battleName}</h2>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '20px', marginTop: '10px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                    <div>
+                        <h2 style={{ margin: 0, fontSize: '1.2rem', color: '#8bff8b' }}>{log.battleName}</h2>
+                        <div style={{ display: 'flex', gap: '15px', marginTop: '5px', fontSize: '0.8rem', color: '#888' }}>
+                            <span>Total Damage: <strong style={{color: '#4fc3f7'}}>{totals.damage.toLocaleString()}</strong></span>
+                            <span>Ships Destroyed: <strong style={{color: '#ff5252'}}>{totals.kills}</strong></span>
+                        </div>
+                    </div>
+                    <div style={{ textAlign: 'right' }}>
+                        <span style={{ fontSize: '1.5rem', fontWeight: 'bold', color: isGlobalView ? '#4fc3f7' : '#8bff8b' }}>
+                            {isGlobalView ? "📊 GLOBAL" : `🎯 TURN ${currentTurn}`}
+                        </span>
+                    </div>
+                </div>
+
+                <div style={{ display: 'flex', alignItems: 'center', gap: '20px', marginTop: '15px' }}>
                     <input 
                         type="range" 
                         min="0" 
@@ -36,8 +58,8 @@ export default function CombatDashboard() {
                         onChange={(e) => setCurrentTurn(parseInt(e.target.value, 10))}
                         style={{ flex: 1, accentColor: '#8bff8b', cursor: 'pointer' }}
                     />
-                    <span style={{ minWidth: '140px', fontWeight: 'bold', color: isGlobalView ? '#4fc3f7' : '#8bff8b' }}>
-                        {isGlobalView ? "📊 GLOBAL SUMMARY" : `🎯 TURN ${currentTurn} / ${log.turns.length}`}
+                    <span style={{ minWidth: '60px', textAlign: 'right', fontSize: '0.9rem', color: '#666' }}>
+                        {currentTurn} / {log.turns.length}
                     </span>
                 </div>
             </header>
@@ -45,15 +67,15 @@ export default function CombatDashboard() {
             {/* Main Content Area */}
             <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
                 
-                {/* LEFT: Heatmap (Expands if side panel is hidden) */}
+                {/* LEFT: Heatmap */}
                 <section style={{ 
                     flex: 1, 
                     padding: '20px', 
                     overflowY: 'auto', 
                     borderRight: isGlobalView ? 'none' : '1px solid #222',
-                    transition: 'flex 0.3s ease-in-out' 
+                    transition: 'all 0.3s ease-in-out' 
                 }}>
-                    <div style={{ marginBottom: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div style={{ marginBottom: '20px' }}>
                         <span style={{ fontSize: '0.9rem', color: '#888', textTransform: 'uppercase', letterSpacing: '1px' }}>
                             {isGlobalView ? "Accumulated Damage Matrix" : `Damage Analysis - Turn ${currentTurn}`}
                         </span>
@@ -61,7 +83,7 @@ export default function CombatDashboard() {
                     <CombatHeatmap log={log} turnFilter={currentTurn} />
                 </section>
                 
-                {/* RIGHT: Tactical Mini-Grid (Conditional Rendering) */}
+                {/* RIGHT: Tactical Mini-Grid */}
                 {!isGlobalView && (
                     <aside style={{ 
                         width: '400px', 
@@ -72,9 +94,19 @@ export default function CombatDashboard() {
                         padding: '20px',
                         animation: 'slideIn 0.3s ease-out'
                     }}>
-                         <div style={{ width: '100%', marginBottom: '15px', fontSize: '0.8rem', color: '#666', textAlign: 'center', borderBottom: '1px solid #222', pb: '10px' }}>
+                         {/* Corrected 'pb' to 'paddingBottom' below */}
+                         <div style={{ 
+                            width: '100%', 
+                            marginBottom: '15px', 
+                            fontSize: '0.8rem', 
+                            color: '#666', 
+                            textAlign: 'center', 
+                            borderBottom: '1px solid #222', 
+                            paddingBottom: '10px' 
+                        }}>
                             TACTICAL POSITIONS
                         </div>
+                        
                         <TacticalGrid turn={log.turns[currentTurn - 1]} />
                         
                         <div style={{ marginTop: 'auto', padding: '15px', background: '#111', borderRadius: '8px', width: '100%', fontSize: '0.8rem' }}>
@@ -87,7 +119,6 @@ export default function CombatDashboard() {
                 )}
             </div>
 
-            {/* Simple animation for the side panel */}
             <style>{`
                 @keyframes slideIn {
                     from { transform: translateX(100%); opacity: 0; }
