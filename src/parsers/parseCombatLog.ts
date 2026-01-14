@@ -36,7 +36,10 @@ export function parseCombatLog(fileName: string, rawText: string): CombatLogData
         const headerMatch = block.match(/\[((F(\d+))_(\d+)\s+VS\s+(F(\d+))_(\d+))\]/);
         if (!headerMatch) return;
 
-        const [_, fullHeader, f1Full, f1Name, f1Owner, f2Full, f2Name, f2Owner] = headerMatch;
+        // Correctly capture the header for splitting sections later
+        const fullHeader = headerMatch[1];
+        const [,,, f1Name, f1Owner,, f2Name] = headerMatch;
+        
         const turnParts = block.split(/TOUR DE COMBAT (\d+)/);
 
         for (let i = 1; i < turnParts.length; i += 2) {
@@ -45,15 +48,17 @@ export function parseCombatLog(fileName: string, rawText: string): CombatLogData
             if (!turnContent) continue;
 
             const exchanges: FleetExchange[] = [];
+            // Regex handles negative coordinates and optional targets
             const shipRegex = /\[.*?\]\s+C(\d+)\s+,\s+tir vaisseau\s+(\d+)\s+N°(\d+\/\d+)\s+\((.*?),\s+race:\s+(\d+)\)\s+,\s+attP:\s+\(x:(-?\d+)\|y:(-?\d+)\|z:(-?\d+)\)(?:,\s+cible:\s+(.*?),\s+deffP:\s+\(x:(-?\d+)\|y:(-?\d+)\|z:(-?\d+)\),\s+distance:\s+([\d\s]+))?/;
 
-            const firingSections = turnContent.split(new RegExp(`\\[${fullHeader.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\]`)).filter(s => s.includes('tir vaisseau'));
+            // FIXED: fullHeader is now in scope for this split
+            const firingSections = turnContent.split(`[${fullHeader}]`).filter(s => s.includes('tir vaisseau'));
 
             firingSections.forEach(section => {
                 const match = section.match(shipRegex);
                 if (!match) return;
 
-                const [__, cmd, sShortId, seq, sType, race, ax, ay, az, targetName, tx, ty, tz, dist] = match;
+                const [, cmd, sShortId, seq, sType, race, ax, ay, az, targetName, tx, ty, tz, dist] = match;
                 const fleetName = (cmd === f1Owner) ? `F${f1Name}` : `F${f2Name}`;
                 const fullShipId = `${fleetName}_${cmd}_${sShortId}`;
                 
@@ -66,7 +71,7 @@ export function parseCombatLog(fileName: string, rawText: string): CombatLogData
                 weaponLines.forEach(wLine => {
                     const wMatch = wLine.match(/arme:\s+(.*?)\s+=>\s+chance\s+(.*?),.*?(hit|miss|shielded)(?:,\s+degat\s+\((\d+)\))?(?:,\s+(cible detruire))?/);
                     if (wMatch) {
-                        const [___, wName, wPercent, wResult, wDmg, wKill] = wMatch;
+                        const [, wName, wPercent, wResult, wDmg, wKill] = wMatch;
                         const damage = parseInt(wDmg || "0", 10);
                         const isFatal = !!wKill;
 
@@ -99,6 +104,7 @@ export function parseCombatLog(fileName: string, rawText: string): CombatLogData
                     }
                 });
 
+                // Populate Table Rows
                 Object.entries(weaponGroups).forEach(([wName, data]) => {
                     tableRows.push({
                         combat: fullHeader, turn: turnNumber, commandant: `C${cmd}`, fleet: fleetName,
@@ -112,8 +118,15 @@ export function parseCombatLog(fileName: string, rawText: string): CombatLogData
                     });
                 });
 
+                // Populate Turn Exchanges for the Tactical Grid
                 exchanges.push({
-                    attacker: { id: sShortId, type: sType, race: parseInt(race), cmd: `C${cmd}`, pos: { x: parseInt(ax), y: parseInt(ay), z: parseInt(az) } },
+                    attacker: { 
+                        id: sShortId, 
+                        type: sType, 
+                        race: parseInt(race), 
+                        cmd: `C${cmd}`, 
+                        pos: { x: parseInt(ax), y: parseInt(ay), z: parseInt(az) } 
+                    },
                     target: { 
                         instanceId: targetName ? `${targetName}_${tx}_${ty}_${tz}` : 'none', 
                         type: targetName || 'None', 
@@ -132,7 +145,7 @@ export function parseCombatLog(fileName: string, rawText: string): CombatLogData
         id: fileName,
         battleName,
         turns: turns.sort((a, b) => a.turnNumber - b.turnNumber),
-        tableData: tableRows, // This must be handled in types/combat.ts
+        tableData: tableRows, 
         globalMatrix: { 
             allShipTypes: Array.from(shipTypes).sort(), 
             data: matrixData 
