@@ -15,32 +15,62 @@ export default function CombatDashboard() {
 
     const log = combatLogs.find(l => l.id === logId);
 
-    // 1. Calculate Totals AND Identify Fleet Compositions
     const battleSummary = useMemo(() => {
         if (!log) return null;
 
-        const fleetMap: Record<string, Map<string, number>> = {};
-        let totalDmg = 0;
-        let totalKills = 0;
+        // Structure to track per-fleet statistics
+        const fleetStats: Record<string, { 
+            dealt: number; 
+            kills: number; 
+            initialShips: Map<string, Set<string>>; // Map<ShipType, Set<ShipID>>
+            deadShips: Set<string>; // Set of unique ship Instance IDs
+        }> = {};
 
-        // Scan turns to map Commandants to ship types and count totals
+        // Identify the two commandants from the battle header
+        const fleetMatches = log.battleName.match(/F\d+_(\d+)\s+VS\s+F\d+_(\d+)/);
+        const cmdIds = fleetMatches ? [`C${fleetMatches[1]}`, `C${fleetMatches[2]}`] : [];
+
+        // Pre-initialize stats for both sides
+        cmdIds.forEach(id => {
+            fleetStats[id] = { dealt: 0, kills: 0, initialShips: new Map(), deadShips: new Set() };
+        });
+
+        // Scan all turns to build the comprehensive battle state
         log.turns.forEach(turn => {
             turn.exchanges.forEach(ex => {
-                const cmd = ex.attacker.cmd || 'Unknown';
-                if (!fleetMap[cmd]) fleetMap[cmd] = new Map();
-                
-                // Track ship types belonging to this commandant
-                const count = fleetMap[cmd].get(ex.attacker.type) || 0;
-                fleetMap[cmd].set(ex.attacker.type, count + 1);
+                const attackerCmd = ex.attacker.cmd;
+                const attackerId = ex.attacker.id;
+                const attackerType = ex.attacker.type;
 
+                // Ensure the commandant exists in our tracker
+                if (!fleetStats[attackerCmd]) {
+                    fleetStats[attackerCmd] = { dealt: 0, kills: 0, initialShips: new Map(), deadShips: new Set() };
+                }
+
+                // Track initial ship IDs to get "Total" counts
+                if (!fleetStats[attackerCmd].initialShips.has(attackerType)) {
+                    fleetStats[attackerCmd].initialShips.set(attackerType, new Set());
+                }
+                fleetStats[attackerCmd].initialShips.get(attackerType)?.add(attackerId);
+
+                // Process shots for damage and kills
                 ex.shots.forEach(s => {
-                    totalDmg += s.damage;
-                    if (s.isFatal) totalKills += 1;
+                    fleetStats[attackerCmd].dealt += s.damage;
+                    if (s.isFatal) {
+                        fleetStats[attackerCmd].kills += 1;
+                        
+                        // Mark the target as destroyed
+                        // We identify the victim's commandant (the one NOT firing)
+                        const victimCmd = cmdIds.find(id => id !== attackerCmd) || (attackerCmd === 'C3' ? 'C0' : 'C3');
+                        if (fleetStats[victimCmd]) {
+                            fleetStats[victimCmd].deadShips.add(ex.target.instanceId);
+                        }
+                    }
                 });
             });
         });
 
-        return { fleetMap, totalDmg, totalKills };
+        return { fleetStats, commandants: Object.keys(fleetStats) };
     }, [log]);
 
     if (!log || !battleSummary) {
@@ -48,7 +78,6 @@ export default function CombatDashboard() {
     }
 
     const isGlobalView = currentTurn === 0;
-    const commandants = Object.keys(battleSummary.fleetMap);
 
     return (
         <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', background: '#0a0a0a', color: '#e0e0e0' }}>
@@ -57,14 +86,13 @@ export default function CombatDashboard() {
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                     <div>
                         <h2 style={{ margin: 0, fontSize: '1.2rem', color: '#8bff8b' }}>{log.battleName}</h2>
-                        <div style={{ display: 'flex', gap: '15px', marginTop: '5px', fontSize: '0.8rem', color: '#888' }}>
-                            <span>Total Damage: <strong style={{color: '#4fc3f7'}}>{battleSummary.totalDmg.toLocaleString()}</strong></span>
-                            <span>Kills: <strong style={{color: '#ff5252'}}>{battleSummary.totalKills}</strong></span>
+                        <div style={{ marginTop: '5px', fontSize: '0.8rem', color: '#666' }}>
+                            Interactive Combat Log Analysis
                         </div>
                     </div>
                     <div style={{ textAlign: 'right' }}>
                         <span style={{ fontSize: '1.5rem', fontWeight: 'bold', color: isGlobalView ? '#4fc3f7' : '#8bff8b' }}>
-                            {isGlobalView ? "📊 GLOBAL" : `🎯 TURN ${currentTurn}`}
+                            {isGlobalView ? "📊 GLOBAL SUMMARY" : `🎯 TURN ${currentTurn}`}
                         </span>
                     </div>
                 </div>
@@ -92,26 +120,50 @@ export default function CombatDashboard() {
                     borderRight: isGlobalView ? 'none' : '1px solid #222'
                 }}>
                     
-                    {/* Dynamic Fleet Compositions */}
+                    {/* Fleet Stats & Composition Cards */}
                     <div style={{ display: 'flex', gap: '20px', marginBottom: '25px' }}>
-                        {commandants.map((cmd, idx) => (
-                            <div key={cmd} style={{ 
-                                flex: 1, padding: '15px', borderRadius: '8px',
-                                background: idx === 0 ? 'rgba(79, 195, 247, 0.05)' : 'rgba(255, 82, 82, 0.05)',
-                                borderLeft: `4px solid ${idx === 0 ? '#4fc3f7' : '#ff5252'}`
-                            }}>
-                                <h4 style={{ margin: '0 0 10px 0', color: idx === 0 ? '#4fc3f7' : '#ff5252', fontSize: '0.9rem' }}>
-                                    COMMANDANT {cmd}
-                                </h4>
-                                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
-                                    {Array.from(battleSummary.fleetMap[cmd].entries()).map(([type, count]) => (
-                                        <span key={type} style={{ fontSize: '0.75rem', color: '#aaa', background: '#1a1a1a', padding: '2px 6px', borderRadius: '4px' }}>
-                                            {type}: <strong>{count}</strong>
-                                        </span>
-                                    ))}
+                        {battleSummary.commandants.map((cmd, idx) => {
+                            const stats = battleSummary.fleetStats[cmd];
+                            return (
+                                <div key={cmd} style={{ 
+                                    flex: 1, padding: '15px', borderRadius: '8px',
+                                    background: idx === 0 ? 'rgba(79, 195, 247, 0.05)' : 'rgba(255, 82, 82, 0.05)',
+                                    borderLeft: `4px solid ${idx === 0 ? '#4fc3f7' : '#ff5252'}`
+                                }}>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '15px' }}>
+                                        <h4 style={{ margin: 0, color: idx === 0 ? '#4fc3f7' : '#ff5252', fontSize: '1rem' }}>
+                                            COMMANDANT {cmd}
+                                        </h4>
+                                        <div style={{ textAlign: 'right', fontSize: '0.75rem' }}>
+                                            <div style={{ color: '#8bff8b' }}>Total Damage: <strong>{stats.dealt.toLocaleString()}</strong></div>
+                                            <div style={{ color: '#ff5252' }}>Kills: <strong>{stats.kills}</strong></div>
+                                        </div>
+                                    </div>
+
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                                        {Array.from(stats.initialShips.entries()).map(([type, ids]) => {
+                                            const total = ids.size;
+                                            // Calculate dead ships of this specific type
+                                            const deadCount = Array.from(stats.deadShips).filter(deadId => deadId.startsWith(type)).length;
+                                            const remaining = total - deadCount;
+
+                                            return (
+                                                <div key={type} style={{ 
+                                                    display: 'flex', justifyContent: 'space-between', 
+                                                    fontSize: '0.8rem', color: '#aaa', background: '#1a1a1a', 
+                                                    padding: '4px 10px', borderRadius: '4px' 
+                                                }}>
+                                                    <span>{type}:</span>
+                                                    <span style={{ color: remaining === 0 ? '#ff5252' : (remaining < total ? '#ffb74d' : '#eee'), fontWeight: 'bold' }}>
+                                                        {remaining} / {total}
+                                                    </span>
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
                                 </div>
-                            </div>
-                        ))}
+                            );
+                        })}
                     </div>
 
                     <div style={{ marginBottom: '20px' }}>
