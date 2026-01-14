@@ -5,19 +5,20 @@ export function parseCombatLog(fileName: string, rawText: string): CombatLogData
     const matrixData: Record<string, { dealt: number; received: number; kills: number }> = {};
     const shipTypes = new Set<string>();
 
-    // 1. Extract the specific Battle ID (e.g., "F0_2 VS F65_0")
+    // Extract the main Battle Name
     const battleMatch = rawText.match(/RESOLUTION COMBAT \[(.*?)\]/);
-    if (!battleMatch) return { id: fileName, battleName: fileName, turns: [], globalMatrix: { allShipTypes: [], data: {} } };
-    
-    const battleId = battleMatch[1]; // The specific ID for this file
-    const battleName = battleId;
+    const battleName = battleMatch ? battleMatch[1] : fileName;
 
-    // 2. Split by "TOUR DE COMBAT"
+    // Split by "TOUR DE COMBAT" but keep the turn numbers
     const turnParts = rawText.split(/TOUR DE COMBAT (\d+)/);
     
+    // turnParts[0] is everything before "TOUR DE COMBAT 1"
+    // turnParts[1] is "1", turnParts[2] is the content of Turn 1
+    // turnParts[3] is "2", turnParts[4] is the content of Turn 2...
     for (let i = 1; i < turnParts.length; i += 2) {
         const turnNumber = parseInt(turnParts[i], 10);
         const turnContent = turnParts[i + 1];
+        
         if (!turnContent) continue;
 
         const exchanges: FleetExchange[] = [];
@@ -26,9 +27,7 @@ export function parseCombatLog(fileName: string, rawText: string): CombatLogData
 
         for (const line of lines) {
             const trimmed = line.trim();
-            // 3. STRICT FILTER: Only parse lines that start with our specific battleId
-            // This prevents the parser from reading summary data at the end of the file
-            if (!trimmed.startsWith(`[${battleId}]`)) continue;
+            if (!trimmed || trimmed.startsWith('FIN DE TOUR')) continue;
 
             // Regex for the exchange line
             const exMatch = trimmed.match(/\[.*?\]\s+C\d+\s*,\s*tir vaisseau N°(\d+\/\d+)\s*\((.*?)\s*,\s*race:\s*(\d+)\)\s*,\s*attP:\s*\(x:(.*?)\|y:(.*?)\|z:(.*?)\)\s*,\s*cible:\s*(.*?),\s*deffP:\s*\(x:(.*?)\|y:(.*?)\|z:(.*?)\)\s*,\s*distance:\s*(\d+)/);
@@ -55,36 +54,38 @@ export function parseCombatLog(fileName: string, rawText: string): CombatLogData
                     shots: []
                 };
                 exchanges.push(currentExchange);
-            } else if (trimmed.startsWith('-') && currentExchange) {
-                // Parse weapon shots for the current exchange
-                const shotMatch = trimmed.match(/-\s+tir\s+N\d+,\s+arme:\s+(.*?)\s+=>\s+.*?,\s+(hit|miss|shielded|exit)(?:,\s+(degat|shielded)\s+\((\d+)\))?(?:,\s+cible\s+detruire)?/);
+                continue;
+            }
 
-                if (shotMatch) {
-                    const [, weaponName, outcome, part, dmgValue] = shotMatch;
-                    const damage = dmgValue ? parseInt(dmgValue, 10) : 0;
-                    const isFatal = trimmed.includes('cible detruire');
+            // Regex for weapon shots
+            const shotMatch = trimmed.match(/-\s+tir\s+N\d+,\s+arme:\s+(.*?)\s+=>\s+.*?,\s+(hit|miss|shielded|exit)(?:,\s+(degat|shielded)\s+\((\d+)\))?(?:,\s+cible\s+detruire)?/);
 
-                    currentExchange.shots.push({
-                        weaponName,
-                        outcome: outcome as WeaponShot['outcome'],
-                        damage,
-                        targetPart: part === 'shielded' ? 'shield' : (part === 'degat' ? 'hull' : 'none'),
-                        isFatal
-                    });
+            if (shotMatch && currentExchange) {
+                const [, weaponName, outcome, part, dmgValue] = shotMatch;
+                const damage = dmgValue ? parseInt(dmgValue, 10) : 0;
+                const isFatal = trimmed.includes('cible detruire');
 
-                    // Update Heatmap Matrix
-                    const matrixKey = `${currentExchange.attacker.type}|${currentExchange.target.type}`;
-                    if (!matrixData[matrixKey]) matrixData[matrixKey] = { dealt: 0, received: 0, kills: 0 };
-                    matrixData[matrixKey].dealt += damage;
-                    if (isFatal) matrixData[matrixKey].kills += 1;
+                currentExchange.shots.push({
+                    weaponName,
+                    outcome: outcome as WeaponShot['outcome'],
+                    damage,
+                    targetPart: part === 'shielded' ? 'shield' : (part === 'degat' ? 'hull' : 'none'),
+                    isFatal
+                });
 
-                    const reverseKey = `${currentExchange.target.type}|${currentExchange.attacker.type}`;
-                    if (!matrixData[reverseKey]) matrixData[reverseKey] = { dealt: 0, received: 0, kills: 0 };
-                    matrixData[reverseKey].received += damage;
-                }
+                const matrixKey = `${currentExchange.attacker.type}|${currentExchange.target.type}`;
+                if (!matrixData[matrixKey]) matrixData[matrixKey] = { dealt: 0, received: 0, kills: 0 };
+                matrixData[matrixKey].dealt += damage;
+                if (isFatal) matrixData[matrixKey].kills += 1;
+
+                const reverseKey = `${currentExchange.target.type}|${currentExchange.attacker.type}`;
+                if (!matrixData[reverseKey]) matrixData[reverseKey] = { dealt: 0, received: 0, kills: 0 };
+                matrixData[reverseKey].received += damage;
             }
         }
 
+        // Only add turns that actually belong to this specific combat resolution
+        // (This prevents cross-contamination if the file has multiple battle results)
         if (exchanges.length > 0) {
             turns.push({ turnNumber, exchanges });
         }
