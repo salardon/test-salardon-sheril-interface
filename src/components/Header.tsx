@@ -1,12 +1,18 @@
 import React, { useRef } from 'react';
 import { useReport } from '../context/ReportContext';
 import Commandant from "./utils/Commandant";
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink, useNavigate, useLocation } from "react-router-dom";
 
 export default function Header() {
     const { rapport, loadRapportFile, setCenter, loadCombatLog, combatLogs } = useReport();
     const rapportInput = useRef<HTMLInputElement>(null);
     const navigate = useNavigate();
+    const location = useLocation();
+
+    // Determine the current log ID from the URL to keep the selector in sync
+    const currentLogId = location.pathname.startsWith('/combat/') 
+        ? location.pathname.split('/')[2] 
+        : "";
     
     return (<header className="app-header">
         <div>
@@ -22,12 +28,7 @@ export default function Header() {
         >
             Capitale: {rapport?.joueur.capitale ? `${rapport.joueur.capitale.x}-${rapport.joueur.capitale.y}` : '—'}
         </button>
-        <nav
-            className="app-nav"
-            style={{
-                display: 'flex', gap: 12, padding: '8px 12px', borderBottom: '1px solid #222', flexWrap: 'wrap',
-            }}
-        >
+        <nav className="app-nav" style={{ display: 'flex', gap: 12, padding: '8px 12px', flexWrap: 'wrap' }}>
             <NavLink to="/" end className={({isActive}) => (isActive ? 'active' : '')}>Carte</NavLink>
             <NavLink to="/systemes" className={({isActive}) => (isActive ? 'active' : '')}>Systèmes</NavLink>
             <NavLink to="/flottes" className={({isActive}) => (isActive ? 'active' : '')}>Flottes</NavLink>
@@ -39,14 +40,14 @@ export default function Header() {
 
         <div className="header-spacer"/>
 
-        {/* COMBAT LOG SELECTOR */}
         {combatLogs.length > 0 && (
             <select 
                 className="combat-selector"
-                onChange={(e) => navigate(`/combat/${e.target.value}`)}
+                value={currentLogId}
+                onChange={(e) => e.target.value && navigate(`/combat/${e.target.value}`)}
                 style={{ marginRight: '10px', background: '#222', color: '#8bff8b', border: '1px solid #444', borderRadius: '4px' }}
             >
-                <option value="">Select Battle...</option>
+                <option value="" disabled>Select Battle...</option>
                 {combatLogs.map(log => (
                     <option key={log.id} value={log.id}>{log.battleName}</option>
                 ))}
@@ -54,10 +55,7 @@ export default function Header() {
         )}
 
         <div className="header-actions" style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-            {/* RAPPORT XML UPLOAD */}
-            <button className="badge" onClick={() => rapportInput.current?.click()}>
-                📁 XML
-            </button>
+            <button className="badge" onClick={() => rapportInput.current?.click()}>📁 XML</button>
             <input
                 ref={rapportInput}
                 type="file"
@@ -70,7 +68,6 @@ export default function Header() {
                 }}
             />
 
-            {/* COMBAT LOG UPLOAD */}
             <label className="badge combat-upload" style={{ cursor: 'pointer', background: '#2c3e50' }}>
                 ⚔️ Log
                 <input 
