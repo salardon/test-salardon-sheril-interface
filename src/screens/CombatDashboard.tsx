@@ -38,9 +38,19 @@ export default function CombatDashboard() {
         // Scan all turns to build the comprehensive battle state
         log.turns.forEach(turn => {
             turn.exchanges.forEach(ex => {
-                const attackerCmd = ex.attacker.cmd;
-                const attackerId = ex.attacker.id;
-                const attackerType = ex.attacker.type;
+                // FIX: Provide a fallback string so attackerCmd is never undefined
+                    const attackerCmd = ex.attacker.cmd || 'Unknown'; 
+                    const attackerId = ex.attacker.id;
+                    const attackerType = ex.attacker.type;
+                // Now TypeScript knows attackerCmd is a string and safe to use as a key
+                    if (!fleetStats[attackerCmd]) {
+                        fleetStats[attackerCmd] = { 
+                            dealt: 0, 
+                            kills: 0, 
+                            initialShips: new Map(), 
+                            deadShips: new Set() 
+                        };
+                    }
 
                 // Ensure the commandant exists in our tracker
                 if (!fleetStats[attackerCmd]) {
