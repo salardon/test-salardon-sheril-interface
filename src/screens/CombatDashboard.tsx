@@ -63,7 +63,13 @@ export default function CombatDashboard() {
         const cmdIds = fleetMatches ? [`C${fleetMatches[1]}`, `C${fleetMatches[2]}`] : [];
 
         cmdIds.forEach(id => {
-            fleetStats[id] = { dealt: 0, kills: 0, initialShips: new Map(), deadShips: new Set() };
+            fleetStats[id] = { 
+                dealt: 0, 
+                kills: 0, 
+                initialShips: new Map(), 
+                deadShips: new Set(),
+                typePerformance: {} // Added this line
+            };
         });
 
         // Use the grouped table data to build summary stats for THIS encounter
