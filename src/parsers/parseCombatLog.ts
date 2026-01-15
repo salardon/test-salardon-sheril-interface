@@ -11,13 +11,16 @@ export interface CombatTableRow {
 }
 
 export function parseCombatLog(fileName: string, rawText: string): CombatLogData {
-  // CLEANING: Strip the source tags and normalize line endings
-  // Using a simpler string-based replace for the source tags to avoid syntax errors
-  const cleanText = rawText.split('\n')
-    .map(line => line.replace(/\/g, "").trim())
-    .join('\n');
+  // 1. CLEANING: Safely remove tags and normalize text
+  const lines = rawText.split('\n');
+  const cleanLines = lines.map(l => {
+    // Remove the source tags by looking for the specific string pattern
+    return l.replace(/\/g, "").trim();
+  });
+  const cleanText = cleanLines.join('\n');
   
-  const combatBlocks = cleanText.split(/RESOLUTION COMBAT\s+/).filter(b => b.trim().length > 0);
+  // 2. SPLITTING: Separate different combat encounters
+  const combatBlocks = cleanText.split(/RESOLUTION COMBAT\s+/).filter(b => b.includes('['));
   
   const tableRows: CombatTableRow[] = [];
   const turns: TurnState[] = [];
@@ -41,7 +44,11 @@ export function parseCombatLog(fileName: string, rawText: string): CombatLogData
       if (!turnContent) continue;
 
       const exchanges: FleetExchange[] = [];
+      
+      // shipRegex: coordinates and target info
       const shipRegex = /\[.*?\]\s+C(\d+)\s+,\s+tir vaisseau\s+(\d+)\s+N°(\d+\/\d+)\s+\((.*?),\s+race:\s+(\d+)\)\s+,\s+attP:\s+\(x:(-?\d+)\|y:(-?\d+)\|z:(-?\d+)\)(?:,\s+cible:\s+(.*?),\s+deffP:\s+\(x:(-?\d+)\|y:(-?\d+)\|z:(-?\d+)\),\s+distance:\s+([\d\s\u202F]+))?/;
+
+      // Split the turn by the header to isolate each ship's firing section
       const firingSections = turnContent.split(`[${fullHeader}]`).filter(s => s.includes("tir vaisseau"));
 
       firingSections.forEach(section => {
@@ -57,10 +64,10 @@ export function parseCombatLog(fileName: string, rawText: string): CombatLogData
 
         const weaponGroups: Record<string, { count: number, damage: number, kill: number, percent: string, shots: WeaponShot[] }> = {};
         
-        // Split section into lines to find weapon shots
-        const lines = section.split("\n");
-        lines.forEach(l => {
-          // Look for weapon lines (e.g., "- tir N0, arme: laserI")
+        // Parse weapon lines within this ship's section
+        const sLines = section.split('\n');
+        sLines.forEach(l => {
+          // Look for: arme: laserI => chance 57(12), miss
           const wMatch = l.match(/arme:\s+(.*?)\s+[-\s=>]+\s+chance\s+(\d+)\(.*?\)[,\s]+(hit|miss|shielded|exit)(?:[,\s]+degat\s+\((\d+)\))?/);
           
           if (wMatch) {
@@ -86,6 +93,7 @@ export function parseCombatLog(fileName: string, rawText: string): CombatLogData
         });
 
         const cleanNum = (v: string | undefined) => v ? parseInt(v.replace(/[^\d-]/g, ""), 10) : 0;
+        
         const baseData = {
           combat: fullHeader, turn: turnNumber, commandant: `C${cmd}`, fleet: fleetName,
           shipType: sType, crewRace: race, shipId: fullShipId,
@@ -97,8 +105,10 @@ export function parseCombatLog(fileName: string, rawText: string): CombatLogData
 
         const wEntries = Object.entries(weaponGroups);
         if (wEntries.length === 0) {
+          // If no weapons were parsed, show as Inactive
           tableRows.push({ ...baseData, shotWeapon: "None (Inactive)", shotPercent: "0", shotShield: 0, shotDamage: 0, shotKill: 0 });
         } else {
+          // Create a row for each weapon type fired
           wEntries.forEach(([wName, data]) => {
             tableRows.push({ 
               ...baseData, 
