@@ -54,6 +54,8 @@ export default function CombatDashboard() {
             kills: number; 
             initialShips: Map<string, Set<string>>;
             deadShips: Set<string>;
+            // New: Track performance per ship type
+            typePerformance: Record<string, { damage: number; kills: number }>;
         }> = {};
 
         // Parse commandants from the specific tab header
@@ -66,25 +68,50 @@ export default function CombatDashboard() {
 
         // Use the grouped table data to build summary stats for THIS encounter
         combats[activeCombatTab].forEach(row => {
-            const cmd = row.commandant;
-            if (!fleetStats[cmd]) {
-                fleetStats[cmd] = { dealt: 0, kills: 0, initialShips: new Map(), deadShips: new Set() };
-            }
+    const cmd = row.commandant;
+    
+    // 1. Ensure the fleet object and the typePerformance object exist
+    if (!fleetStats[cmd]) {
+        fleetStats[cmd] = { 
+            dealt: 0, 
+            kills: 0, 
+            initialShips: new Map(), 
+            deadShips: new Set(),
+            typePerformance: {} // Initialize new tracking object
+        };
+    }
 
-            if (!fleetStats[cmd].initialShips.has(row.shipType)) {
-                fleetStats[cmd].initialShips.set(row.shipType, new Set());
-            }
-            fleetStats[cmd].initialShips.get(row.shipType)?.add(row.shipId);
+    // 2. Track initial ship counts (for the "X / Y" status display)
+    if (!fleetStats[cmd].initialShips.has(row.shipType)) {
+        fleetStats[cmd].initialShips.set(row.shipType, new Set());
+    }
+    fleetStats[cmd].initialShips.get(row.shipType)?.add(row.shipId);
 
-            fleetStats[cmd].dealt += row.shotDamage;
-            if (row.shotKill === 1) {
-                fleetStats[cmd].kills += 1;
-                const victimCmd = cmdIds.find(id => id !== cmd);
-                if (victimCmd && fleetStats[victimCmd]) {
-                    fleetStats[victimCmd].deadShips.add(`${row.targetType}_${row.targetX}_${row.targetY}_${row.targetZ}`);
-                }
-            }
-        });
+    // 3. Initialize performance tracking for this specific ship type
+    if (!fleetStats[cmd].typePerformance[row.shipType]) {
+        fleetStats[cmd].typePerformance[row.shipType] = { damage: 0, kills: 0 };
+    }
+
+    // 4. Record Damage
+    fleetStats[cmd].dealt += row.shotDamage;
+    fleetStats[cmd].typePerformance[row.shipType].damage += row.shotDamage;
+
+    // 5. Handle Kills (The Graveyard Logic)
+    if (row.shotKill === 1) {
+        // Increment attacker stats
+        fleetStats[cmd].kills += 1;
+        fleetStats[cmd].typePerformance[row.shipType].kills += 1;
+
+        // Identify and record the victim in the OTHER fleet's deadShips set
+        const victimCmd = cmdIds.find(id => id !== cmd);
+        if (victimCmd && fleetStats[victimCmd]) {
+            // We store the target's type and position as a unique ID for the graveyard
+            // This allows us to count how many of 'ShipTypeX' were destroyed
+            const victimId = `${row.targetType}_${row.targetX}_${row.targetY}_${row.targetZ}`;
+            fleetStats[victimCmd].deadShips.add(victimId);
+        }
+    }
+});
 
         return { fleetStats, commandants: Object.keys(fleetStats) };
     }, [log, activeCombatTab, combats]);
@@ -164,7 +191,7 @@ export default function CombatDashboard() {
                                     <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                                         {Array.from(stats.initialShips.entries()).map(([type, ids]) => {
                                             const total = ids.size;
-                                            const deadCount = Array.from(stats.deadShips).filter(d => d.includes(type)).length;
+                                            const deadCount = Array.from(stats.deadShips).filter(d => d.startsWith(type + "_")).length;
                                             return (
                                                 <div key={type} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', color: '#aaa' }}>
                                                     <span>{type}</span>
@@ -177,7 +204,50 @@ export default function CombatDashboard() {
                             );
                         })}
                     </div>
-
+                    <div style={{ display: 'flex', gap: '20px', marginBottom: '25px' }}>
+                        {battleSummary.commandants.map((cmd, idx) => {
+                            const stats = battleSummary.fleetStats[cmd];
+                            return (
+                                <div key={`perf-${cmd}`} style={{ flex: 1, background: '#0d0d0d', border: '1px solid #222', borderRadius: '8px', padding: '15px' }}>
+                                    <h5 style={{ margin: '0 0 10px 0', color: '#666', fontSize: '0.7rem', textTransform: 'uppercase' }}>
+                                        Type Performance & Losses
+                                    </h5>
+                                    <table style={{ width: '100%', fontSize: '0.75rem', borderCollapse: 'collapse' }}>
+                                        <thead>
+                                            <tr style={{ color: '#444', textAlign: 'left' }}>
+                                                <th style={{ paddingBottom: '5px' }}>Ship Type</th>
+                                                <th style={{ textAlign: 'center' }}>Damage</th>
+                                                <th style={{ textAlign: 'center' }}>Kills</th>
+                                                <th style={{ textAlign: 'right' }}>Status</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {Object.keys(stats.typePerformance).map(type => {
+                                                const perf = stats.typePerformance[type];
+                                                const deadCount = Array.from(stats.deadShips).filter(d => d.startsWith(type  + "_")).length;
+                                                return (
+                                                    <tr key={type} style={{ borderTop: '1px solid #1a1a1a' }}>
+                                                        <td style={{ padding: '6px 0', color: '#eee' }}>{type}</td>
+                                                        <td style={{ textAlign: 'center', color: '#8bff8b' }}>{perf.damage.toLocaleString()}</td>
+                                                        <td style={{ textAlign: 'center', color: perf.kills > 0 ? '#ff5252' : '#444' }}>{perf.kills}</td>
+                                                        <td style={{ textAlign: 'right' }}>
+                                                            {deadCount > 0 ? (
+                                                                <span style={{ color: '#ff5252', background: 'rgba(255,82,82,0.1)', padding: '2px 6px', borderRadius: '4px' }}>
+                                                                    -{deadCount} LOST
+                                                                </span>
+                                                            ) : (
+                                                                <span style={{ color: '#444' }}>INTACT</span>
+                                                            )}
+                                                        </td>
+                                                    </tr>
+                                                );
+                                            })}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            );
+                        })}
+                    </div>
                     <div style={{ marginBottom: '30px' }}>
                         <CombatTable data={tableData} />
                     </div>
