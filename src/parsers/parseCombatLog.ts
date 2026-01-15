@@ -11,7 +11,6 @@ export interface CombatTableRow {
 }
 
 export function parseCombatLog(fileName: string, rawText: string): CombatLogData {
-  // 1. Pre-process: Clean source tags and normalize
   const cleanText = rawText.replace(/\/g, "").replace(/\r/g, "");
   const combatBlocks = cleanText.split(/RESOLUTION COMBAT\s+/).filter(b => b.trim().length > 0);
   
@@ -37,9 +36,7 @@ export function parseCombatLog(fileName: string, rawText: string): CombatLogData
       if (!turnContent) continue;
 
       const exchanges: FleetExchange[] = [];
-      // Regex: Added flexibility for the specific coordinates and target naming in combat.txt
       const shipRegex = /\[.*?\]\s+C(\d+)\s+,\s+tir vaisseau\s+(\d+)\s+N°(\d+\/\d+)\s+\((.*?),\s+race:\s+(\d+)\)\s+,\s+attP:\s+\(x:(-?\d+)\|y:(-?\d+)\|z:(-?\d+)\)(?:,\s+cible:\s+(.*?),\s+deffP:\s+\(x:(-?\d+)\|y:(-?\d+)\|z:(-?\d+)\),\s+distance:\s+([\d\s\u202F]+))?/;
-      
       const firingSections = turnContent.split(`[${fullHeader}]`).filter(s => s.includes("tir vaisseau"));
 
       firingSections.forEach(section => {
@@ -55,14 +52,10 @@ export function parseCombatLog(fileName: string, rawText: string): CombatLogData
 
         const weaponGroups: Record<string, { count: number, damage: number, kill: number, percent: string, shots: WeaponShot[] }> = {};
         
-        // Split by lines and look for "arme:"
+        // Revised weapon detection: specific to "- tir NX, arme: NAME => chance..."
         const lines = section.split("\n");
         lines.forEach(l => {
-          if (!l.includes("arme:")) return;
-
-          // Refined Weapon Regex: Captures the weapon name and result more reliably
-          const wMatch = l.match(/arme:\s+(.*?)\s+.*?chance\s+(\d+)\(.*?\)[,\s]+(hit|miss|shielded|exit)(?:[,\s]+degat\s+\((\d+)\))?/);
-          
+          const wMatch = l.match(/arme:\s+(.*?)\s+[-\s=>]+\s+chance\s+(\d+)\(.*?\)[,\s]+(hit|miss|shielded|exit)(?:[,\s]+degat\s+\((\d+)\))?/);
           if (wMatch) {
             const [, wName, wPercent, wResult, wDmg] = wMatch;
             const dmg = parseInt(wDmg || "0", 10);
