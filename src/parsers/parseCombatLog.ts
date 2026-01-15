@@ -51,7 +51,6 @@ export function parseCombatLog(fileName: string, rawText: string): CombatLogData
         //const shipRegex = /C(\d+)\s+,\s+tir vaisseau\s+(\d+)\s+N°(\d+\/\d+)\s+\((.*?),\s+race:\s+(\d+)\)\s+,\s+attP:\s+\(x:(-?\d+)\|y:(-?\d+)\|z:(-?\d+)\)(?:,\s+cible:\s+(.*?),\s+deffP:\s+\(x:(-?\d+)\|y:(-?\d+)\|z:(-?\d+)\),\s+distance:\s+([\d\s\u202F]+))?/;
         // Optimized Regex: more flexible with spaces and target capturing
         const shipRegex = /C(\d+)\s*,\s*tir vaisseau\s+(\d+)\s+N°(\d+\/\d+)\s+\((.*?),\s+race:\s+(\d+)\)\s*,\s*attP:\s*\(x:(-?\d+)\|y:(-?\d+)\|z:(-?\d+)\)(?:,\s*cible:\s*(.*?),\s*deffP:\s*\(x:(-?\d+)\|y:(-?\d+)\|z:(-?\d+)\),\s*distance:\s*([\d\s\u202F]+))?/;
-        
         const match = section.match(shipRegex);
         // --- DEBUG LOG START ---
         if (section.includes('cible:')) {
