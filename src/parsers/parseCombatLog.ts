@@ -48,9 +48,20 @@ export function parseCombatLog(fileName: string, rawText: string): CombatLogData
       const firingSections = turnContent.split(/\[F\d+_\d+\s+VS\s+F\d+_\d+\]/).filter(s => s.includes('tir vaisseau'));
 
       firingSections.forEach((section) => {
-        const shipRegex = /C(\d+)\s+,\s+tir vaisseau\s+(\d+)\s+N°(\d+\/\d+)\s+\((.*?),\s+race:\s+(\d+)\)\s+,\s+attP:\s+\(x:(-?\d+)\|y:(-?\d+)\|z:(-?\d+)\)(?:,\s+cible:\s+(.*?),\s+deffP:\s+\(x:(-?\d+)\|y:(-?\d+)\|z:(-?\d+)\),\s+distance:\s+([\d\s\u202F]+))?/;
+        //const shipRegex = /C(\d+)\s+,\s+tir vaisseau\s+(\d+)\s+N°(\d+\/\d+)\s+\((.*?),\s+race:\s+(\d+)\)\s+,\s+attP:\s+\(x:(-?\d+)\|y:(-?\d+)\|z:(-?\d+)\)(?:,\s+cible:\s+(.*?),\s+deffP:\s+\(x:(-?\d+)\|y:(-?\d+)\|z:(-?\d+)\),\s+distance:\s+([\d\s\u202F]+))?/;
+        // Optimized Regex: more flexible with spaces and target capturing
+        const shipRegex = /C(\d+)\s*,\s*tir vaisseau\s+(\d+)\s+N°(\d+\/\d+)\s+\((.*?),\s+race:\s+(\d+)\)\s*,\s*attP:\s*\(x:(-?\d+)\|y:(-?\d+)\|z:(-?\d+)\)(?:,\s*cible:\s*(.*?),\s*deffP:\s*\(x:(-?\d+)\|y:(-?\d+)\|z:(-?\d+)\),\s*distance:\s*([\d\s\u202F]+))?/;
         
         const match = section.match(shipRegex);
+        // --- DEBUG LOG START ---
+        if (section.includes('cible:')) {
+            if (!match) {
+                console.warn("Regex failed to match a section that HAS a target:", section.substring(0, 100));
+            } else {
+                console.log("Matched Target:", match[9], "at", match[10], match[11], match[12]);
+            }
+        }
+        // --- DEBUG LOG END ---
         if (!match) return;
 
         const [, cmd, sId, seq, sType, race, ax, ay, az, target, tx, ty, tz, dist] = match;
