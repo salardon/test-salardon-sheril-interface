@@ -11,7 +11,12 @@ export interface CombatTableRow {
 }
 
 export function parseCombatLog(fileName: string, rawText: string): CombatLogData {
-  const cleanText = rawText.replace(/\/g, "").replace(/\r/g, "");
+  // CLEANING: Strip the source tags and normalize line endings
+  // Using a simpler string-based replace for the source tags to avoid syntax errors
+  const cleanText = rawText.split('\n')
+    .map(line => line.replace(/\/g, "").trim())
+    .join('\n');
+  
   const combatBlocks = cleanText.split(/RESOLUTION COMBAT\s+/).filter(b => b.trim().length > 0);
   
   const tableRows: CombatTableRow[] = [];
@@ -52,10 +57,12 @@ export function parseCombatLog(fileName: string, rawText: string): CombatLogData
 
         const weaponGroups: Record<string, { count: number, damage: number, kill: number, percent: string, shots: WeaponShot[] }> = {};
         
-        // Revised weapon detection: specific to "- tir NX, arme: NAME => chance..."
+        // Split section into lines to find weapon shots
         const lines = section.split("\n");
         lines.forEach(l => {
+          // Look for weapon lines (e.g., "- tir N0, arme: laserI")
           const wMatch = l.match(/arme:\s+(.*?)\s+[-\s=>]+\s+chance\s+(\d+)\(.*?\)[,\s]+(hit|miss|shielded|exit)(?:[,\s]+degat\s+\((\d+)\))?/);
+          
           if (wMatch) {
             const [, wName, wPercent, wResult, wDmg] = wMatch;
             const dmg = parseInt(wDmg || "0", 10);
