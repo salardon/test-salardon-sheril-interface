@@ -64,7 +64,9 @@ export function parseCombatLog(fileName: string, rawText: string): CombatLogData
         if (!match) return;
 
         const [, cmd, sId, seq, sType, race, ax, ay, az, target, tx, ty, tz, dist] = match;
-        const fleetName = block.includes(`F${headerMatch[1].split('VS')[0].trim()}_${cmd}`) ? "Attacker" : "Defender";
+    const fleetName = block.includes(`F${headerMatch[1].split('VS')[0].trim()}_${cmd}`) ? "Attacker" : "Defender";
+    
+    
         
         shipTypes.add(sType);
 
@@ -98,13 +100,21 @@ export function parseCombatLog(fileName: string, rawText: string): CombatLogData
 
         const cleanNum = (v: string | undefined) => v ? parseInt(v.replace(/[^\d-]/g, ""), 10) : 0;
         const baseData = {
-          combat: fullHeader, turn: turnNumber, commandant: `C${cmd}`, fleet: fleetName,
-          shipType: sType, crewRace: race, shipId: sId,
-          shipX: ax, shipY: ay, shipZ: az,
-          targetType: target || "None", targetSequence: seq,
-          targetX: tx || "0", targetY: ty || "0", targetZ: tz || "0",
-          targetDist: cleanNum(dist)
-        };
+        combat: fullHeader, 
+        turn: turnNumber, 
+        commandant: `C${cmd}`, 
+        fleet: fleetName,
+        shipType: sType.trim(), 
+        crewRace: race, 
+        shipId: sId,
+        shipX: ax, shipY: ay, shipZ: az,
+        targetType: target ? target.trim() : "None", 
+        targetSequence: seq, // Now correctly tracks 0/3, 1/3, etc.
+        targetX: tx || "0", 
+        targetY: ty || "0", 
+        targetZ: tz || "0",
+        targetDist: cleanNum(dist)
+    };
 
         const wEntries = Object.entries(weaponGroups);
         if (wEntries.length === 0) {
