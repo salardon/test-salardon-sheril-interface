@@ -259,7 +259,12 @@ export default function CombatDashboard() {
                     </div>
 
                     <div style={{ borderTop: '1px solid #222', paddingTop: '30px' }}>
-                        <CombatHeatmap log={log} turnFilter={currentTurn} />
+                        {/* Pass the scoped tableData, the active tab name, and the turn filter */}
+                        <CombatHeatmap 
+                            data={tableData} 
+                            activeTab={activeCombatTab || ''} 
+                            turnFilter={currentTurn} 
+                        />
                     </div>
                 </section>
                 
