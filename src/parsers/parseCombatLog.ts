@@ -68,11 +68,11 @@ export function parseCombatLog(fileName: string, rawText: string): CombatLogData
           ty = tMatch[3];
           tz = tMatch[4];
           dist = tMatch[5];
-          console.log(`DEBUG: SUCCESS Match -> Turn ${turnNumber} Ship ${sType} TARGETED ${target} at [${tx},${ty},${tz}]`);
+          //console.log(`DEBUG: SUCCESS Match -> Turn ${turnNumber} Ship ${sType} TARGETED ${target} at [${tx},${ty},${tz}]`);
         } else {
           // Log why it failed if it contains the word 'cible'
           if (section.includes('cible:')) {
-            console.error(`DEBUG: FAILED Target Match -> Turn ${turnNumber} Ship ${sType} has a target string but regex failed. Content:`, section.split('\n')[0]);
+            //console.error(`DEBUG: FAILED Target Match -> Turn ${turnNumber} Ship ${sType} has a target string but regex failed. Content:`, section.split('\n')[0]);
           }
         }
 
