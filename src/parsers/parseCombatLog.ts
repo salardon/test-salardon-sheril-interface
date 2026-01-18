@@ -48,43 +48,39 @@ export function parseCombatLog(fileName: string, rawText: string): CombatLogData
       const firingSections = turnContent.split(/\[F\d+_\d+\s+VS\s+F\d+_\d+\]/).filter(s => s.includes('tir vaisseau'));
 
       firingSections.forEach((section) => {
-        //const shipRegex = /C(\d+)\s+,\s+tir vaisseau\s+(\d+)\s+N°(\d+\/\d+)\s+\((.*?),\s+race:\s+(\d+)\)\s+,\s+attP:\s+\(x:(-?\d+)\|y:(-?\d+)\|z:(-?\d+)\)(?:,\s+cible:\s+(.*?),\s+deffP:\s+\(x:(-?\d+)\|y:(-?\d+)\|z:(-?\d+)\),\s+distance:\s+([\d\s\u202F]+))?/;
-        // Optimized Regex: more flexible with spaces and target capturing
-        const shipRegex = /C(\d+)\s*,\s*tir vaisseau\s+(\d+)\s+N°(\d+\/\d+)\s+\((.*?),\s+race:\s+(\d+)\)\s*,\s*attP:\s*\(x:(-?\d+)\|y:(-?\d+)\|z:(-?\d+)\)(?:,\s*cible:\s*(.*?),\s*deffP:\s*\(x:(-?\d+)\|y:(-?\d+)\|z:(-?\d+)\),\s*distance:\s*([\d\s\u202F]+))?/;
-        const match = section.match(shipRegex);
-        // --- DEBUG LOG START ---
-        if (section.includes('cible:')) {
-            if (!match) {
-                console.warn("Regex failed to match a section that HAS a target:", section.substring(0, 100));
-            } else {
-                console.log("Matched Target:", match[9], "at", match[10], match[11], match[12]);
-            }
-        }
-        // --- DEBUG LOG END ---
-        if (!match) return;
+    const shipRegex = /C(\d+)\s*,\s*tir vaisseau\s+(\d+)\s+N°(\d+\/\d+)\s+\((.*?),\s+race:\s+(\d+)\)\s*,\s*attP:\s*\(x:(-?\d+)\|y:(-?\d+)\|z:(-?\d+)\)(?:,\s*cible:\s*(.*?),\s*deffP:\s*\(x:(-?\d+)\|y:(-?\d+)\|z:(-?\d+)\),\s*distance:\s*([\d\s\u202F]+))?/;
+    
+    const match = section.match(shipRegex);
+    if (!match) return;
 
-        const [, cmd, sId, seq, sType, race, ax, ay, az, target, tx, ty, tz, dist] = match;
-    const fleetName = block.includes(`F${headerMatch[1].split('VS')[0].trim()}_${cmd}`) ? "Attacker" : "Defender";
+    // INDEX MAPPING:
+    // 1: cmd, 2: sId, 3: seq, 4: sType, 5: race
+    // 6: ax, 7: ay, 8: az
+    // 9: target, 10: tx, 11: ty, 12: tz, 13: dist
+    const [, cmd, sId, seq, sType, race, ax, ay, az, target, tx, ty, tz, dist] = match;
     
+    // Determine fleet name safely
+    const fleetName = block.includes(`F${fullHeader.split('VS')[0].trim()}_${cmd}`) ? "Attacker" : "Defender";
     
+    shipTypes.add(sType.trim());
+    if (target) shipTypes.add(target.trim());
+
+    const weaponGroups: Record<string, { count: number, damage: number, shield: number, kill: number, percent: string }> = {};
+    const lines = section.split('\n');
+
+    lines.forEach(l => {
+        if (!l.includes('arme:')) return;
         
-        shipTypes.add(sType);
-
-        const weaponGroups: Record<string, { count: number, damage: number, shield: number, kill: number, percent: string }> = {};
-        const lines = section.split('\n');
-
-        lines.forEach(l => {
-          if (l.includes('arme:') === false) return;
-          
-          const wMatch = l.match(/arme:\s+(.*?)\s+[-\s=>]+\s+chance\s+(\d+).*?(hit|miss|shielded|exit)(?:.*?degat\s+\((\d+)\))?/i);
-          
-          if (wMatch) {
+        // Updated weapon regex to handle both "=>" and "-" formats
+        const wMatch = l.match(/arme:\s+(.*?)\s+[-\s=>]+\s+chance\s+(\d+).*?(hit|miss|shielded|exit)(?:.*?degat\s+\((\d+)\))?/i);
+        
+        if (wMatch) {
             const [, wName, wPercent, wResult, wDmg] = wMatch;
             const dmgValue = parseInt(wDmg || "0", 10);
             const isFatal = l.toLowerCase().includes('detruire');
 
             if (!weaponGroups[wName]) {
-              weaponGroups[wName] = { count: 0, damage: 0, shield: 0, kill: 0, percent: wPercent };
+                weaponGroups[wName] = { count: 0, damage: 0, shield: 0, kill: 0, percent: wPercent };
             }
             
             weaponGroups[wName].count++;
@@ -93,13 +89,13 @@ export function parseCombatLog(fileName: string, rawText: string): CombatLogData
             } else {
                 weaponGroups[wName].damage += dmgValue;
             }
-            
             if (isFatal) weaponGroups[wName].kill = 1;
-          }
-        });
+        }
+    });
 
-        const cleanNum = (v: string | undefined) => v ? parseInt(v.replace(/[^\d-]/g, ""), 10) : 0;
-        const baseData = {
+    const cleanNum = (v: string | undefined) => v ? parseInt(v.replace(/[^\d-]/g, ""), 10) : 0;
+    
+    const baseData = {
         combat: fullHeader, 
         turn: turnNumber, 
         commandant: `C${cmd}`, 
@@ -107,31 +103,33 @@ export function parseCombatLog(fileName: string, rawText: string): CombatLogData
         shipType: sType.trim(), 
         crewRace: race, 
         shipId: sId,
-        shipX: ax, shipY: ay, shipZ: az,
+        shipX: ax, 
+        shipY: ay, 
+        shipZ: az,
         targetType: target ? target.trim() : "None", 
-        targetSequence: seq, // Now correctly tracks 0/3, 1/3, etc.
+        targetSequence: seq, 
         targetX: tx || "0", 
         targetY: ty || "0", 
         targetZ: tz || "0",
         targetDist: cleanNum(dist)
     };
 
-        const wEntries = Object.entries(weaponGroups);
-        if (wEntries.length === 0) {
-          tableRows.push({ ...baseData, shotWeapon: "Inactive/Miss", shotPercent: "0", shotShield: 0, shotDamage: 0, shotKill: 0 });
-        } else {
-          wEntries.forEach(([wName, data]) => {
+    const wEntries = Object.entries(weaponGroups);
+    if (wEntries.length === 0) {
+        tableRows.push({ ...baseData, shotWeapon: "Inactive/Miss", shotPercent: "0", shotShield: 0, shotDamage: 0, shotKill: 0 });
+    } else {
+        wEntries.forEach(([wName, data]) => {
             tableRows.push({ 
-              ...baseData, 
-              shotWeapon: `${data.count}x ${wName}`, 
-              shotPercent: data.percent, 
-              shotShield: data.shield, 
-              shotDamage: data.damage, 
-              shotKill: data.kill 
+                ...baseData, 
+                shotWeapon: `${data.count}x ${wName}`, 
+                shotPercent: data.percent, 
+                shotShield: data.shield, 
+                shotDamage: data.damage, 
+                shotKill: data.kill 
             });
-          });
-        }
-      });
+        });
+    }
+});
     }
   });
 
