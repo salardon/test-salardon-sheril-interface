@@ -1,94 +1,70 @@
 import React, { useMemo } from 'react';
-import { CombatLogData } from '../types/combat';
+import { CombatTableRow } from '../parsers/parseCombatLog';
 
 interface Props {
-    log: CombatLogData;
+    data: CombatTableRow[]; // Pass the already filtered tableData
+    activeTab: string;
     turnFilter: number;
 }
 
-export default function CombatHeatmap({ log, turnFilter }: Props) {
-    const { attackers, defenders } = useMemo(() => {
-    // 1. Extract the two fleets from the battle name (e.g., F16_3 VS F77_0)
-    // We'll use the commandant IDs (the number after the underscore)
-    const fleetMatches = log.battleName.match(/F\d+_(\d+)\s+VS\s+F\d+_(\d+)/);
-    const cmdA = fleetMatches ? `C${fleetMatches[1]}` : 'C3'; // Fallback to C3
-    const cmdB = fleetMatches ? `C${fleetMatches[2]}` : 'C0'; // Fallback to C0
+export default function CombatHeatmap({ data, activeTab, turnFilter }: Props) {
+    const { attackers, defenders, statsMap } = useMemo(() => {
+        // 1. Identify Fleet A and Fleet B from the Tab Name (e.g., "F19_2 VS F38_4")
+        const fleetMatches = activeTab.match(/F\d+_(\d+)\s+VS\s+F\d+_(\d+)/);
+        const cmdA = fleetMatches ? `C${fleetMatches[1]}` : '';
+        
+        const sideA = new Set<string>();
+        const sideB = new Set<string>();
+        const matrix: Record<string, { dealt: number; received: number; kills: number }> = {};
 
-    const sideA = new Set<string>();
-    const sideB = new Set<string>();
+        data.forEach(row => {
+            const isSideA = row.commandant === cmdA;
+            const attackerType = row.shipType;
+            const targetType = row.targetType;
 
-    log.turns.forEach(turn => {
-        turn.exchanges.forEach(ex => {
-            const cmd = ex.attacker.cmd;
-            const type = ex.attacker.type;
-            
-            // Assign ship types to the correct axis based on their Commandant
-            if (cmd === cmdA) {
-                sideA.add(type);
-            } else if (cmd === cmdB) {
-                sideB.add(type);
+            // Assign to axes
+            if (isSideA) {
+                sideA.add(attackerType);
+                if (targetType !== "None") sideB.add(targetType);
+            } else {
+                sideB.add(attackerType);
+                if (targetType !== "None") sideA.add(targetType);
             }
 
-            // Also check the target's type to ensure defenders appear 
-            // even if they never fired back
-            if (ex.target && ex.target.type !== 'None') {
-                // If C3 is attacking, the target must belong to C0
-                if (cmd === cmdA) sideB.add(ex.target.type);
-                else sideA.add(ex.target.type);
-            }
-        });
-    });
+            // Aggregate Stats for Heatmap Cells
+            if (targetType !== "None") {
+                const key = `${attackerType}|${targetType}`;
+                if (!matrix[key]) matrix[key] = { dealt: 0, received: 0, kills: 0 };
+                
+                matrix[key].dealt += row.shotDamage;
+                matrix[key].kills += row.shotKill;
 
-    return {
-        attackers: Array.from(sideA).sort(),
-        defenders: Array.from(sideB).sort()
-    };
-}, [log]);
-
-    const getStats = (attackerType: string, targetType: string) => {
-        if (turnFilter === 0) {
-            const key = `${attackerType}|${targetType}`;
-            const revKey = `${targetType}|${attackerType}`;
-            return {
-                dealt: log.globalMatrix.data[key]?.dealt || 0,
-                received: log.globalMatrix.data[revKey]?.dealt || 0,
-                kills: log.globalMatrix.data[key]?.kills || 0
-            };
-        }
-
-        const turn = log.turns[turnFilter - 1];
-        let dealt = 0, received = 0, kills = 0;
-
-        turn.exchanges.forEach(ex => {
-            if (ex.attacker.type === attackerType && ex.target.type === targetType) {
-                ex.shots.forEach(s => {
-                    dealt += s.damage;
-                    if (s.isFatal) kills++;
-                });
-            }
-            if (ex.attacker.type === targetType && ex.target.type === attackerType) {
-                ex.shots.forEach(s => {
-                    received += s.damage;
-                });
+                // Also record the "received" side for the reverse perspective
+                const revKey = `${targetType}|${attackerType}`;
+                if (!matrix[revKey]) matrix[revKey] = { dealt: 0, received: 0, kills: 0 };
+                matrix[revKey].received += row.shotDamage;
             }
         });
 
-        return { dealt, received, kills };
-    };
-
-    // If one side has no ships (rare, but possible in logs), fallback to all types
-    const rowTypes = attackers.length > 0 ? attackers : log.globalMatrix.allShipTypes;
-    const colTypes = defenders.length > 0 ? defenders : log.globalMatrix.allShipTypes;
+        return {
+            attackers: Array.from(sideA).sort(),
+            defenders: Array.from(sideB).sort(),
+            statsMap: matrix
+        };
+    }, [data, activeTab]);
 
     return (
         <div style={{ background: '#111', padding: '20px', borderRadius: '8px', border: '1px solid #333', overflowX: 'auto' }}>
+            <h3 style={{ color: '#888', fontSize: '0.8rem', marginTop: 0, marginBottom: '15px', textTransform: 'uppercase' }}>
+                Tactical Effectiveness Matrix
+            </h3>
             <table style={{ borderCollapse: 'collapse', width: '100%' }}>
                 <thead>
                     <tr>
                         <th style={{ color: '#666', fontSize: '0.7rem', textAlign: 'left', minWidth: '120px' }}>
                             FLEET A (Rows) →
                         </th>
-                        {colTypes.map(type => (
+                        {defenders.map(type => (
                             <th key={type} style={{ padding: '10px', fontSize: '0.7rem', color: '#888', writingMode: 'vertical-lr', transform: 'rotate(180deg)', height: '140px' }}>
                                 {type}
                             </th>
@@ -96,11 +72,11 @@ export default function CombatHeatmap({ log, turnFilter }: Props) {
                     </tr>
                 </thead>
                 <tbody>
-                    {rowTypes.map(rowType => (
+                    {attackers.map(rowType => (
                         <tr key={rowType} style={{ borderBottom: '1px solid #222' }}>
                             <td style={{ padding: '10px', fontSize: '0.8rem', fontWeight: 'bold', color: '#aaa' }}>{rowType}</td>
-                            {colTypes.map(colType => {
-                                const stats = getStats(rowType, colType);
+                            {defenders.map(colType => {
+                                const stats = statsMap[`${rowType}|${colType}`] || { dealt: 0, received: 0, kills: 0 };
                                 
                                 if (stats.dealt === 0 && stats.received === 0 && stats.kills === 0) {
                                     return <td key={colType} style={{ background: '#0a0a0a' }}></td>;
@@ -134,9 +110,9 @@ export default function CombatHeatmap({ log, turnFilter }: Props) {
             </table>
             
             <div style={{ marginTop: '20px', display: 'flex', gap: '25px', fontSize: '0.75rem', color: '#888', borderTop: '1px solid #222', paddingTop: '15px' }}>
-                <span><strong style={{color: '#8bff8b'}}>▲</strong> Dealt</span>
-                <span><strong style={{color: '#ff5252'}}>▼</strong> Received</span>
-                <span><strong style={{color: '#fff'}}>💀</strong> Kills</span>
+                <span><strong style={{color: '#8bff8b'}}>▲</strong> Damage Dealt</span>
+                <span><strong style={{color: '#ff5252'}}>▼</strong> Damage Received</span>
+                <span><strong style={{color: '#fff'}}>💀</strong> Kills Confirmed</span>
             </div>
         </div>
     );
