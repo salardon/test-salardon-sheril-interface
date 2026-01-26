@@ -489,12 +489,30 @@ export function parseRapportXml(text: string): Rapport {
         }
     });
 
+    const combats: { x: number; y: number }[] = [];
+    qAll(joueurNode, ['messages > m']).forEach((m) => {
+        if (getAttr(m, ['type']) === 'EVT') {
+            const content = m.innerHTML || '';
+            if (content.includes('résultat de combat')) {
+                const match = /<FONT color='#AC0DFE'>(\d+)-(\d+)/.exec(content);
+                if (match) {
+                    const x = parseInt(match[1], 10);
+                    const y = parseInt(match[2], 10);
+                    if (!isNaN(x) && !isNaN(y)) {
+                        combats.push({ x, y });
+                    }
+                }
+            }
+        }
+    });
+
     const rapport: Rapport = {
         tour,
         lieutenants,
         technologiesAtteignables,
         technologiesConnues, joueur, systemesJoueur, systemesDetectes: mergedSystemesDetectes, flottesJoueur, flottesDetectees, plansVaisseaux,
         budgetTechnologique,
+        combats,
     };
 
     return rapport;
