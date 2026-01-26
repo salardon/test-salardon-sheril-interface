@@ -194,7 +194,6 @@ export type Rapport = {
     flottesDetectees: FlotteDetectee[];
     plansVaisseaux: PlanVaisseau[];
     budgetTechnologique: number;
-    combats: { x: number, y: number }[];
 };
 export type GlobalData = {
     commandants: Commandant[];
