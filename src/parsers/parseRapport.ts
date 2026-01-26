@@ -480,6 +480,25 @@ export function parseRapportXml(text: string): Rapport {
         });
     });
 
+    // Messages for combat events
+    const combats: { x: number, y: number }[] = [];
+    qAll(joueurNode, ['messages > m[type="EVT"]']).forEach((m) => {
+        const messageText = m.innerHTML;
+        if (messageText.includes('résultat de combat')) {
+            const fontNode = m.querySelector('font[color="#AC0DFE"]');
+            if (fontNode && fontNode.textContent) {
+                const match = fontNode.textContent.match(/(\d+)-(\d+)/);
+                if (match && match.length === 3) {
+                    const x = parseInt(match[1], 10);
+                    const y = parseInt(match[2], 10);
+                    if (!isNaN(x) && !isNaN(y)) {
+                        combats.push({ x, y });
+                    }
+                }
+            }
+        }
+    });
+
     // Budget technologique (valeur absolue)
     let budgetTechnologique = 0;
     const budgetsNode = qOne(joueurNode, ['budgets']);
@@ -495,6 +514,7 @@ export function parseRapportXml(text: string): Rapport {
         technologiesAtteignables,
         technologiesConnues, joueur, systemesJoueur, systemesDetectes: mergedSystemesDetectes, flottesJoueur, flottesDetectees, plansVaisseaux,
         budgetTechnologique,
+        combats,
     };
 
     return rapport;
